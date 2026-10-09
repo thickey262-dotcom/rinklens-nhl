@@ -1,0 +1,55 @@
+name: RinkLens - NHL stats and website
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: rinklens-pages
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test NHL data normalization
+        run: python -m unittest discover -s tests -v
+      - name: Refresh NHL data
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: python scripts/fetch_nhl.py --seasons 20262027 20252026 20242025
+      - name: Commit snapshots
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/nhl-*.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore(data): refresh NHL skater snapshots'
+            git push origin HEAD:main
+          fi
+      - name: Assemble static website
+        run: |
+          mkdir -p _site/data
+          cp index.html styles.css app.js cloud.js config.js _site/
+          touch _site/.nojekyll
+          for file in data/nhl-*.json; do
+            if [ -f "$file" ]; then cp "$file" _site/data/; fi
+          done
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deploy website
+        id: deployment
+        uses: actions/deploy-pages@v4
