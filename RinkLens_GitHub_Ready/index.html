@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09111d">
+  <meta name="description" content="Hockey advanced stats explained for the eye-test crowd. Learn what the numbers mean, compare players and sound smarter in front of your friends.">
+  <title>RinkLens — Numbers meet the eye test</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="#dashboard" class="brand" aria-label="RinkLens home"><span class="brand-mark"><span>R</span></span><span>RINK<span class="brand-accent">LENS</span><small>HOCKEY INTELLIGENCE</small></span></a>
+      <div class="side-label">WORKSPACE</div>
+      <nav aria-label="Main navigation" class="main-nav">
+        <button class="nav-item active" data-view="dashboard"><span class="nav-icon">◫</span> Overview</button>
+        <button class="nav-item" data-view="players"><span class="nav-icon">▤</span> Player database</button>
+        <button class="nav-item" data-view="scouting"><span class="nav-icon">◎</span> Scouting board <span id="ratedCountSide" class="nav-count">0</span></button>
+        <button class="nav-item" data-view="compare"><span class="nav-icon">⇄</span> Player comparison</button>
+      </nav>
+      <div class="side-label side-secondary">REFERENCE</div>
+      <nav class="main-nav"><button class="nav-item" data-view="methodology"><span class="nav-icon">≡</span> Methodology</button><button class="nav-item" data-view="account"><span class="nav-icon">♙</span> Account & sync</button></nav>
+      <div class="sidebar-bottom">
+        <div class="mini-status"><span class="live-dot"></span> Independent scouting toolkit</div>
+        <div class="sidebar-note">Statistics are sourced; scouting grades are opinions. Neither should be confused for the other.</div>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-mark">R</span><b>RINK<span class="brand-accent">LENS</span></b></div>
+        <div class="breadcrumb">NHL <span>/</span> <strong id="breadcrumb">Overview</strong></div>
+        <div class="top-actions">
+          <span class="season-label">SEASON</span>
+          <select id="seasonSelect" aria-label="Season"><option value="20262027">2026–27</option><option value="20252026">2025–26</option><option value="20242025">2024–25</option></select>
+          <button class="primary-button" id="loadNHL">↻ <span>Refresh NHL stats</span></button>
+        </div>
+      </header>
+
+      <div class="page-container">
+        <div id="sourceBanner" class="source-banner" role="status"><span class="source-dot demo"></span><span id="sourceText"><b>DEMO MODE</b> — Sample players and figures are illustrative, not real NHL statistics.</span><button id="sourceMore">Data options ↗</button></div>
+
+        <section id="view-dashboard" class="view active">
+          <div class="hero">
+            <div class="hero-content"><div class="eyebrow"><span class="line"></span> A NEW LENS ON PLAYER PERFORMANCE</div><h1>The numbers tell a story.<br><em>The eye test finishes it.</em></h1><p>Compare what the data says with what you actually see on the ice. One scouting workspace for production, possession, player grades, and the gap between them.</p><div class="hero-actions"><button class="primary-button big" data-go="players">Explore skaters <span>↗</span></button><button class="secondary-button big" data-go="scouting">Open scouting board <span>→</span></button></div></div>
+            <div class="hero-rink" aria-hidden="true"><svg viewBox="0 0 420 300" fill="none"><rect x="34" y="29" width="352" height="242" rx="70" stroke="#6cc8d7" stroke-width="1.5" opacity=".45"/><rect x="56" y="51" width="308" height="198" rx="54" stroke="#6cc8d7" stroke-width="1" opacity=".15"/><line x1="210" y1="30" x2="210" y2="270" stroke="#5db1c9" opacity=".45" stroke-width="3"/><circle cx="210" cy="150" r="49" stroke="#5db1c9" opacity=".43" stroke-width="2"/><circle cx="111" cy="150" r="37" stroke="#6cc8d7" opacity=".2"/><circle cx="309" cy="150" r="37" stroke="#6cc8d7" opacity=".2"/><path d="M116 43V257M304 43V257" stroke="#df795b" opacity=".4" stroke-width="3"/><circle cx="210" cy="150" r="6" fill="#c1f7ee"/><circle cx="135" cy="112" r="8" fill="#c0f3dc"/><circle cx="290" cy="188" r="8" fill="#edb97c"/></svg><div class="hero-rink-caption"><span>DATA</span><span class="caption-rule"></span><span>OBSERVATION</span></div></div>
+          </div>
+          <section class="mission-panel" aria-labelledby="mission-heading">
+            <div class="mission-heading"><span class="eyebrow">OUR MISSION</span><h2 id="mission-heading">Advanced stats for the eye-test crowd.</h2></div>
+            <p>This website is for us eye-test dummies who don’t understand advanced stats. Here’s where you can learn what the numbers actually mean, so you can sound smarter in front of your friends.</p>
+          </section>
+          <div class="section-header compact"><div><div class="eyebrow muted">LEAGUE SNAPSHOT</div><h2>At a glance</h2></div><span id="snapshotSource" class="header-aside">Illustrative dataset</span></div>
+          <div class="kpi-grid">
+            <div class="kpi"><div class="kpi-top">SKATERS TRACKED <span>↗</span></div><div id="kpiPlayers" class="kpi-value">—</div><div class="kpi-caption">Players in current dataset</div></div>
+            <div class="kpi"><div class="kpi-top">SCOUTED PLAYERS <span>◎</span></div><div id="kpiRated" class="kpi-value">—</div><div class="kpi-caption">Complete six-trait assessments</div></div>
+            <div class="kpi"><div class="kpi-top">AVG. PRODUCTION INDEX <span>▤</span></div><div id="kpiAnalytics" class="kpi-value">—</div><div class="kpi-caption">Percentile-style model score / 100</div></div>
+            <div class="kpi"><div class="kpi-top">WATCHLIST <span>☆</span></div><div id="kpiWatch" class="kpi-value">—</div><div class="kpi-caption">Players marked for follow-up</div></div>
+          </div>
+          <div class="dashboard-grid">
+            <section class="panel spotlight-panel"><div class="panel-heading"><div><span class="eyebrow muted">TWO PERSPECTIVES</span><h3>Analytics vs. eye test</h3></div><span class="panel-subtag">SCOUTED PLAYERS ONLY</span></div><p class="panel-intro">Each dot is one player. The upper-right is where statistical and scouting evaluations agree. The other quadrants reveal players worth investigating.</p><div id="scatterArea" class="scatter-area"></div><div class="plot-footer"><span><i class="legend teal"></i> Strong agreement</span><span><i class="legend amber"></i> Worth a second look</span></div></section>
+            <section class="panel leaderboard-panel"><div class="panel-heading"><div><span class="eyebrow muted">PLAYER RANKINGS</span><h3>Production leaders</h3></div><button class="text-button" data-go="players">All players →</button></div><div id="topPlayers" class="top-players"></div><div class="leaderboard-foot">Rankings use the selected model and available sample, not a validated projection of future player value.</div></section>
+          </div>
+        </section>
+
+        <section id="view-players" class="view">
+          <div class="section-header"><div><div class="eyebrow muted">PLAYER DATABASE</div><h1>Every player. Both perspectives.</h1><p>Search and sort by numbers, scouting grade, or combined evaluation.</p></div><button class="secondary-button" id="importDataButton">↑ Import advanced CSV</button></div>
+          <div class="panel table-panel"><div class="filters"><div class="search-wrap"><span>⌕</span><input id="searchInput" type="search" placeholder="Search player or team..." aria-label="Search players"></div><select id="teamFilter" aria-label="Filter by team"><option value="all">All teams</option></select><select id="posFilter" aria-label="Filter by position"><option value="all">All positions</option><option value="F">Forwards</option><option value="D">Defense</option></select><select id="ratingFilter" aria-label="Filter by scouting"><option value="all">All players</option><option value="rated">Scouted</option><option value="unrated">Not scouted</option><option value="watch">Watchlist</option></select><select id="sortSelect" aria-label="Sort players"><option value="analytics">Highest statistical score</option><option value="combined">Highest combined score</option><option value="eye">Highest eye-test score</option><option value="points">Most points</option><option value="name">Player name</option></select></div><div class="table-meta"><span id="resultCount">—</span><span>Click a player to grade or compare</span></div><div class="table-scroll"><table><thead><tr><th>PLAYER</th><th>GP</th><th>G</th><th>A</th><th>PTS</th><th title="Points per 60 minutes of ice time">P/60</th><th id="advHeader">STAT INDEX</th><th>EYE TEST</th><th>COMBINED</th><th></th></tr></thead><tbody id="playerRows"></tbody></table></div><div class="table-note">An em dash means no scouting score has been submitted. Statistical indexes are position-relative and not equivalent to NHL player rankings.</div></div>
+        </section>
+
+        <section id="view-scouting" class="view"><div class="section-header"><div><div class="eyebrow muted">SCOUTING WORKSPACE</div><h1>What the box score can't show.</h1><p>Turn observations into consistent, reusable six-trait assessments.</p></div><button class="secondary-button" id="exportGrades">↓ Export scouting CSV</button></div><div class="scouting-layout"><section class="panel scouting-guide"><div class="panel-heading"><div><span class="eyebrow muted">THE SIX TRAITS</span><h3>Score each from 1 to 5</h3></div></div><div id="traitsGuide" class="traits-guide"></div><div class="guide-bottom"><b>Scouting is independent.</b><p>Grades reflect your observations, and are local unless you connect and sign in to your own cloud account. No eye-test grades are generated from statistics.</p></div></section><section class="panel notes-panel"><div class="panel-heading"><div><span class="eyebrow muted">YOUR REPORTS</span><h3>Scouted players</h3></div><span id="scoutingCount" class="panel-subtag">0 REPORTS</span></div><div id="scoutedList"></div></section></div><div class="section-header small-spacer"><div><h2>Start a new evaluation</h2><p>Choose an NHL player and create your own scouting report.</p></div></div><div class="scout-quick panel"><div class="search-wrap"><span>⌕</span><input type="search" id="scoutSearch" placeholder="Find a player to scout..." aria-label="Find a player to scout"></div><div id="scoutSuggestions" class="scout-suggestions"></div></div></section>
+
+        <section id="view-compare" class="view"><div class="section-header"><div><div class="eyebrow muted">SIDE BY SIDE</div><h1>Player comparison.</h1><p>Select up to two players from the database. Compare their production and any scouting reports you've created.</p></div><button class="secondary-button" data-go="players">+ Choose players</button></div><div id="comparisonContent" class="comparison-content"></div></section>
+
+        <section id="view-methodology" class="view"><div class="section-header"><div><div class="eyebrow muted">TRANSPARENT BY DESIGN</div><h1>How RinkLens measures players.</h1><p>Every score is labeled by its source, formula, and limitations.</p></div></div><div class="method-grid"><article class="panel method-card"><div class="eyebrow">01 / STATISTICAL LAYER</div><h3>Production Index</h3><p>With NHL summary data, position-relative percentiles combine points per 60 minutes (55%), shots per 60 (30%), and goals per 60 (15%). Players with fewer than ten games are excluded from the percentile reference sample when enough eligible players exist.</p><p>This is a simple <b>production index</b>, not an expected-goals model or an all-in-one measure of defensive impact.</p></article><article class="panel method-card"><div class="eyebrow">02 / ADVANCED LAYER</div><h3>5-on-5 Analytics Index</h3><p>When a compatible MoneyPuck skater CSV is imported, the model uses five-on-five on-ice expected-goal share (45%), Corsi share (20%), individual expected goals per 60 (20%), and points per 60 (15%), rated within position groups.</p><p>Shares reflect on-ice outcomes, not isolated player causality. Usage, teammates, matchups and sample size all matter.</p></article><article class="panel method-card"><div class="eyebrow">03 / OBSERVATION LAYER</div><h3>Eye-Test Grade</h3><p>A scout assigns a one-to-five grade to skating, puck skills, hockey IQ, defensive play, compete level, and transition. The mean is multiplied by twenty to create a score out of 100.</p><p>Unscouted players receive <b>no eye-test score</b>. Notes remain local unless you connect a Supabase account and sign in. Account data is private under database row-level security.</p></article><article class="panel method-card"><div class="eyebrow">04 / COMBINED VIEW</div><h3>Blended Evaluation</h3><p>For players with a completed scouting report, blend the statistical index and scouting grade. The default is 60% data and 40% eye test. You can adjust the weighting in the comparison view.</p><p>Scores are experimental scouting aids; they are not official ratings, independently validated player projections, or substitutes for contextual film review.</p></article></div><div class="panel citations-panel"><h3>Data and attribution</h3><p><b>NHL statistics:</b> Publicly accessible NHL statistics endpoints; this project is independent and not endorsed by the NHL.</p><p><b>Advanced statistics:</b> MoneyPuck CSV import. Credit <a href="https://moneypuck.com/data.htm" target="_blank" rel="noopener noreferrer">MoneyPuck.com</a> when using its data. MoneyPuck publishes separate terms for noncommercial and other uses, so verify permissions before using it in a commercial site.</p><p><b>Source separation:</b> Loaded statistics, manually entered scouting grades, and calculated scores are identified separately throughout the interface.</p></div></section>
+        <section id="view-account" class="view">
+          <div class="section-header"><div><div class="eyebrow muted">PRIVATE SCOUTING WORKSPACE</div><h1>Account & cloud sync.</h1><p>Keep scouting evaluations and watchlists available on your other devices. Public statistics and private observations stay separate.</p></div></div>
+          <div class="account-grid">
+            <section class="panel account-panel"><div class="eyebrow muted">CONNECTION</div><h3 id="cloudHeading">Browser-only mode</h3><p id="cloudDescription">Your scouting reports are stored in this browser until a cloud database is configured.</p>
+              <div id="accountSignedOut"><label for="accountEmail">Email for a secure sign-in link</label><input type="email" id="accountEmail" placeholder="you@example.com" autocomplete="email"><button id="sendSignin" class="primary-button">Email me a sign-in link →</button></div>
+              <div id="accountSignedIn" hidden><div class="account-profile" id="accountIdentity"></div><div class="account-buttons"><button class="primary-button" id="syncNow">↻ Sync reports now</button><button class="secondary-button" id="signOut">Sign out</button></div><button class="text-button" id="importGuest">Import this browser's guest reports for the selected season →</button></div>
+              <div class="account-status" id="accountStatus" role="status">Cloud connection not configured.</div>
+            </section>
+            <section class="panel account-panel"><div class="eyebrow muted">PRIVACY & SYNC RULES</div><h3>How your reports are saved</h3><p>Only you can see reports associated with your signed-in account. Grades are never generated automatically from NHL statistics.</p><p>Without a configured database, saved reports stay on this device; export CSV regularly for backup. Signing in does not silently copy guest reports into the account.</p><p>Cloud setup instructions are included in the download (see <code>README.md</code> and <code>supabase.sql</code>).</p></section>
+          </div>
+        </section>
+      </div>
+      <footer class="footer"><span>© <span id="currentYear"></span> RINKLENS · Independent hockey analysis</span><span>Built for people who watch the game and study the numbers.</span></footer>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="playerModal" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-top"><span class="eyebrow">PLAYER SCOUTING REPORT</span><button id="closeModal" class="close-button" aria-label="Close">×</button></div><div id="modalContent"></div></div></div>
+  <input id="csvFile" type="file" accept=".csv,text/csv" hidden>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="config.js"></script>
+  <script src="cloud.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
