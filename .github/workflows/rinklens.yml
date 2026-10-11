@@ -28,12 +28,16 @@ jobs:
       - name: Refresh NHL data
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: python scripts/fetch_nhl.py --seasons 20262027 20252026 20242025
+      - name: Download 5v5 player advanced stats (MoneyPuck, non-commercial)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+        continue-on-error: true
+        run: python scripts/fetch_advanced.py --seasons 20262027 20252026 20242025
       - name: Commit snapshots
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/nhl-*.json
+          git add -A data/
           if ! git diff --cached --quiet; then
             git commit -m 'chore(data): refresh NHL skater snapshots'
             git push origin HEAD:main
@@ -41,9 +45,9 @@ jobs:
       - name: Assemble static website
         run: |
           mkdir -p _site/data
-          cp index.html styles.css learn.css app.js learn.js cloud.js config.js _site/
+          cp index.html styles.css learn.css advanced.css app.js learn.js advanced.js cloud.js config.js _site/
           touch _site/.nojekyll
-          for file in data/nhl-*.json; do
+          for file in data/nhl-*.json data/advanced-*.json; do
             if [ -f "$file" ]; then cp "$file" _site/data/; fi
           done
       - uses: actions/configure-pages@v5
