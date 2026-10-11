@@ -2,6 +2,12 @@
 
 An NHL statistics and independent scouting website. This is a deployable static web application with **automatic NHL data loading**, an optional **scheduled NHL data refresh workflow**, and an **optional Supabase database for private, cross-device scouting reports**.
 
+## Individual player advanced analytics
+
+Each NHL skater profile shows 5-on-5 expected-goal share (xGF%), shot-attempt share (CF%), unblocked share (FF%), individual expected goals per 60 (ixG/60), and high-danger share (HDCF%) when the season-level record is available. The database adds xGF% and CF% columns; compare mode shows selected advanced metrics. Tapping a stat opens its Stats School explanation. Never replace missing advanced values with guessed data.
+
+The included `scripts/fetch_advanced.py` downloads MoneyPuck's publicly listed season-level skaters CSV and creates `data/advanced-YYYYYYYY.json` matched to NHL skaters by NHL player ID. Daily GitHub Actions refreshes and publishes these compact snapshots. Keep the site non-commercial unless MoneyPuck explicitly approves other uses. [MoneyPuck downloads and attribution terms](https://moneypuck.com/data.htm). On-ice shares are not isolated individual impact statistics.
+
 ## Website mission statement
 
 > This website is for us eye-test dummies who don’t understand advanced stats. Here’s where you can learn what the numbers actually mean, so you can sound smarter in front of your friends.
