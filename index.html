@@ -7,6 +7,7 @@
   <meta name="description" content="Hockey advanced stats explained for the eye-test crowd. Learn what the numbers mean, compare players and sound smarter in front of your friends.">
   <title>RinkLens — Numbers meet the eye test</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="learn.css">
 </head>
 <body>
   <div class="app-shell">
@@ -20,7 +21,7 @@
         <button class="nav-item" data-view="compare"><span class="nav-icon">⇄</span> Player comparison</button>
       </nav>
       <div class="side-label side-secondary">REFERENCE</div>
-      <nav class="main-nav"><button class="nav-item" data-view="methodology"><span class="nav-icon">≡</span> Methodology</button><button class="nav-item" data-view="account"><span class="nav-icon">♙</span> Account & sync</button></nav>
+      <nav class="main-nav"><button class="nav-item" data-view="learn"><span class="nav-icon">◈</span> Stats explained</button><button class="nav-item" data-view="methodology"><span class="nav-icon">≡</span> Methodology</button><button class="nav-item" data-view="account"><span class="nav-icon">♙</span> Account & sync</button></nav>
       <div class="sidebar-bottom">
         <div class="mini-status"><span class="live-dot"></span> Independent scouting toolkit</div>
         <div class="sidebar-note">Statistics are sourced; scouting grades are opinions. Neither should be confused for the other.</div>
@@ -43,7 +44,7 @@
 
         <section id="view-dashboard" class="view active">
           <div class="hero">
-            <div class="hero-content"><div class="eyebrow"><span class="line"></span> A NEW LENS ON PLAYER PERFORMANCE</div><h1>The numbers tell a story.<br><em>The eye test finishes it.</em></h1><p>Compare what the data says with what you actually see on the ice. One scouting workspace for production, possession, player grades, and the gap between them.</p><div class="hero-actions"><button class="primary-button big" data-go="players">Explore skaters <span>↗</span></button><button class="secondary-button big" data-go="scouting">Open scouting board <span>→</span></button></div></div>
+            <div class="hero-content"><div class="eyebrow"><span class="line"></span> A NEW LENS ON PLAYER PERFORMANCE</div><h1>The numbers tell a story.<br><em>The eye test finishes it.</em></h1><p>Compare what the data says with what you actually see on the ice. One scouting workspace for production, possession, player grades, and the gap between them.</p><div class="hero-actions"><button class="primary-button big" data-go="players">Explore skaters <span>↗</span></button><button class="secondary-button big" data-go="learn">Learn advanced stats <span>→</span></button></div></div>
             <div class="hero-rink" aria-hidden="true"><svg viewBox="0 0 420 300" fill="none"><rect x="34" y="29" width="352" height="242" rx="70" stroke="#6cc8d7" stroke-width="1.5" opacity=".45"/><rect x="56" y="51" width="308" height="198" rx="54" stroke="#6cc8d7" stroke-width="1" opacity=".15"/><line x1="210" y1="30" x2="210" y2="270" stroke="#5db1c9" opacity=".45" stroke-width="3"/><circle cx="210" cy="150" r="49" stroke="#5db1c9" opacity=".43" stroke-width="2"/><circle cx="111" cy="150" r="37" stroke="#6cc8d7" opacity=".2"/><circle cx="309" cy="150" r="37" stroke="#6cc8d7" opacity=".2"/><path d="M116 43V257M304 43V257" stroke="#df795b" opacity=".4" stroke-width="3"/><circle cx="210" cy="150" r="6" fill="#c1f7ee"/><circle cx="135" cy="112" r="8" fill="#c0f3dc"/><circle cx="290" cy="188" r="8" fill="#edb97c"/></svg><div class="hero-rink-caption"><span>DATA</span><span class="caption-rule"></span><span>OBSERVATION</span></div></div>
           </div>
           <section class="mission-panel" aria-labelledby="mission-heading">
@@ -72,6 +73,18 @@
 
         <section id="view-compare" class="view"><div class="section-header"><div><div class="eyebrow muted">SIDE BY SIDE</div><h1>Player comparison.</h1><p>Select up to two players from the database. Compare their production and any scouting reports you've created.</p></div><button class="secondary-button" data-go="players">+ Choose players</button></div><div id="comparisonContent" class="comparison-content"></div></section>
 
+        <section id="view-learn" class="view" aria-labelledby="learnHeading">
+          <div class="learn-intro">
+            <div><div class="eyebrow">RINKLENS STATS SCHOOL / ZERO JARGON REQUIRED</div><h1 id="learnHeading">The stats, <em>without the headache.</em></h1><p>Confused by CF%, xG or PDO? Choose a stat, change the example numbers and learn what to watch for on the ice. Then test yourself before the next group chat argument.</p></div>
+            <div class="learn-count"><strong>8</strong><span>metrics explained<br>in plain English</span></div>
+          </div>
+          <div class="learn-subheader"><div><span class="eyebrow muted">THE GLOSSARY</span><h2>Pick a stat to understand</h2><p>No spreadsheets required. These are teaching examples, not live player statistics.</p></div><input class="learn-search" type="search" id="learnSearch" aria-label="Search stats glossary" placeholder="Search Corsi, xG, shots…"></div>
+          <div class="learn-filters" id="learnFilters" role="group" aria-label="Filter stat lessons"></div>
+          <div class="learn-browser"><div class="learn-cards" id="learnCards"></div><article class="panel learn-detail" id="learnDetail" aria-label="Selected stat explanation"></article></div>
+          <div class="learn-quiz-wrap"><div class="learn-quiz-caption"><div class="eyebrow">PUT YOUR KNOWLEDGE TO WORK</div><h2>Think you know your xG from your PDO?</h2><p>Four quick questions. No account, no leaderboard, no homework. Just enough ammo to sound smart during the next intermission.</p></div><section class="panel learn-quiz-panel" id="learnQuiz" aria-label="Hockey advanced stats quiz"></section></div>
+          <div class="learn-references"><strong>How to use these lessons:</strong><p>Always check the season, game situation (especially 5v5 vs all situations), ice time and sample size before comparing players. Examples here are hypothetical, and metric definitions can vary across data providers.</p><p>References: <a href="https://www.moneypuck.com/glossary.htm" target="_blank" rel="noopener noreferrer">MoneyPuck glossary ↗</a> · <a href="https://www.moneypuck.com/about.htm" target="_blank" rel="noopener noreferrer">How expected goals are modeled ↗</a> · <a href="https://www.hockey-reference.com/about/advanced_stats.html" target="_blank" rel="noopener noreferrer">Hockey-Reference advanced stats ↗</a>. For the RinkLens scoring approach, see <button type="button" class="text-button" data-go="methodology">Methodology →</button></p></div>
+        </section>
+
         <section id="view-methodology" class="view"><div class="section-header"><div><div class="eyebrow muted">TRANSPARENT BY DESIGN</div><h1>How RinkLens measures players.</h1><p>Every score is labeled by its source, formula, and limitations.</p></div></div><div class="method-grid"><article class="panel method-card"><div class="eyebrow">01 / STATISTICAL LAYER</div><h3>Production Index</h3><p>With NHL summary data, position-relative percentiles combine points per 60 minutes (55%), shots per 60 (30%), and goals per 60 (15%). Players with fewer than ten games are excluded from the percentile reference sample when enough eligible players exist.</p><p>This is a simple <b>production index</b>, not an expected-goals model or an all-in-one measure of defensive impact.</p></article><article class="panel method-card"><div class="eyebrow">02 / ADVANCED LAYER</div><h3>5-on-5 Analytics Index</h3><p>When a compatible MoneyPuck skater CSV is imported, the model uses five-on-five on-ice expected-goal share (45%), Corsi share (20%), individual expected goals per 60 (20%), and points per 60 (15%), rated within position groups.</p><p>Shares reflect on-ice outcomes, not isolated player causality. Usage, teammates, matchups and sample size all matter.</p></article><article class="panel method-card"><div class="eyebrow">03 / OBSERVATION LAYER</div><h3>Eye-Test Grade</h3><p>A scout assigns a one-to-five grade to skating, puck skills, hockey IQ, defensive play, compete level, and transition. The mean is multiplied by twenty to create a score out of 100.</p><p>Unscouted players receive <b>no eye-test score</b>. Notes remain local unless you connect a Supabase account and sign in. Account data is private under database row-level security.</p></article><article class="panel method-card"><div class="eyebrow">04 / COMBINED VIEW</div><h3>Blended Evaluation</h3><p>For players with a completed scouting report, blend the statistical index and scouting grade. The default is 60% data and 40% eye test. You can adjust the weighting in the comparison view.</p><p>Scores are experimental scouting aids; they are not official ratings, independently validated player projections, or substitutes for contextual film review.</p></article></div><div class="panel citations-panel"><h3>Data and attribution</h3><p><b>NHL statistics:</b> Publicly accessible NHL statistics endpoints; this project is independent and not endorsed by the NHL.</p><p><b>Advanced statistics:</b> MoneyPuck CSV import. Credit <a href="https://moneypuck.com/data.htm" target="_blank" rel="noopener noreferrer">MoneyPuck.com</a> when using its data. MoneyPuck publishes separate terms for noncommercial and other uses, so verify permissions before using it in a commercial site.</p><p><b>Source separation:</b> Loaded statistics, manually entered scouting grades, and calculated scores are identified separately throughout the interface.</p></div></section>
         <section id="view-account" class="view">
           <div class="section-header"><div><div class="eyebrow muted">PRIVATE SCOUTING WORKSPACE</div><h1>Account & cloud sync.</h1><p>Keep scouting evaluations and watchlists available on your other devices. Public statistics and private observations stay separate.</p></div></div>
@@ -95,5 +108,6 @@
   <script src="config.js"></script>
   <script src="cloud.js"></script>
   <script src="app.js"></script>
+  <script src="learn.js"></script>
 </body>
 </html>
