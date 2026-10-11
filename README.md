@@ -90,3 +90,13 @@ python -m unittest discover -s tests -v
 ## Next production improvements
 
 Add a properly licensed automated advanced statistics provider, real data-source monitoring, scout permissions/team collaboration and immutable observation history, player/team detail pages, stronger statistical models, better goalie coverage, additional seasons, automatic tests for authenticated database operations and legal/privacy policies before inviting public accounts.
+## Stats School — advanced stats for the eye-test crowd
+
+Open **Stats explained** in the site navigation or **Learn advanced stats** on the homepage. This educational section includes:
+
+- Eight explanations: Corsi (CF%), Fenwick (FF%), expected goals (xG), expected-goal share (xGF%), high-danger chance share (HDCF%), points per 60 (P/60), PDO, and goals saved above expected (GSAx).
+- Example calculators with editable inputs, with a clear label that the figures are *hypothetical lessons* and not live NHL/player numbers.
+- What-to-watch coaching notes, metric caveats, plain-English conversation examples, and a four-question quiz.
+- External reference links to MoneyPuck and Hockey-Reference for methodology context.
+
+Files: `learn.css`, `learn.js`. The main HTML includes the `view-learn` section and the existing navigation function recognizes its route. The section works independently of the optional scouting cloud service.
