@@ -105,6 +105,42 @@ Deno.serve(async (req) => {
   if (raw.length > 3100000) return reply({error:"Request too large"},413);
   let body;
   try { body = JSON.parse(raw); } catch { return reply({error:"Invalid JSON"},400); }
+  // Non-billable credential/model metadata check: no media, no generation request.
+  // Still requires a signed-in Supabase user. Never return the key itself.
+  if (body?.mode === "connection-test") {
+    let modelResponse;
+    try {
+      modelResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+MODEL,{
+        method:"GET",
+        headers:{"x-goog-api-key":apiKey},
+        signal:AbortSignal.timeout(12000)
+      });
+    } catch { return reply({ready:false,model:MODEL,error:"Could not reach Google Gemini. Try again later."},503); }
+    if (modelResponse.status === 404) return reply({
+      ready:false,model:MODEL,
+      error:"Google does not provide Gemini 2.5 Flash-Lite to this API project. New Google projects may have restricted 2.5-model access. No video was sent."
+    });
+    if (modelResponse.status === 401 || modelResponse.status === 403) return reply({
+      ready:false,model:MODEL,error:"Google rejected the key or its permissions. Check Google AI Studio project and restrictions."
+    });
+    if (modelResponse.status === 429) return reply({
+      ready:false,model:MODEL,error:"Google's API quota is currently exhausted. No model inference was attempted."
+    });
+    if (!modelResponse.ok) return reply({
+      ready:false,model:MODEL,error:"Google model check returned HTTP "+modelResponse.status+". No footage was sent."
+    });
+    try {
+      const metadata=await modelResponse.json();
+      const available=metadata?.name === "models/"+MODEL &&
+        Array.isArray(metadata.supportedGenerationMethods) &&
+        metadata.supportedGenerationMethods.includes("generateContent");
+      return reply({
+        ready:available,model:MODEL,
+        error:available?undefined:"Google accepted the key but did not confirm generateContent for this model.",
+        message:available?"API key accepted; model metadata supports generateContent. No footage sent or generated. Google billing tier and full inference are not verified.":undefined
+      });
+    } catch { return reply({ready:false,model:MODEL,error:"Google returned an unexpected model description."}); }
+  }
   if (!valid(body)) return reply({error:"Confirm permission and submit a player identifier with 2–8 JPEG frames"},400);
 
   const times = body.frames.map(f => f.time);
