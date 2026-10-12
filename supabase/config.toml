@@ -1,2 +1,4 @@
 [functions.analyze-film]
-verify_jwt = true
+verify_jwt = false
+# Custom Supabase Auth /auth/v1/user validation is REQUIRED in the function.
+# Modern sb_publishable_ keys are not JWTs; verify_jwt=true rejects these clients.
