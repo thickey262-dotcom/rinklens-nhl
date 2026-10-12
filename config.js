@@ -1,7 +1,5 @@
-// OPTIONAL account syncing: fill these values with your own Supabase project details.
-// These are client-safe values (project URL and publishable/anon key). NEVER put a
-// service_role key, a database password, or any other secret in this file.
+// Public, client-safe Supabase project configuration. Never add private API keys here.
 window.RINKLENS_CONFIG = Object.freeze({
-  supabaseUrl: '',
-  supabasePublishableKey: ''
+  supabaseUrl: 'https://tepultvonkdphiechirx.supabase.co',
+  supabasePublishableKey: 'sb_publishable_clOls4E4E1rcQmzhFOK4KA_e3ujOjiW'
 });
