@@ -19,12 +19,13 @@ Deno.serve(async(req:Request)=>{
  const bearer=req.headers.get("authorization")||"";
  if(!/^Bearer [A-Za-z0-9._~-]+$/.test(bearer))return json({error:"Sign-in required"},401);
  const supaUrl=Deno.env.get("SUPABASE_URL");
- const anon=Deno.env.get("SUPABASE_ANON_KEY")||Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
+ const anon=Deno.env.get("SUPABASE_ANON_KEY")||JSON.parse(Deno.env.get("SUPABASE_PUBLISHABLE_KEYS")||"{}").default;
  const key=Deno.env.get("OPENAI_API_KEY");
- if(!supaUrl||!anon||!key)return json({error:"Film AI not configured"},503);
+ if(!supaUrl||!anon)return json({error:"Authentication backend not configured"},503);
  const client=createClient(supaUrl,anon,{auth:{persistSession:false,autoRefreshToken:false}});
  const user=(await client.auth.getUser(bearer.slice(7))).data?.user;
  if(!user?.id)return json({error:"Invalid user session"},401);
+ if(!key)return json({error:"AI processing not enabled; server API key not configured"},503);
  if(Number(req.headers.get("content-length")||0)>3100000)return json({error:"Request too large"},413);
  let b:any;try{b=await req.json()}catch{return json({error:"Malformed JSON"},400)}
  if(!valid(b))return json({error:"Provide a player, jersey identifier and 2–8 JPEG frames"},400);
