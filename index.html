@@ -106,8 +106,8 @@
               <section class="panel film-panel" style="margin-top:16px">
                 <h3>4. Optional AI frame review</h3>
                 <p><b>This is a limited still-image assessment, not automatic puck tracking or a full-game eye test.</b> It cannot reliably evaluate a player's speed, habits, or decision-making from a few screenshots. Results are tentative with timestamps and remain separate from your manually graded profile.</p>
-                <p class="film-legal">Requires a separately configured Supabase sign-in, deployed Edge Function, and privately stored OpenAI API key. Your original video is not transmitted or published. An AI request sends only the 2–8 frames you selected to the analysis provider; requests may incur charges.</p>
-                <label class="film-consent" for="filmConsent"><input id="filmConsent" type="checkbox"> I have the right to use this footage and I consent to sending these selected frames for AI analysis.</label>
+                <p class="film-legal">Uses Gemini 2.5 Flash-Lite via your signed-in Supabase account. To enable it, create a free, non-billed Google AI Studio API key and save it privately in Supabase as GEMINI_API_KEY. There is no paid-model fallback. Only 2–8 selected frames are transmitted (not the original video). Google may use free-tier inputs to improve its products; free-tier rate limits apply.</p>
+                <label class="film-consent" for="filmConsent"><input id="filmConsent" type="checkbox"> I have permission to process this footage and consent to sending only my selected frames to Google Gemini. I understand free-tier submissions may be used to improve Google products.</label>
                 <div class="film-controls"><button class="secondary-button" type="button" id="filmAnalyze">Review frames with AI →</button></div>
                 <div id="filmStatus" class="film-status" role="status" aria-live="polite">Film Lab ready. Choose a player and local clip to begin.</div>
                 <div id="filmAIResults" aria-label="AI film-review observations"></div>
