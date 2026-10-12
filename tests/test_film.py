@@ -12,7 +12,7 @@ class FilmLabTests(unittest.TestCase):
         src=(ROOT/'film.js').read_text()
         core=(ROOT/'film-core.js').read_text()
         server=(ROOT/'supabase/functions/analyze-film/index.ts').read_text()
-        for s in ['id="view-film"','data-view="film"','id="filmFile"','id="filmConsent"','src="film-core.js"','src="film.js"','href="film.css"']:
+        for s in ['id="view-film"','data-view="film"','id="filmFile"','id="filmConsent"','id="filmCheckGemini"','src="film-core.js"','src="film.js"','href="film.css"']:
             self.assertIn(s,html)
         self.assertIn('data-film-player=',app)
         self.assertIn('film-core.js film.js cloud.js',workflow)
@@ -20,6 +20,9 @@ class FilmLabTests(unittest.TestCase):
         self.assertIn('RinkFilmCore.scrubAnalysis',src)
         self.assertIn('validSelection',core)
         self.assertIn('GEMINI_API_KEY',server)
+        self.assertIn('connection-test',server)
+        self.assertIn('models/"+MODEL',server)
+        self.assertIn('checkGemini',src)
         self.assertIn('gemini-2.5-flash-lite',server)
         self.assertNotIn('OPENAI_API_KEY',server)
         self.assertIn('/auth/v1/user',server)
