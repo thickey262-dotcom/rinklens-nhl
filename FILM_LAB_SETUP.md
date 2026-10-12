@@ -1,25 +1,34 @@
-# RinkLens Film Lab — setup and limits
+# RinkLens Film Lab — Free Google Gemini configuration
 
-## Works immediately on GitHub Pages
-Open Film Lab or Review film on an NHL player. Choose a local video (MP4/WebM, under 300 MB), identify your skater, manually capture moments or automatically sample six frames from a 2–120 second segment. Add time-stamped observations and optional human grades, saved only in the browser. Export JSON for backup. Full video and selected images are not automatically uploaded, and the original video is never stored on the site.
+## Available now without an API key
+On https://thickey262-dotcom.github.io/rinklens-nhl/ open Film Lab or Review film from a player profile.
+Choose a local MP4 or WebM video (under 300 MB), identify the skater, capture 2–8 frames, then write and export time-stamped notes. The full video never leaves the browser. AI cannot overwrite human scouting grades.
 
-## Optional AI vision connection
-Film-AI still-frame reviews require configuring your own Supabase project and private OpenAI API key. Without this setup, the AI button explains that the service is unavailable.
+## Enable Gemini 2.5 Flash-Lite using its free tier
+The server uses ONLY model gemini-2.5-flash-lite. Current Google pricing lists free image input and text output for eligible free-tier projects, subject to limits. Google may use free-tier prompts and images to improve its products; avoid uploading sensitive/private footage.
 
-1. Create a Supabase project at https://supabase.com and enable email sign-in. Set the RinkLens Pages domain as an allowed authentication redirect.
-2. Add the project URL and only its client-safe publishable key to the repository's config.js. Never put a service-role key or any model API key there.
-3. Install the Supabase CLI from https://supabase.com/docs/guides/local-development/cli/getting-started. Link the project and deploy the function using the command: supabase functions deploy analyze-film
-4. Add the OpenAI API key privately in the Supabase Edge Functions secrets, for example using: supabase secrets set OPENAI_API_KEY=YOUR_PRIVATE_VALUE
-5. Sign in from RinkLens Account & Sync, open Film Lab, supply jersey/team identifier, choose 2–8 frames, confirm permission to process them, and press Review frames with AI.
+1. Create a Gemini API key at https://aistudio.google.com/api-keys in a Google project with NO paid billing attached. Do not enable paid billing. Check your tier and quotas at https://aistudio.google.com/usage .
+2. In Supabase open https://supabase.com/dashboard/project/tepultvonkdphiechirx/functions/secrets .
+3. Add a private secret named GEMINI_API_KEY with the key from AI Studio. Do not put it into GitHub, ChatGPT messages, or public config.js. No OpenAI key is needed.
+4. On RinkLens use Account & Sync to sign in. For magic-link redirects, allow https://thickey262-dotcom.github.io/rinklens-nhl/ under Supabase Authentication URL Configuration.
+5. In Film Lab choose a player, select permitted footage, identify jersey/team cues, select 2–8 frames, accept the Google privacy notice, then use Review frames with AI.
 
-The function requires Supabase JWT authentication, uses the OpenAI Responses API with store:false, and enforces a limited number of JPEG still frames. API usage may incur charges. Set spending limits and restrict site access if needed.
+There is no paid-provider fallback or automatic retry on quota exhaustion. On HTTP 429, the function reports that the free quota is exhausted and declines further processing. This code never enables paid billing. However, if you deliberately use a Gemini key belonging to a billed Google project, Google may charge according to that project's settings—the server cannot determine or override the Google billing tier.
 
-## What film AI can and cannot do
+## Authentication and evidence safeguards
+- The Supabase gateway uses verify_jwt=false for modern publishable API keys, but every POST is verified against Supabase Auth /auth/v1/user using the signed-in user's bearer token. Anonymous public API keys are never sufficient.
+- Server validates explicit consent:true, player ID, jersey/team identifier, 2–8 JPEG frames, body size limits and frame timestamps. The origin is restricted to the RinkLens GitHub Pages host.
+- Only selected JPEG stills, not original video, are sent to Gemini. The server validates model JSON, requires observed evidence matching actual timestamps and at least two distinct frames before any tentative rating (1–5) is accepted. Identity must be confirmed and confidence medium/high.
+- Hockey motion, skating speed, compete level and decision-making cannot be determined reliably from sparse frames. AI findings require human verification and NEVER overwrite manual eye-test or Auto Scout grades.
+- The Gemini key is stored only in a server secret; nothing is included in publicly deployed HTML, JavaScript or GitHub Pages.
 
-Only chosen stills are submitted to the model after explicit consent. No full video analysis, puck tracking, automated jersey recognition, movement trajectory, speed measurement, or shift-by-shift scouting is performed. Results are tentative, evidence-linked observations and optional provisional 1–5 trait suggestions, only if the target can be visually identified and enough frames support an observation. Unobserved traits remain ungraded, and no automatic overall eye-test score is inserted into player profiles.
+## Tests
+GitHub Actions runs Python and Node tests. The mock Node integration test tests signed-in authorization, no-key disabled behavior, server-side consent enforcement, Gemini-only request formatting, quota 429, and score evidence checks. The mocked test does NOT demonstrate real model performance; a live AI test requires your private Gemini key.
 
-Use only videos you own or have permission to process. NHL content and highlight footage may carry separate licensing restrictions; see https://www.nhl.com/info/terms-of-service.
+## Footage rights
+Use only footage you have permission to process. NHL game content may have licensing restrictions; do not scrape or redistribute broadcasts.
 
-## Validation
-
-On pushes to the main branch, GitHub Actions runs Python and Node checks before shipping the Film Lab assets to GitHub Pages. Locally run: python -m unittest discover -s tests -v
+## Official documentation
+Google pricing: https://ai.google.dev/gemini-api/docs/pricing
+Google rate limits: https://ai.google.dev/gemini-api/docs/rate-limits
+Google Gemini API: https://ai.google.dev/gemini-api/docs/generate-content/text-generation
