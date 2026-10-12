@@ -175,16 +175,20 @@ const RinkFilm=(()=>{
     const p=player();
     if(!p||!state.file){status('Choose an NHL player and local video first.','error');return}
     if(!RinkCloud.configured()||!RinkCloud.user||!RinkCloud.client){
-      status('AI requires your configured Supabase account and a deployed authenticated analyze-film function. Manual review works now.','error');return;
+      status('Gemini AI requires sign-in to your RinkLens account. Local video review and scouting notes still work without it.','error');return;
     }
     if(!$f('filmConsent').checked){status('Confirm that you have permission to analyze and send frames from this footage.','error');return}
     const identifier=$f('filmIdentifier').value.trim();
-    const payload={playerId:String(p.id),playerName:p.name,season:S.season,identifier,frames:state.frames};
+    const payload={playerId:String(p.id),playerName:p.name,season:S.season,identifier,consent:true,frames:state.frames};
     if(!RinkFilmCore.validSelection(payload)){status('Provide a player identifier (e.g., jersey number/team), and 2–8 local JPEG frames.','error');return}
     setBusy(true);status('Submitting ONLY the selected still frames for authenticated AI review…');
     try{
       const {data,error}=await RinkCloud.client.functions.invoke('analyze-film',{body:payload});
-      if(error)throw error;
+      if(error){
+        const response=error.context;
+        if(response?.json){try{const body=await response.json();if(body?.error)throw new Error(body.error)}catch(e){if(e?.message && e.message!=="Unexpected end of JSON input")throw e}}
+        throw error;
+      }
       if(!data||typeof data!=='object')throw Error('Unexpected AI response.');
       state.analysis=RinkFilmCore.scrubAnalysis(data,state.frames.map(f=>f.time));
       renderAnalysis();
