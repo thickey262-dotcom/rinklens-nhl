@@ -70,7 +70,7 @@ const makeReq=(payload,origin="https://thickey262-dotcom.github.io",token="user-
  statusGemini=429;
  const limited=await handler(makeReq(sample));
  assert.equal(limited.status,429);
- assert((await limited.json()).error.includes("No paid fallback"));
+ assert((await limited.json()).error.toLowerCase().includes("no paid fallback"));
  statusGemini=200;
  const ok=await handler(makeReq(sample));
  assert.equal(ok.status,200,"valid key may return a bounded, mock AI result");
