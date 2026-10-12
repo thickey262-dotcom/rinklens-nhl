@@ -38,10 +38,10 @@ class AdvancedMetricsTests(unittest.TestCase):
         flow=(ROOT/'.github/workflows/rinklens.yml').read_text()
         self.assertIn('<script src="advanced.js"></script>',html)
         self.assertLess(html.index('<script src="advanced.js"></script>'),html.index('<script src="app.js"></script>'))
-        self.assertIn('RinkAdvanced.profile(p)',app)
+        self.assertIn('RinkReports.profile(p)',app)
         self.assertIn('RinkAdvanced.load(season)',app)
         self.assertIn('fetch_advanced.py',flow)
-        self.assertIn('advanced.css app.js',flow)
+        self.assertIn('advanced.css reportcards.css app.js',flow)
 
 if __name__=='__main__':
     unittest.main()
