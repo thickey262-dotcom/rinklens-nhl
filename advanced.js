@@ -46,8 +46,8 @@ const RinkAdvanced=(()=>{
    updated=data.updatedAt||null;
    renderTable();renderCompare();
    if(S.active&&!document.getElementById('playerModal').hidden){
-    const current=playerFor(S.active),panel=document.querySelector('.adv-player-section');
-    if(current&&panel)panel.outerHTML=profile(current);
+    const current=playerFor(S.active),panel=document.querySelector('.report-card');
+    if(current&&panel)panel.outerHTML=RinkReports.profile(current);
    }
   }catch(e){console.info('5v5 advanced data not yet available:',e.message);}
  }
