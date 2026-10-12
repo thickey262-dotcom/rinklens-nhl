@@ -1,5 +1,16 @@
 # RinkLens v2 — NHL analytics + eye-test scouting
 
+## Player Report Cards (2026-10-12)
+
+Click a skater in **Player Database** to open a report card that combines six on-ice and production statistics, same-position percentiles and your own private six-trait eye-test grades. The advanced measures are 5v5 xGF%, CF%, FF%, individual xG/60 and HDCF%; points/60 uses NHL all-situations time on ice. Tap **What is this?** on supported metrics to open Stats School.
+
+Percentiles use midranks for ties and compare **centers with centers, left wings with left wings, right wings with right wings, and defensemen with defensemen**, separately for the selected season. A percentile is displayed only if the player meets the games-played minimum (3 games in an early season, 10 in a longer season) and at least 15 eligible same-position peers have that metric. Missing or demo data never receives a fabricated percentile. These are descriptive peer comparisons, not context-adjusted impact scores. They are particularly noisy early in the season. NHL stats and MoneyPuck data remain separately attributed; do not use MoneyPuck data commercially without permission.
+
+### Verification
+
+The deployment workflow runs the repo's Python test suite, including `tests/test_reportcards.py`, which invokes JavaScript percentile tests in `tests/test_reportcards.js` when Node is available. GitHub Pages publishes `reportcards.js` and `reportcards.css` alongside the current RinkLens assets.
+
+
 An NHL statistics and independent scouting website. This is a deployable static web application with **automatic NHL data loading**, an optional **scheduled NHL data refresh workflow**, and an **optional Supabase database for private, cross-device scouting reports**.
 
 ## Individual player advanced analytics
