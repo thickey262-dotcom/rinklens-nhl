@@ -30,6 +30,15 @@ def pct(row,key):
     n=n*100 if 0<=n<=1 else n
     return round(n,2) if 0<=n<=100 else None
 
+# Compatibility helpers for stable test names.
+percentage=pct
+
+def high_danger_share(row):
+    a=finite(row,'OnIce_F_highDangerShots')
+    b=finite(row,'OnIce_A_highDangerShots')
+    if a is None or b is None or a<0 or b<0 or a+b<=0:return None
+    return round(100*a/(a+b),2)
+
 def normalize(rows):
     best={}
     for row in rows:
