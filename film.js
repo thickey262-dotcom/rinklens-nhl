@@ -172,15 +172,29 @@ const RinkFilm=(()=>{
     if(!data.findings.length){const p=document.createElement('p');p.textContent='The model could not support any trait evaluations from the selected frames.';root.append(p)}
   }
   async function checkGemini(){
-    if(state.busy)return;
+    const button=$f('filmCheckGemini'), feedback=$f('filmCheckResult');
+    const show=(message,kind='info')=>{
+      if(feedback){feedback.hidden=false;feedback.textContent=message;feedback.dataset.kind=kind;}
+      status(message,kind);
+    };
+    // Immediate, persistent feedback directly beside the button, even before any network call.
+    show('Connection check started. Checking your RinkLens sign-in…');
+    if(state.busy){show('Finish the current video task before checking Gemini.','error');return;}
     if(!RinkCloud.configured()||!RinkCloud.user||!RinkCloud.client){
-      status('Sign in through Account & Sync first. No video frames are needed to check the connection.','error');return;
+      show('RinkLens is not signed in. Open Account & Sync, sign in, then return and check again.','error');return;
     }
-    const button=$f('filmCheckGemini');
-    button.disabled=true;
-    status('Checking private Gemini key and model availability. No video or generation requests are being sent.');
+    const originalText=button?.textContent||'✓ Check Gemini connection';
+    if(button){button.disabled=true;button.textContent='Checking Gemini…';}
+    show('Checking Google model access via Supabase. No video is uploaded and no AI content is generated.');
+    let timeoutId;
     try {
-      const {data,error}=await RinkCloud.client.functions.invoke('analyze-film',{body:{mode:'connection-test'}});
+      const timeout=new Promise((_,reject)=>{
+        timeoutId=setTimeout(()=>reject(new Error('Connection timed out after 20 seconds. Check your connection, then retry.')),20000);
+      });
+      const {data,error}=await Promise.race([
+        RinkCloud.client.functions.invoke('analyze-film',{body:{mode:'connection-test'}}),
+        timeout
+      ]);
       if(error){
         let details=error.message||'Server could not check Gemini';
         try {
@@ -189,12 +203,16 @@ const RinkFilm=(()=>{
         throw Error(details);
       }
       if(data?.ready===true){
-        status('Gemini API key accepted and model '+String(data.model||'')+' is listed as available. No video or model tokens were used. Google billing tier and actual analysis are not verified.','ok');
+        show('CONNECTED: Gemini API key accepted. '+String(data.model||'Gemini')+' supports generation. No footage was sent. Free-tier billing status and image analysis are not independently verified.','ok');
       } else {
-        status(String(data?.error||'The Gemini model connection could not be confirmed.'),'error');
+        show('NOT READY: '+String(data?.error||'The Gemini model connection could not be confirmed.'),'error');
       }
-    }catch(e){status('Gemini connection check failed: '+String(e.message||e).slice(0,220),'error')}
-    finally{button.disabled=false}
+    }catch(e){
+      show('CONNECTION ERROR: '+String(e.message||e).slice(0,260),'error');
+    }finally{
+      clearTimeout(timeoutId);
+      if(button){button.disabled=false;button.textContent=originalText;}
+    }
   }
   async function analyze(){
     const p=player();
