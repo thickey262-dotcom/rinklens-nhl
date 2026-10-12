@@ -1,17 +1,22 @@
-name: RinkLens - NHL stats and website
+name: RinkLens — NHL stats and website
+
 on:
   push:
     branches: [main]
   schedule:
+    # Approximately 2:17am Eastern during daylight saving time; GitHub scheduling is best-effort.
     - cron: '17 6 * * *'
   workflow_dispatch:
+
 permissions:
   contents: write
   pages: write
   id-token: write
+
 concurrency:
   group: rinklens-pages
   cancel-in-progress: false
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -20,20 +25,26 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
       - name: Test NHL data normalization
         run: python -m unittest discover -s tests -v
-      - name: Refresh NHL data
+
+      - name: Refresh NHL data (daily or manual run)
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: python scripts/fetch_nhl.py --seasons 20262027 20252026 20242025
-      - name: Download 5v5 player advanced stats (MoneyPuck, non-commercial)
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+
+      - name: Refresh MoneyPuck 5v5 advanced stats (non-commercial attribution)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         continue-on-error: true
         run: python scripts/fetch_advanced.py --seasons 20262027 20252026 20242025
-      - name: Commit snapshots
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+
+      - name: Commit updated real-data snapshots (daily or manual run)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -42,18 +53,21 @@ jobs:
             git commit -m 'chore(data): refresh NHL skater snapshots'
             git push origin HEAD:main
           fi
+
+      # Copy only public website files. Do not publish SQL, tests, or GitHub workflow files.
       - name: Assemble static website
         run: |
           mkdir -p _site/data
-          cp index.html styles.css learn.css advanced.css reportcards.css app.js learn.js advanced.js reportcards.js cloud.js config.js _site/
+          cp index.html styles.css learn.css advanced.css reportcards.css autoscout.css app.js learn.js advanced.js reportcards.js autoscout.js cloud.js config.js _site/
           touch _site/.nojekyll
           for file in data/nhl-*.json data/advanced-*.json; do
             if [ -f "$file" ]; then cp "$file" _site/data/; fi
           done
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
-      - name: Deploy website
+      - name: Deploy RinkLens to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

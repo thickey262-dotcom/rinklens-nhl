@@ -1,23 +1,15 @@
 # RinkLens v2 — NHL analytics + eye-test scouting
 
-## Player Report Cards (2026-10-12)
-
-Click a skater in **Player Database** to open a report card that combines six on-ice and production statistics, same-position percentiles and your own private six-trait eye-test grades. The advanced measures are 5v5 xGF%, CF%, FF%, individual xG/60 and HDCF%; points/60 uses NHL all-situations time on ice. Tap **What is this?** on supported metrics to open Stats School.
-
-Percentiles use midranks for ties and compare **centers with centers, left wings with left wings, right wings with right wings, and defensemen with defensemen**, separately for the selected season. A percentile is displayed only if the player meets the games-played minimum (3 games in an early season, 10 in a longer season) and at least 15 eligible same-position peers have that metric. Missing or demo data never receives a fabricated percentile. These are descriptive peer comparisons, not context-adjusted impact scores. They are particularly noisy early in the season. NHL stats and MoneyPuck data remain separately attributed; do not use MoneyPuck data commercially without permission.
-
-### Verification
-
-The deployment workflow runs the repo's Python test suite, including `tests/test_reportcards.py`, which invokes JavaScript percentile tests in `tests/test_reportcards.js` when Node is available. GitHub Pages publishes `reportcards.js` and `reportcards.css` alongside the current RinkLens assets.
-
-
 An NHL statistics and independent scouting website. This is a deployable static web application with **automatic NHL data loading**, an optional **scheduled NHL data refresh workflow**, and an **optional Supabase database for private, cross-device scouting reports**.
 
-## Individual player advanced analytics
 
-Each NHL skater profile shows 5-on-5 expected-goal share (xGF%), shot-attempt share (CF%), unblocked share (FF%), individual expected goals per 60 (ixG/60), and high-danger share (HDCF%) when the season-level record is available. The database adds xGF% and CF% columns; compare mode shows selected advanced metrics. Tapping a stat opens its Stats School explanation. Never replace missing advanced values with guessed data.
+## Player Report Cards (2026-10-12)
 
-The included `scripts/fetch_advanced.py` downloads MoneyPuck's publicly listed season-level skaters CSV and creates `data/advanced-YYYYYYYY.json` matched to NHL skaters by NHL player ID. Daily GitHub Actions refreshes and publishes these compact snapshots. Keep the site non-commercial unless MoneyPuck explicitly approves other uses. [MoneyPuck downloads and attribution terms](https://moneypuck.com/data.htm). On-ice shares are not isolated individual impact statistics.
+Click a skater in Player Database to view six numerical metrics, position-specific season percentiles, plain-English explanations and your own six-trait eye-test grades. Positions are compared separately (C, LW, RW, D). 5v5 metrics include xGF%, CF%, FF%, ixG/60 and HDCF%; points/60 is all situations. Percentiles use midranks for ties and require at least 15 eligible same-position players. The games-played minimum is 3 during early-season play (league maximum <15 GP), and 10 afterward. No fabricated scouting grades or missing-value percentiles are shown.
+
+Metrics are descriptive, not isolated impact or predictive rankings, and early-season comparisons are volatile. MoneyPuck advanced data is credited for non-commercial use; contact the provider for commercial permission.
+
+The GitHub Pages workflow runs Python integration tests plus a Node.js percentile test before deploying the report card assets.
 
 ## Website mission statement
 
@@ -107,13 +99,13 @@ python -m unittest discover -s tests -v
 ## Next production improvements
 
 Add a properly licensed automated advanced statistics provider, real data-source monitoring, scout permissions/team collaboration and immutable observation history, player/team detail pages, stronger statistical models, better goalie coverage, additional seasons, automatic tests for authenticated database operations and legal/privacy policies before inviting public accounts.
-## Stats School — advanced stats for the eye-test crowd
 
-Open **Stats explained** in the site navigation or **Learn advanced stats** on the homepage. This educational section includes:
+## 5v5 advanced metrics on every NHL player profile
 
-- Eight explanations: Corsi (CF%), Fenwick (FF%), expected goals (xG), expected-goal share (xGF%), high-danger chance share (HDCF%), points per 60 (P/60), PDO, and goals saved above expected (GSAx).
-- Example calculators with editable inputs, with a clear label that the figures are *hypothetical lessons* and not live NHL/player numbers.
-- What-to-watch coaching notes, metric caveats, plain-English conversation examples, and a four-question quiz.
-- External reference links to MoneyPuck and Hockey-Reference for methodology context.
+The player database now shows **xGF% and CF%** where available, and opening a skater shows **xGF%, CF%, FF%, individual expected goals per 60, and high-danger shot share**, each linking directly to an interactive Stats School explanation. If a player or season has no source record, the UI shows **—**, not made-up advanced values. NHL boxscore totals are all-situations; the advanced measures are explicitly **5v5**.
 
-Files: `learn.css`, `learn.js`. The main HTML includes the `view-learn` section and the existing navigation function recognizes its route. The section works independently of the optional scouting cloud service.
+`python scripts/fetch_advanced.py --seasons 20262027 20252026 20242025` downloads the publicly listed [MoneyPuck season skater CSVs](https://moneypuck.com/data.htm) and writes the compact per-player snapshot as `data/advanced-YYYYYYYY.json`. The GitHub Action now requests them daily or on a manual run, preserves existing snapshots on failures, and publishes them next to NHL files.
+
+**Licensing:** MoneyPuck's downloads are free for **non-commercial** purposes and journalists' ad-hoc use, with **credit to MoneyPuck.com** wherever their information appears. Other uses require permission at the email on their download page. This website must remain non-commercial unless permission is obtained. Never scrape other site pages.
+
+`xGF%`, `CF%`, `FF%` and `HDCF%` are *on-ice* shares, not isolation-adjusted impact measures. `ixG/60` is *individual* 5v5 expected goals per 60 minutes. Different providers may define high-danger differently.
