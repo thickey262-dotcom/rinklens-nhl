@@ -43,4 +43,6 @@ class FilmLabTests(unittest.TestCase):
         subprocess.run(['node',str(ROOT/'tests/test_film.js')],check=True,capture_output=True)
         result=subprocess.run(['node',str(ROOT/'tests/test_gemini.js')],capture_output=True,text=True)
         self.assertEqual(result.returncode,0,result.stdout+'\n'+result.stderr)
+        button=subprocess.run(['node',str(ROOT/'tests/test_film_button.js')],capture_output=True,text=True)
+        self.assertEqual(button.returncode,0,button.stdout+'\n'+button.stderr)
 if __name__=='__main__':unittest.main()
