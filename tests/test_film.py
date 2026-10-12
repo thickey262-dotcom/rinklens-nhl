@@ -36,5 +36,6 @@ class FilmLabTests(unittest.TestCase):
         for script in ['film-core.js','film.js']:
             subprocess.run(['node','--check',str(ROOT/script)],check=True,capture_output=True)
         subprocess.run(['node',str(ROOT/'tests/test_film.js')],check=True,capture_output=True)
-        subprocess.run(['node',str(ROOT/'tests/test_gemini.js')],check=True,capture_output=True)
+        result=subprocess.run(['node',str(ROOT/'tests/test_gemini.js')],capture_output=True,text=True)
+        self.assertEqual(result.returncode,0,result.stdout+'\n'+result.stderr)
 if __name__=='__main__':unittest.main()
