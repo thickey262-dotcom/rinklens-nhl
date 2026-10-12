@@ -6,7 +6,7 @@ const vm = require("node:vm");
 const fs = require("node:fs");
 const path = require("node:path");
 const code=fs.readFileSync(path.join(__dirname,"..","supabase","functions","analyze-film","index.ts"),"utf8");
-let handler, apiEnabled=false, statusGemini=200, calls=[], mode="valid";
+let handler, apiEnabled=false, statusGemini=200, metadataStatus=200, calls=[], mode="valid";
 const settings={SUPABASE_URL:"https://example.supabase.co",SUPABASE_ANON_KEY:"public-test-key",GEMINI_API_KEY:""};
 const sample={playerId:"8478402",playerName:"Connor McDavid",season:"20262027",identifier:"EDM #97",
   consent:true,frames:[{time:2,image:"data:image/jpeg;base64,AAAA"},{time:8,image:"data:image/jpeg;base64,BBBB"}]};
@@ -30,6 +30,14 @@ const sandbox={
    assert.equal(opts.headers.apikey,"public-test-key");
    return mode==="unauthorized"?new Response("{}",{status:401}):
        new Response(JSON.stringify({id:"user-123"}),{status:200});
+  }
+  if(url.includes("/models/gemini-2.5-flash-lite") && opts.method==="GET"){
+    assert.equal(opts.headers["x-goog-api-key"],"not-a-real-test-key");
+    if(metadataStatus!==200)return new Response("{}",{status:metadataStatus});
+    return new Response(JSON.stringify({
+      name:"models/gemini-2.5-flash-lite",
+      supportedGenerationMethods:["generateContent"]
+    }),{status:200});
   }
   assert(url.includes("models/gemini-2.5-flash-lite:generateContent"),"free-tier model is pinned");
   assert.equal(opts.headers["x-goog-api-key"],"not-a-real-test-key");
@@ -64,6 +72,25 @@ const makeReq=(payload,origin="https://thickey262-dotcom.github.io",token="user-
  assert((await noKey.json()).error.includes("not configured"));
  assert.equal(calls.filter(x=>x.url.includes("generativelanguage")).length,0,"never calls Gemini without key");
  settings.GEMINI_API_KEY="not-a-real-test-key";
+ mode="unauthorized";
+ assert.equal((await handler(makeReq({mode:"connection-test"}))).status,401,"connection test requires signed-in user");
+ mode="valid";
+ calls=[];
+ const diag=await handler(makeReq({mode:"connection-test"}));
+ assert.equal(diag.status,200);
+ const diagBody=await diag.json();
+ assert.equal(diagBody.ready,true,"Gemini model metadata confirms key/model");
+ assert.equal(diagBody.model,"gemini-2.5-flash-lite");
+ assert.equal(calls.filter(x=>x.url.includes("generateContent")).length,0,"readiness test never calls billable generation");
+ assert.equal(calls.filter(x=>x.url.includes("models/gemini-2.5-flash-lite")).length,1,"model metadata queried exactly once");
+ metadataStatus=404;
+ const missingModel=await handler(makeReq({mode:"connection-test"}));
+ assert.equal(missingModel.status,200);
+ assert.equal((await missingModel.json()).ready,false,"missing model is distinguishable from a working key");
+ metadataStatus=403;
+ const invalidKey=await handler(makeReq({mode:"connection-test"}));
+ assert.equal((await invalidKey.json()).ready,false,"blocked key remains unverified");
+ metadataStatus=200;
  assert.equal((await handler(makeReq({...sample,consent:false}))).status,400,"explicit consent required server-side");
  assert.equal((await handler(makeReq({...sample,frames:[sample.frames[0]]}))).status,400,"requires two frames");
  assert.equal((await handler(makeReq({...sample,frames:sample.frames.map(f=>({...f,image:"https://example.com/leak.jpg"}))}))).status,400,"blocks URLs");
