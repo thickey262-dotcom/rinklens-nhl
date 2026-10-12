@@ -11,7 +11,9 @@ The server uses ONLY model gemini-2.5-flash-lite. Current Google pricing lists f
 2. In Supabase open https://supabase.com/dashboard/project/tepultvonkdphiechirx/functions/secrets .
 3. Add a private secret named GEMINI_API_KEY with the key from AI Studio. Do not put it into GitHub, ChatGPT messages, or public config.js. No OpenAI key is needed.
 4. On RinkLens use Account & Sync to sign in. For magic-link redirects, allow https://thickey262-dotcom.github.io/rinklens-nhl/ under Supabase Authentication URL Configuration.
-5. In Film Lab choose a player, select permitted footage, identify jersey/team cues, select 2–8 frames, accept the Google privacy notice, then use Review frames with AI.
+5. Sign in and open Film Lab. Click **Check Gemini connection** to verify that Google accepts the key and lists the selected model. The check sends no video and generates no AI tokens. Then select permitted footage, identify jersey/team cues, choose 2–8 frames, review the Google privacy notice, and select Review frames with AI.
+
+The check cannot confirm the Google project's billing status or actual image-inference success. Newly created Google projects may lack access to Gemini 2.5 Flash-Lite, even with a valid key.
 
 There is no paid-provider fallback or automatic retry on quota exhaustion. On HTTP 429, the function reports that the free quota is exhausted and declines further processing. This code never enables paid billing. However, if you deliberately use a Gemini key belonging to a billed Google project, Google may charge according to that project's settings—the server cannot determine or override the Google billing tier.
 
