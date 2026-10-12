@@ -1,5 +1,13 @@
 # RinkLens v2 — NHL analytics + eye-test scouting
 
+## Film Lab: free-tier Gemini 2.5 Flash-Lite
+
+RinkLens Film Lab keeps original videos in the browser; only explicitly consented JPEG frames are sent to Google's Gemini 2.5 Flash-Lite vision endpoint. The optional AI backend uses a server-only GEMINI_API_KEY secret in Supabase from an UNBILLED Google AI Studio project, with no paid model fallback. Free-tier limits apply and Google's free tier may use submissions to improve its products. It does not generate or save automatic human scouting grades.
+
+The backend and website can be deployed without a key, but real AI inference remains disabled until the key is configured. Detailed setup, security limits and test coverage: [FILM_LAB_SETUP.md](FILM_LAB_SETUP.md).
+
+
+
 An NHL statistics and independent scouting website. This is a deployable static web application with **automatic NHL data loading**, an optional **scheduled NHL data refresh workflow**, and an **optional Supabase database for private, cross-device scouting reports**.
 
 
