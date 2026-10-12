@@ -171,6 +171,31 @@ const RinkFilm=(()=>{
     }
     if(!data.findings.length){const p=document.createElement('p');p.textContent='The model could not support any trait evaluations from the selected frames.';root.append(p)}
   }
+  async function checkGemini(){
+    if(state.busy)return;
+    if(!RinkCloud.configured()||!RinkCloud.user||!RinkCloud.client){
+      status('Sign in through Account & Sync first. No video frames are needed to check the connection.','error');return;
+    }
+    const button=$f('filmCheckGemini');
+    button.disabled=true;
+    status('Checking private Gemini key and model availability. No video or generation requests are being sent.');
+    try {
+      const {data,error}=await RinkCloud.client.functions.invoke('analyze-film',{body:{mode:'connection-test'}});
+      if(error){
+        let details=error.message||'Server could not check Gemini';
+        try {
+          if(error.context?.json){const response=await error.context.json();if(response?.error)details=response.error;}
+        }catch{}
+        throw Error(details);
+      }
+      if(data?.ready===true){
+        status('Gemini API key accepted and model '+String(data.model||'')+' is listed as available. No video or model tokens were used. Google billing tier and actual analysis are not verified.','ok');
+      } else {
+        status(String(data?.error||'The Gemini model connection could not be confirmed.'),'error');
+      }
+    }catch(e){status('Gemini connection check failed: '+String(e.message||e).slice(0,220),'error')}
+    finally{button.disabled=false}
+  }
   async function analyze(){
     const p=player();
     if(!p||!state.file){status('Choose an NHL player and local video first.','error');return}
@@ -211,6 +236,7 @@ const RinkFilm=(()=>{
     $f('filmCapture')?.addEventListener('click',capture);
     $f('filmSample')?.addEventListener('click',sample);
     $f('filmAddNote')?.addEventListener('click',addObservation);
+    $f('filmCheckGemini')?.addEventListener('click',checkGemini);
     $f('filmAnalyze')?.addEventListener('click',analyze);
     $f('filmExport')?.addEventListener('click',exportReview);
     $f('filmPlayer')?.addEventListener('focus',refreshPlayers);
