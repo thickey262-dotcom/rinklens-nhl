@@ -13,7 +13,7 @@ const RinkFilmCore=(()=>{
     return Array.from({length:count},(_,i)=>Math.round((start+0.08*length+(i/(count-1))*0.84*length)*10)/10);
   }
   function validSelection(payload){
-    if(!payload||typeof payload!=='object')return false;
+    if(!payload||typeof payload!=='object'||payload.consent!==true)return false;
     if(!/^[0-9]{6,10}$/.test(String(payload.playerId||'')))return false;
     if(!/^20[0-9]{6}$/.test(String(payload.season||'')))return false;
     if(!/^.{1,100}$/.test(String(payload.playerName||'')))return false;
@@ -34,7 +34,7 @@ const RinkFilmCore=(()=>{
         .slice(0,3).map(e=>({time:e.time,observation:e.observation.slice(0,240)}));
       if(!evidence.length)continue;
       const confidence=['low','medium','high'].includes(item.confidence)?item.confidence:'low';
-      const score=Number.isInteger(item.score)&&item.score>=1&&item.score<=5&&confidence!=='low'?item.score:null;
+      const score=Number.isInteger(item.score)&&item.score>=1&&item.score<=5&&confidence!=='low'&&new Set(evidence.map(e=>e.time)).size>=2?item.score:null;
       findings.push({trait:item.trait,score,confidence,evidence,explanation:String(item.explanation||'').slice(0,280)});
     }
     const identityConfirmed=value.identityConfirmed===true;
