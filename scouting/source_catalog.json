@@ -290,6 +290,83 @@
           ]
         }
       ]
+    },
+    {
+      "id": "8485366",
+      "name": "Matthew Schaefer",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Mike G. Morreale; NHL Central Scouting",
+          "date": "2025-04-03",
+          "url": "https://www.nhl.com/news/central-scouting-analyzes-top-prospects-for-2025-nhl-draft",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "elite",
+              "evidence": "Scouts identify skating, speed and mobility among his leading strengths."
+            },
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "The scouting analysis recognizes technical skill for a potential top defense prospect."
+            },
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "Central Scouting identifies hockey sense as a primary strength."
+            },
+            {
+              "trait": "compete",
+              "level": "strong",
+              "evidence": "Central Scouting explicitly singles out competitiveness among his best traits."
+            },
+            {
+              "trait": "transition",
+              "level": "strong",
+              "evidence": "Scouts describe a playing style that should transfer effectively to the NHL."
+            }
+          ]
+        },
+        {
+          "publisher": "The Hockey Writers",
+          "author": "Dayton Reimer",
+          "date": "2025-03-10",
+          "url": "https://thehockeywriters.com/matthew-schaefer-2025-nhl-draft-prospect-profile/",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "elite",
+              "evidence": "The scouting report emphasizes agility, speed and deceptive changes of direction."
+            },
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "The writer praises quality passing, stick skills and shooting from the blue line."
+            },
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "The report credits awareness and seeing developing plays in all zones."
+            },
+            {
+              "trait": "defense",
+              "level": "strong",
+              "evidence": "The writer reports capable defensive pressure, shot blocking and penalty killing."
+            },
+            {
+              "trait": "compete",
+              "level": "strong",
+              "evidence": "The evaluation notes physical engagement and willingness to contest pucks."
+            },
+            {
+              "trait": "transition",
+              "level": "strong",
+              "evidence": "The report identifies joining the rush and moving play forward as key strengths."
+            }
+          ]
+        }
+      ]
     }
   ]
 }
