@@ -1,0 +1,234 @@
+{
+  "version": 1,
+  "description": "Attribution-only scouting evidence registry. These short statements are original paraphrases from named analyst reports; no copyrighted article text is reproduced. Independent-source crosschecks required.",
+  "players": [
+    {
+      "id": "8486067",
+      "name": "Gavin McKenna",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Mike G. Morreale; NHL Central Scouting",
+          "date": "2026-04-09",
+          "url": "https://www.nhl.com/news/topic/nhl-draft/central-scouting-analyzes-top-prospects-for-2026-nhl-draft",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "Central Scouting identifies skating among his standout assets."
+            },
+            {
+              "trait": "iq",
+              "level": "elite",
+              "evidence": "Central Scouting credits exceptional understanding of play and anticipation."
+            },
+            {
+              "trait": "puck",
+              "level": "elite",
+              "evidence": "Scouts highlight high-end offensive creation and finishing skill."
+            },
+            {
+              "trait": "compete",
+              "level": "strong",
+              "evidence": "Scouts praise his work habits and competitive approach."
+            }
+          ]
+        },
+        {
+          "publisher": "Elite Prospects",
+          "author": "David St-Louis and Mitchell Brown",
+          "date": "2026-06-22",
+          "url": "https://www.eliteprospects.com/news/2026-nhl-draft/film-room-why-gavin-mckenna-should-go-first-overall-in-the-2026-nhl-draft",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "Their film breakdown credits pace changes, edgework and deceptive skating."
+            },
+            {
+              "trait": "iq",
+              "level": "elite",
+              "evidence": "Their report highlights anticipation and manipulating defensive coverage."
+            },
+            {
+              "trait": "puck",
+              "level": "elite",
+              "evidence": "Their breakdown describes unusual passing range and skill in tight spaces."
+            },
+            {
+              "trait": "compete",
+              "level": "weak",
+              "evidence": "The report raises concern about off-puck effort and battles at the college level."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8485402",
+      "name": "Michael Misa",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Mike G. Morreale; NHL Central Scouting",
+          "date": "2025-04-03",
+          "url": "https://www.nhl.com/news/central-scouting-analyzes-top-prospects-for-2025-nhl-draft",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "Scouts list skating as a best asset and emphasize quickness."
+            },
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "Scouts recognize highly developed passing and offensive skills."
+            },
+            {
+              "trait": "iq",
+              "level": "elite",
+              "evidence": "Scouts single out elite reads and decision-making."
+            },
+            {
+              "trait": "defense",
+              "level": "strong",
+              "evidence": "Central Scouting praises his detailed, responsible 200-foot approach."
+            }
+          ]
+        },
+        {
+          "publisher": "Elite Prospects",
+          "author": "Lauren Kelly",
+          "date": "2025-06-16",
+          "url": "https://www.eliteprospects.com/news/2025-nhl-draft/film-room-why-michael-misa-is-the-most-complete-player-in-the-2025-nhl-draft",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "Film review highlights quick first steps and an effective pace-changing rush."
+            },
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "Film analysis credits varied handling, passing and dual-threat creation."
+            },
+            {
+              "trait": "iq",
+              "level": "elite",
+              "evidence": "Scouting review emphasizes strong anticipation, scanning and rapid decisions."
+            },
+            {
+              "trait": "defense",
+              "level": "elite",
+              "evidence": "Report praises strong defensive tracking, positioning and backchecking."
+            },
+            {
+              "trait": "transition",
+              "level": "elite",
+              "evidence": "Detailed assessment characterizes transition attacking as a defining strength."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8485406",
+      "name": "Porter Martone",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Mike G. Morreale; NHL Central Scouting",
+          "date": "2025-04-03",
+          "url": "https://www.nhl.com/news/central-scouting-analyzes-top-prospects-for-2025-nhl-draft",
+          "notes": [
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "Scouts credit skilled playmaking and the ability to create chances."
+            },
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "Scouts praise positioning and reading opportunities."
+            },
+            {
+              "trait": "compete",
+              "level": "elite",
+              "evidence": "Competitiveness is listed among his best assets."
+            }
+          ]
+        },
+        {
+          "publisher": "Elite Prospects",
+          "author": "Lauren Kelly",
+          "date": "2025-06-16",
+          "url": "https://www.eliteprospects.com/news/2025-nhl-draft/film-room-why-playmaking-genius-porter-martone-might-be-the-2025-nhl-drafts-most-special-talent",
+          "notes": [
+            {
+              "trait": "puck",
+              "level": "elite",
+              "evidence": "The published scouting overview describes outstanding playmaking ability."
+            },
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "The article emphasizes offensive vision and high-end top-line potential."
+            },
+            {
+              "trait": "compete",
+              "level": "strong",
+              "evidence": "The scouting introduction notes his edge and persistence."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8485391",
+      "name": "Anton Frondell",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "NHL.com scouting staff",
+          "date": "2025-06-27",
+          "url": "https://www.nhl.com/news/2025-nhl-draft-live-blog",
+          "notes": [
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "NHL pre-draft analysis describes his offensive skill and scoring finishing."
+            },
+            {
+              "trait": "compete",
+              "level": "strong",
+              "evidence": "NHL coverage recognizes strong physical play and net-front engagement."
+            }
+          ]
+        },
+        {
+          "publisher": "Elite Prospects",
+          "author": "Lassi Alanen",
+          "date": "2025-06-18",
+          "url": "https://www.eliteprospects.com/news/2025-nhl-draft/film-room-anton-frondells-game-has-grown-but-how-high-is-the-ceiling",
+          "notes": [
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "Film report notes skilled finishing and handling around the net."
+            },
+            {
+              "trait": "compete",
+              "level": "strong",
+              "evidence": "Evaluation describes strength in contact and effective net-front battles."
+            },
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "The author emphasizes timing and finding openings away from the puck."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
