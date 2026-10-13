@@ -8,7 +8,8 @@ const players=[];
 for(let i=0;i<21;i++)players.push({id:'C'+i,name:'Center '+i,pos:'C',gp:5,p:5+i,toi:12,advanced:{gp:5,xgfPct:40+i,cfPct:40+i,ffPct:40+i,ixG60:i/10,hdCfPct:40+i}});
 for(let i=0;i<20;i++)players.push({id:'D'+i,name:'D '+i,pos:'D',gp:5,p:i+2,toi:22,advanced:{gp:5,xgfPct:20+i,cfPct:20+i,ffPct:20+i,ixG60:i/12,hdCfPct:20+i}});
 const ctx={S:{players,source:'nhl',season:'20262027'},RinkAdvanced:{read:(p,key)=>p.advanced?.[key]??null},
- RinkAuto:{panel:()=>'<div class="auto-scout-panel">Auto Scout Estimate</div>'}, reportFor:()=>null,eye:()=>null,n:Number,traits:[],seasonLabel:()=> '2026–27',esc: x=>String(x).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;')};
+ RinkAuto:{panel:()=>'<div class="auto-scout-panel">Auto Scout Estimate</div>'},
+ RinkConsensus:{panel:()=>'<div class="consensus-panel">No verified report</div>'}, reportFor:()=>null,eye:()=>null,n:Number,traits:[],seasonLabel:()=> '2026–27',esc: x=>String(x).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;')};
 vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(path.join(ROOT,'reportcards.js'),'utf8')+'\nthis.R = RinkReports;',ctx);
 const R=ctx.R;
