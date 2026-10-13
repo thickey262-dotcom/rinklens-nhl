@@ -1,0 +1,24 @@
+
+.community-panel{margin:18px 0;padding:20px;border:1px solid #3e707e;border-radius:10px;background:#102d38;color:#e9f5f5}
+.community-heading{display:flex;justify-content:space-between;gap:14px;align-items:center}
+.community-heading h4{font-size:28px;margin-top:5px}.community-heading strong{font-size:26px;color:#b2f3de}
+.community-label{font-size:12px;font-weight:800;color:#b5efdd}
+.community-panel p{font-size:15px;color:#cce0e5;line-height:1.6;margin:10px 0}
+.community-traits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
+.community-traits div{background:#163b44;border:1px solid #3b6673;border-radius:7px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px}
+.community-traits b{color:#a2f1dc;white-space:nowrap}
+.community-blend{background:#174448;border-left:4px solid #82e6ce;padding:12px 14px;margin:16px 0}
+.community-blend b{font-size:20px}.community-blend p{margin:4px 0}
+.community-form{border-top:1px solid #37616b;padding-top:16px;margin-top:18px}
+.community-form h5{font-size:20px;margin:0 0 8px}
+.community-vote-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.community-vote-grid label{display:flex;flex-direction:column;gap:7px;font-size:16px;font-weight:800}
+.community-vote-grid select{background:#0c222e;border:1px solid #79a4b7;color:#f5fafb;font-size:16px;min-height:48px;padding:8px;border-radius:6px;max-width:100%}
+.community-consent{display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.65;padding:12px 0}
+.community-consent input{min-width:22px;min-height:22px;accent-color:#82e6ce;flex:0 0 22px;margin-top:4px}
+.community-actions{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
+.community-small{font-size:13px!important}
+.community-table-score{border:1px solid #4d817c;color:#c7fbea;background:#174442;padding:7px 9px;border-radius:5px;font-weight:800;display:inline-block;min-width:44px}
+.community-table-score.missing{color:#a4bcc4;background:none;border-color:#38515e}
+#communityVoteStatus{font-weight:700;color:#dbf4ed}
+@media(max-width:620px){.community-traits,.community-vote-grid{grid-template-columns:1fr}.community-panel{padding:15px}}
