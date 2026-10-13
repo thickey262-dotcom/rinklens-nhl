@@ -1,0 +1,23 @@
+/* The single Eye Test score is a viewer opinion, never a MoneyPuck statistic. */
+.eye-table{font-weight:800;color:#9ee4d9}
+.eye-score{display:inline-block;color:#abefdc;font-size:1.8rem;letter-spacing:-.03em}
+.eye-panel{margin-top:28px;padding:22px;border:1px solid #457481;background:#142e3a;border-radius:13px}
+.eye-panel h3{font-size:1.5rem;margin-bottom:12px}
+.eye-panel h4{margin:18px 0 8px}
+.eye-panel details{padding:12px 0;margin:8px 0;cursor:pointer}
+.eye-traits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:15px 0}
+.eye-traits>div{padding:10px;border:1px solid #4d6c77;border-radius:7px}
+.eye-traits span{display:block;color:#bcdae2}
+.eye-email-label{display:block;margin:10px 0 7px;font-weight:700}
+.eye-signin-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.eye-signin-row input{flex:1 1 270px}
+.eye-signin-row .button,.vote-buttons .button{border:0;margin:0}
+#eyeSignedOut[hidden],#eyeSignedIn[hidden]{display:none}
+.vote-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.vote-grid label{display:grid;gap:5px;font-size:.96rem}
+.vote-grid select{width:100%}
+.watch-consent{display:flex;gap:11px;align-items:flex-start;margin:14px 0}
+.watch-consent input{width:21px;height:21px;flex:none;accent-color:#8cdbdd}
+.vote-buttons{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+#eyeMessage{font-weight:650;color:#a8e6d6}
+@media(max-width:560px){.vote-grid,.eye-traits{grid-template-columns:1fr}}

@@ -1,4 +1,4 @@
-name: RinkLens — MoneyPuck-only website
+name: RinkLens — MoneyPuck stats and community Eye Test
 on:
   push:
     branches: [main]
@@ -27,6 +27,11 @@ jobs:
           python-version: '3.12'
       - name: Check MoneyPuck normalization
         run: python -m unittest discover -s tests_moneypuck -v
+      - name: Validate public website JavaScript
+        run: |
+          node --check money.js
+          node --check eye.js
+          node --check cloud.js
       - name: Update MoneyPuck player statistics
         run: python scripts/fetch_moneypuck.py --seasons 20262027 20252026 20242025
       - name: Save refreshed public MoneyPuck snapshots
@@ -38,13 +43,13 @@ jobs:
             git commit -m 'chore(data): refresh MoneyPuck-only snapshots'
             git push origin HEAD:main
           fi
-      - name: Assemble MoneyPuck-only website
+      - name: Assemble MoneyPuck + Eye Test website
         run: |
           mkdir -p _site/data
-          cp index.html money.css money.js _site/
+          cp index.html money.css money.js eye.css eye.js cloud.js config.js _site/
           cp data/moneypuck-*.json _site/data/
           touch _site/.nojekyll
-          if grep -Ei 'autoscout|community-eye|scouting-consensus|model-ratings|supabase|nhl-[0-9]|advanced-[0-9]' _site/index.html; then
+          if grep -Ei 'autoscout|community-eye\\.js|scouting-consensus|model-ratings|film-lab|nhl-[0-9]|advanced-[0-9]' _site/index.html; then
             echo 'Unexpected non-MoneyPuck UI dependency' && exit 1
           fi
       - uses: actions/configure-pages@v5
