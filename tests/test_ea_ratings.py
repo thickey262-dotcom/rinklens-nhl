@@ -1,6 +1,8 @@
 import sys
 from pathlib import Path
 import unittest
+import shutil
+import subprocess
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 import fetch_ea_nhl27 as ea
 
@@ -18,4 +20,11 @@ class EANHL27Tests(unittest.TestCase):
   self.assertEqual(ea.name_key('Tim Stützle'),ea.name_key('Tim Stutzle'))
  def test_never_generate_when_missing(self):
   with self.assertRaises(ValueError):ea.collect(fetcher=lambda url:'<html></html>')
+ @unittest.skipUnless(shutil.which('node'),'Node not installed')
+ def test_js_import_and_matching(self):
+  script=Path(__file__).resolve().parents[1]/'ea-ratings.js'
+  subprocess.run(['node','--check',str(script)],check=True,capture_output=True)
+  app=Path(__file__).resolve().parents[1]/'app.js'
+  subprocess.run(['node','--check',str(app)],check=True,capture_output=True)
+  subprocess.run(['node',str(Path(__file__).parent/'test_ea_ratings.js')],check=True,capture_output=True)
 if __name__=='__main__':unittest.main()
