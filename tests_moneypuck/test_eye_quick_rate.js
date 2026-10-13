@@ -13,7 +13,7 @@ const state={season:'20262027',players:[player],selected:[],page:1,ready:true};
 const listeners={}, nodes=new Map(), posted=[];
 function node(id){
  if(!nodes.has(id))nodes.set(id,{
-  id,hidden:false,textContent:'',value:'',checked:false,disabled:false,
+  id,dataset:{},hidden:false,textContent:'',value:'',checked:false,disabled:false,
   addEventListener(type,fn){listeners[id+':'+type]=fn;},
   focus(){},scrollIntoView(){},classList:{toggle(){}}
  });
