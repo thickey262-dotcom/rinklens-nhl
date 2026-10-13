@@ -3,6 +3,18 @@
 An NHL statistics and independent scouting website. This is a deployable static web application with **automatic NHL data loading**, an optional **scheduled NHL data refresh workflow**, and an **optional Supabase database for private, cross-device scouting reports**.
 
 
+## Published Scouting Consensus — an automated, evidence-limited eye-test proxy
+
+RinkLens can now display independent **published scouting assessments** alongside its existing NHL stats, Stats-Only Auto Scout Estimate, and your private manual grades. **This does not watch footage and should not be mistaken for an independently observed eye test.** Reports are often **historical draft/prospect assessments**, not evaluations of 2026–27 NHL performance.
+
+**How it works:** The attributed, rights-conscious `scouting/source_catalog.json` contains original short paraphrases of vetted editorial scouting observations with source, byline, date (if known), and original source link. `scripts/build_scouting_consensus.py` scores the six skill dimensions using a fixed transparent five-level vocabulary. For a skill to receive a number, at least **two different publishers** must make compatible assessments. Conflicting evaluations (>1 level apart) suppress that skill entirely. A 0–100 overall score appears only when at least **three skills** have agreed evidence, including a defensive, competitive, or transition skill. Lack of coverage does **not** imply a bad player and is shown as a dash.
+
+The user-facing **Scout consensus** column is separate from **Your grade**. Only qualified published consensus is allowed as a fallback for the existing Combined score; the owner's completed six-skill rating always wins. **No data is written to personal scouting reports or cloud accounts.** The profile shows the original linked reports and paraphrased evidence, including withheld/disputed traits. RinkLens is independent of all cited scouting publishers.
+
+**Current scope is deliberately narrow:** Initial source registry includes four recent prospects for whom multiple public analyst reports were reviewed. Three currently satisfy the overall scoring threshold. Other NHL players remain unscored until sufficiently vetted, independent reports become available. Do not extend ratings by guessing, scraping paywalled text, or converting statistics to a human eye-test grade.
+
+The public site automatically rebuilds these scores on GitHub Pages deployments, including scheduled refreshes. **Rebuilding is not the same as discovering new source reports:** new verified, attributed evaluations must be added to the registry. The current scorer is a **deterministic text-evidence rubric**, not a Gemini AI model; the Supabase Gemini key used for the retired Film Lab is **not** read by this pipeline. NHL EDGE skating measures and MoneyPuck data remain separately labeled statistics and are not silently turned into scouting opinions. Automated report discovery may be added through a separate supervised update workflow.
+
 ## Easy-to-read interface (2026-10-12)
 
 The homepage has a three-step guide. The player table initially shows the essential columns; visitors may toggle advanced metrics on. Visible definitions explain every major score, and larger high-contrast text is the default. Use **A+ Larger text** in the top toolbar for an additional size increase that stays saved on that device. Player links work with Enter or Space, and site controls show a visible keyboard focus. No scoring formulas, private reports, or source data are changed.
