@@ -1,0 +1,20 @@
+'use strict';
+const assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
+const sample={version:1,season:'20262027',players:[{id:'8478402',name:'Connor McDavid',position:'F',score:66,gamesAcrossSeasons:120,hasAdvancedData:true,confidence:'Higher sample',kind:'stats-only-model',seasons:[{season:'20252026',games:82,rawPositionPercentile:82.5,weight:.5}]}]};
+let requestUrl=null;
+const ctx={S:{source:'nhl',season:'20262027'},fetch:async(url)=>{requestUrl=url;return {ok:true,json:async()=>sample}}};
+vm.createContext(ctx);
+vm.runInContext(fs.readFileSync(path.join(__dirname,'..','model-ratings.js'),'utf8')+'\nthis.R=RinkModel;',ctx);
+(async()=>{
+ assert.equal(await ctx.R.load('20262027'),true);
+ assert.equal(requestUrl,'data/model-rating-20262027.json');
+ assert.equal(ctx.R.score({id:'8478402',name:'Connor McDavid',pos:'C'}),66);
+ assert.equal(ctx.R.score({id:'8478402',name:'Connor McDavid',pos:'D'}),null);
+ assert.equal(ctx.R.score({id:'8478402',name:'Wrong Name',pos:'C'}),null);
+ assert.equal(ctx.R.score({id:'9999999',name:'Unknown',pos:'C'}),null);
+ assert.match(ctx.R.panel({id:'8478402',name:'Connor McDavid',pos:'C'}),/not an eye test/);
+ ctx.S.source='demo';assert.equal(ctx.R.score({id:'8478402',name:'Connor McDavid',pos:'C'}),null);
+ ctx.S.source='nhl';ctx.S.season='20252026';assert.equal(ctx.R.score({id:'8478402',name:'Connor McDavid',pos:'C'}),null);
+ assert.equal(ctx.R.ingest({...sample,players:[{id:'8478402',name:'Connor McDavid',position:'F',score:110,gamesAcrossSeasons:120,kind:'stats-only-model'}]}),false);
+ console.log('Statistical-only score matching, season isolation, missing-data safeguards passed.');
+})().catch(e=>{console.error(e);process.exitCode=1});
