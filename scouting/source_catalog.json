@@ -180,6 +180,34 @@
               "evidence": "The scouting introduction notes his edge and persistence."
             }
           ]
+        },
+        {
+          "publisher": "The Hockey Writers",
+          "author": "Peter Baracchini",
+          "date": "2025-03-19",
+          "url": "https://thehockeywriters.com/porter-martone-2025-nhl-draft-prospect-profile/",
+          "notes": [
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "This profile notes strong handling and playmaking in small spaces."
+            },
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "The report describes useful vision and recognizing passing lanes."
+            },
+            {
+              "trait": "compete",
+              "level": "elite",
+              "evidence": "The profile identifies competitive drive and physical intensity as major strengths."
+            },
+            {
+              "trait": "skating",
+              "level": "limited",
+              "evidence": "The author considers skating pace and agility areas for improvement."
+            }
+          ]
         }
       ]
     },
@@ -225,6 +253,39 @@
               "trait": "iq",
               "level": "strong",
               "evidence": "The author emphasizes timing and finding openings away from the puck."
+            }
+          ]
+        },
+        {
+          "publisher": "The Hockey Writers",
+          "author": "Peter Baracchini",
+          "date": null,
+          "url": "https://thehockeywriters.com/anton-frondell-2025-nhl-draft-prospect-profile/",
+          "notes": [
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "The profile describes his puck protection and work in tight spaces."
+            },
+            {
+              "trait": "compete",
+              "level": "strong",
+              "evidence": "The report calls physical engagement and compete level clear strengths."
+            },
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "The scouting profile praises awareness and reading plays ahead."
+            },
+            {
+              "trait": "defense",
+              "level": "strong",
+              "evidence": "The writeup credits 200-foot defensive responsibilities and anticipation."
+            },
+            {
+              "trait": "skating",
+              "level": "limited",
+              "evidence": "The profile identifies early acceleration as a development area."
             }
           ]
         }
