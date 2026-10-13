@@ -367,6 +367,566 @@
           ]
         }
       ]
+    },
+    {
+      "id": "8484801",
+      "name": "Macklin Celebrini",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Mike G. Morreale (NHL.com)",
+          "date": "2024-04-04",
+          "url": "https://www.nhl.com/news/2024-nhl-draft-prospects-comparisons",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "elite",
+              "evidence": "Central Scouting lists his skating among the central strengths of his draft profile."
+            },
+            {
+              "trait": "iq",
+              "level": "elite",
+              "evidence": "Central Scouting highlights hockey sense as one of his strongest on-ice abilities."
+            },
+            {
+              "trait": "compete",
+              "level": "elite",
+              "evidence": "Central Scouting specifically identifies competitiveness as an outstanding asset."
+            }
+          ]
+        },
+        {
+          "publisher": "The Hockey Writers",
+          "author": "Peter Baracchini",
+          "date": "2024-03-20",
+          "url": "https://thehockeywriters.com/macklin-celebrini-2024-nhl-draft-prospect-profile/",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "The prospect breakdown credits speed bursts, evasive edges and changing direction in traffic."
+            },
+            {
+              "trait": "iq",
+              "level": "elite",
+              "evidence": "The report stresses creative play recognition and decision-making on both sides of the puck."
+            },
+            {
+              "trait": "compete",
+              "level": "elite",
+              "evidence": "The review emphasizes the energy he brings to board battles, tight areas and puck pursuit."
+            },
+            {
+              "trait": "puck",
+              "level": "elite",
+              "evidence": "The author's assessment praises soft hands, passing creativity and tight-space puck control."
+            },
+            {
+              "trait": "transition",
+              "level": "strong",
+              "evidence": "The author highlights his ability to start rushes and carry the puck into attacking areas."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8485395",
+      "name": "James Hagens",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Mike G. Morreale (NHL.com)",
+          "date": "2025-04-03",
+          "url": "https://www.nhl.com/news/central-scouting-analyzes-top-prospects-for-2025-nhl-draft",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "Central Scouting lists skating as one of his top strengths."
+            },
+            {
+              "trait": "puck",
+              "level": "elite",
+              "evidence": "Scouts spotlight advanced playmaking and puck execution."
+            },
+            {
+              "trait": "iq",
+              "level": "elite",
+              "evidence": "Central Scouting emphasizes elite anticipation, visual reads and composure."
+            }
+          ]
+        },
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "NHL.com Draft Class podcast; Scott Harris",
+          "date": "2025-01-08",
+          "url": "https://www.nhl.com/news/james-hagens-at-wjc-discussed-on-draft-class-podcast",
+          "notes": [
+            {
+              "trait": "transition",
+              "level": "strong",
+              "evidence": "The NHL Draft Class assessment credits pace and the ability to drive a line's attacks."
+            }
+          ]
+        },
+        {
+          "publisher": "The Hockey Writers",
+          "author": "Peter Baracchini",
+          "date": "2025-03-10",
+          "url": "https://thehockeywriters.com/james-hagens-2025-nhl-draft-prospect-profile/",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "The analyst details acceleration, quick rushes and shifts in skating pace."
+            },
+            {
+              "trait": "puck",
+              "level": "elite",
+              "evidence": "The prospect profile calls his passing and offensive playmaking top-end traits."
+            },
+            {
+              "trait": "iq",
+              "level": "elite",
+              "evidence": "The analyst highlights anticipating openings and processing play quickly."
+            },
+            {
+              "trait": "transition",
+              "level": "strong",
+              "evidence": "He is credited with carrying pace on the rush and attacking central ice lanes."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8484806",
+      "name": "Sam Dickinson",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "NHL.com draft analysis staff",
+          "date": "2024-06-28",
+          "url": "https://www.nhl.com/news/2024-nhl-draft-first-round-live-tracker",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "NHL draft coverage describes skating mobility that controls pace under pressure."
+            },
+            {
+              "trait": "defense",
+              "level": "strong",
+              "evidence": "The draft analysis describes reliable defensive detail and a poised two-way game."
+            },
+            {
+              "trait": "transition",
+              "level": "strong",
+              "evidence": "NHL coverage emphasizes precise breakouts, zone exits and puck movement up ice."
+            }
+          ]
+        },
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "NHL.com Draft Class podcast; Nick Smith",
+          "date": "2024-06-13",
+          "url": "https://www.nhl.com/news/sam-dickinson-nhl-draft-class-podcast",
+          "notes": [
+            {
+              "trait": "compete",
+              "level": "strong",
+              "evidence": "Central Scouting's podcast evaluation emphasizes a reliable all-situations two-way effort."
+            }
+          ]
+        },
+        {
+          "publisher": "The Hockey Writers",
+          "author": "Peter Baracchini",
+          "date": "2024-04-01",
+          "url": "https://thehockeywriters.com/sam-dickinson-2024-nhl-draft-prospect-profile/",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "The report points to strong mobility and efficient movement in transition."
+            },
+            {
+              "trait": "defense",
+              "level": "strong",
+              "evidence": "The analyst highlights sound gaps, positioning and neutral-zone stops."
+            },
+            {
+              "trait": "transition",
+              "level": "strong",
+              "evidence": "The profile identifies skating and breakouts as major parts of his game."
+            },
+            {
+              "trait": "compete",
+              "level": "elite",
+              "evidence": "The author describes consistently high intensity and willingness to battle."
+            },
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "The report praises reads and decisions both defensively and offensively."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8484798",
+      "name": "Zeev Buium",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Mike G. Morreale (NHL.com)",
+          "date": "2024-04-04",
+          "url": "https://www.nhl.com/news/2024-nhl-draft-prospects-comparisons",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "Central Scouting counts skating among his most effective tools."
+            },
+            {
+              "trait": "iq",
+              "level": "elite",
+              "evidence": "Scouts highlight hockey sense and anticipating play before it develops."
+            },
+            {
+              "trait": "compete",
+              "level": "strong",
+              "evidence": "Central Scouting lists competitiveness among his strongest assets."
+            },
+            {
+              "trait": "transition",
+              "level": "strong",
+              "evidence": "The scouting analysis emphasizes a proactive, quick puck-transition game."
+            }
+          ]
+        },
+        {
+          "publisher": "The Hockey Writers",
+          "author": "Jesse Courville-Lynch",
+          "date": "2024-03-21",
+          "url": "https://thehockeywriters.com/zeev-buium-2024-nhl-draft-prospect-profile/",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "elite",
+              "evidence": "The author describes excellent lateral mobility, speed and smooth edges."
+            },
+            {
+              "trait": "iq",
+              "level": "elite",
+              "evidence": "The profile praises intelligent reads at both ends of the ice."
+            },
+            {
+              "trait": "transition",
+              "level": "strong",
+              "evidence": "The author credits elusive rush movement and carrying pucks to dangerous areas."
+            },
+            {
+              "trait": "defense",
+              "level": "strong",
+              "evidence": "The report describes responsible play and good space management in the defensive zone."
+            },
+            {
+              "trait": "compete",
+              "level": "limited",
+              "evidence": "The review identifies physical battles and puck races as areas needing development."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8484783",
+      "name": "Artyom Levshunov",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Mike G. Morreale (NHL.com)",
+          "date": "2024-04-04",
+          "url": "https://www.nhl.com/news/2024-nhl-draft-prospects-comparisons",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "Central Scouting lists skating as a primary asset."
+            },
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "The scouting summary singles out passing ability."
+            },
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "Central Scouting lists hockey sense and adaptation to different leagues."
+            },
+            {
+              "trait": "defense",
+              "level": "strong",
+              "evidence": "The report describes a complete prospect able to play in every game situation."
+            }
+          ]
+        },
+        {
+          "publisher": "The Hockey Writers",
+          "author": "Logan Horn",
+          "date": "2024-03-23",
+          "url": "https://thehockeywriters.com/artyom-levshunov-2024-nhl-draft-prospect-profile/",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "The writer highlights quick, agile lateral movement and puck-carrying mobility."
+            },
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "The profile notes comfortable passing and shooting as part of his offensive game."
+            },
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "The analysis praises awareness when shaping lanes, though it highlights some poor defensive decisions."
+            },
+            {
+              "trait": "defense",
+              "level": "average",
+              "evidence": "The writer credits improving defending but explicitly notes inconsistency in defensive decisions."
+            },
+            {
+              "trait": "transition",
+              "level": "elite",
+              "evidence": "The report emphasizes carrying the puck out and leading offensive zone entries."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8484797",
+      "name": "Konsta Helenius",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Mike G. Morreale (NHL.com)",
+          "date": "2024-04-04",
+          "url": "https://www.nhl.com/news/2024-nhl-draft-prospects-comparisons",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "Central Scouting identifies skating as a strong part of his game."
+            },
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "The scouts list passing as one of his primary talents."
+            },
+            {
+              "trait": "iq",
+              "level": "elite",
+              "evidence": "The report names hockey sense as a standout strength."
+            },
+            {
+              "trait": "defense",
+              "level": "strong",
+              "evidence": "Scouting staff mention reliability while competing in Finland's defensively demanding league."
+            }
+          ]
+        },
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Adam Kimelman (NHL.com); Olli Jokinen",
+          "date": "2024-06-21",
+          "url": "https://www.nhl.com/news/finnish-forward-konsta-helenius-enters-2024-nhl-draft",
+          "notes": [
+            {
+              "trait": "compete",
+              "level": "strong",
+              "evidence": "His coach describes battles, practice habits and competitiveness as major strengths."
+            },
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "The coaching assessment praises short turns, edgework and balance in tight spaces."
+            }
+          ]
+        },
+        {
+          "publisher": "The Hockey Writers",
+          "author": "Dayton Reimer",
+          "date": "2024-03-22",
+          "url": "https://thehockeywriters.com/konsta-helenius-2024-nhl-draft-prospect-profile/",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "The scouting profile values his edgework and changing skating direction."
+            },
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "The author praises passing awareness and a fast, accurate shot."
+            },
+            {
+              "trait": "iq",
+              "level": "elite",
+              "evidence": "The report emphasizes excellent anticipation and reading plays one or two steps ahead."
+            },
+            {
+              "trait": "defense",
+              "level": "strong",
+              "evidence": "The author describes positioning, interceptions and effective puck pressure."
+            },
+            {
+              "trait": "compete",
+              "level": "strong",
+              "evidence": "The assessment stresses relentless puck pursuit and willingness to engage physically."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8484762",
+      "name": "Beckett Sennecke",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "NHL.com draft analysis staff",
+          "date": "2024-06-28",
+          "url": "https://www.nhl.com/news/2024-nhl-draft-first-round-live-tracker",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "NHL's draft analysis describes capable skating as a defining strength."
+            },
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "The NHL assessment highlights puck recovery in traffic and making plays in limited space."
+            },
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "Scouts highlight sensible puck decisions and creating scoring chances."
+            },
+            {
+              "trait": "compete",
+              "level": "strong",
+              "evidence": "The analysis credits all-around work ethic at both ends of the rink."
+            },
+            {
+              "trait": "defense",
+              "level": "strong",
+              "evidence": "NHL draft coverage describes a responsible two-hundred-foot game."
+            }
+          ]
+        },
+        {
+          "publisher": "The Hockey Writers",
+          "author": "Matthew Zator",
+          "date": "2024-05-03",
+          "url": "https://thehockeywriters.com/beckett-sennecke-2024-nhl-draft-prospect-profile/",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "The report recognizes agility and edges despite his tall frame."
+            },
+            {
+              "trait": "puck",
+              "level": "elite",
+              "evidence": "The assessment praises imaginative playmaking and soft puckhandling skills."
+            },
+            {
+              "trait": "iq",
+              "level": "average",
+              "evidence": "The report credits offensive vision but points to tunnel-vision decisions at times."
+            },
+            {
+              "trait": "compete",
+              "level": "average",
+              "evidence": "The writer notes that physical battles and off-puck engagement were not always consistent."
+            },
+            {
+              "trait": "defense",
+              "level": "limited",
+              "evidence": "The report explicitly identifies defensive attention and work habits as development needs."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8484984",
+      "name": "Ivan Demidov",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "NHL.com draft analysis staff",
+          "date": "2024-06-28",
+          "url": "https://www.nhl.com/news/2024-nhl-draft-first-round-live-tracker",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "elite",
+              "evidence": "NHL draft coverage describes his skating ability as especially dynamic."
+            },
+            {
+              "trait": "puck",
+              "level": "elite",
+              "evidence": "NHL analysis identifies excellent handling, passing and shooting skill."
+            },
+            {
+              "trait": "iq",
+              "level": "elite",
+              "evidence": "The draft summary emphasizes anticipation and making unexpected offensive plays."
+            }
+          ]
+        },
+        {
+          "publisher": "The Hockey Writers",
+          "author": "Dayton Reimer",
+          "date": "2024-04-02",
+          "url": "https://thehockeywriters.com/ivan-demidov-2024-nhl-draft-prospect-profile/",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "The profile credits acceleration and quick directional movement."
+            },
+            {
+              "trait": "puck",
+              "level": "elite",
+              "evidence": "The prospect report singles out advanced handling and creative skill."
+            },
+            {
+              "trait": "iq",
+              "level": "elite",
+              "evidence": "The analysis praises offensive anticipation and reading scoring opportunities."
+            },
+            {
+              "trait": "compete",
+              "level": "strong",
+              "evidence": "The author includes competitive puck pursuit and off-puck work among his assets."
+            },
+            {
+              "trait": "defense",
+              "level": "limited",
+              "evidence": "Defensive awareness is identified as a development area."
+            }
+          ]
+        }
+      ]
     }
   ]
 }
