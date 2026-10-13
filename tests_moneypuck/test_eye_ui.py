@@ -11,7 +11,9 @@ class EyeTestUI(unittest.TestCase):
         for forbidden in ["model-ratings.js", "scouting-consensus.js", "autoscout.js", "community-eye.js", "Combined score", "Computer estimate", "Stats score"]:
             self.assertNotIn(forbidden,html)
         self.assertIn("Eye Test",html)
-        self.assertIn("RinkEye?.score",js)
+        self.assertIn("RinkEye?.display",js)
+        self.assertIn("Your Rating (Private)",eye)
+        self.assertIn("personalScore",eye)
         self.assertIn("community_eye_scores",eye)
         self.assertIn("community_eye_votes",eye)
         self.assertIn("Number(row.reviewer_count) < 3",eye)
