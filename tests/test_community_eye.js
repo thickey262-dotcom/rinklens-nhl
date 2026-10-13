@@ -20,7 +20,7 @@ ctx.RinkConsensus.score=()=>null;
 assert.equal(com.eyeTest(player).score,73,'community only when qualified');
 assert.equal(com.ingest([],'20262027'),true);
 assert.equal(com.eyeTest(player),null,'no sources means no eye-test score');
-assert.equal(com.ingest([row()],'20252026'),true);
+assert.equal(com.ingest([{...row(),season_id:'20252026'}],'20252026'),true);
 assert.equal(com.score(player),null,'season isolation');
 ctx.S.season='20252026';assert.equal(com.score(player),73);
 ctx.S.source='demo';assert.equal(com.score(player),null,'demo must never show real ratings');
