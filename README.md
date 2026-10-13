@@ -3,6 +3,16 @@
 An NHL statistics and independent scouting website. This is a deployable static web application with **automatic NHL data loading**, an optional **scheduled NHL data refresh workflow**, and an **optional Supabase database for private, cross-device scouting reports**.
 
 
+## Complete NHL player model coverage (2024–2027)
+
+Every qualifying skater in the three NHL datasets receives an independently calculated **stats-only model rating**, not an eyewitness grade or professional scouting consensus: 920/920 in 2024–25, 940/940 in 2025–26 and 661/661 in 2026–27, as verified by the GitHub Actions build and coverage tests.
+
+The model uses NHL public regular-season player summaries (points, goals, and shots per 60 minutes plus average time on ice), with MoneyPuck five-on-five expected-goal share and individual expected goals/60 where source data are available. Each input is percentile-ranked against same-season forwards or defensemen. Forward weights: points 30%, goals 20%, shots 16%, ice time 10%, expected-goal share 14%, individual expected goals 10%. Defensemen: points 25%, goals 10%, shots 13%, ice time 27%, expected-goal share 15%, individual expected goals 10%. Missing advanced inputs are excluded and the remaining metric weights renormalized. Data are smoothed toward a neutral score of 50 according to games played, and older seasons are included where available so very early seasons do not produce misleadingly extreme model ratings. The selected season never uses future seasons.
+
+In the website, Model rating is clearly marked as **STATS ONLY** and has its own confidence statement, data-source links, and season-by-season method in each player profile. A missing or weak scouting report is not turned into a fabricated expert quote or source-backed score. The independent Scout consensus column still only shows ratings that meet the existing two-independent-publisher requirement. The existing private personal scouting scores have priority in the Combined score; model rating is intentionally NOT blended into that combined score to prevent double-counting the same stats.
+
+Rebuild: python scripts/build_full_league_ratings.py. GitHub Actions runs that script during deployment and automatically publishes data/model-rating-SEASON.json for each season after NHL and available MoneyPuck data snapshots have been loaded. Tests assert full coverage, source data isolation, historical bounds and player identity matching. This is a descriptive statistical model, not a calibrated talent or scouting grade.
+
 ## Published Scouting Consensus — an automated, evidence-limited eye-test proxy
 
 RinkLens can now display independent **published scouting assessments** alongside its existing NHL stats, Stats-Only Auto Scout Estimate, and your private manual grades. **This does not watch footage and should not be mistaken for an independently observed eye test.** Reports are often **historical draft/prospect assessments**, not evaluations of 2026–27 NHL performance.
