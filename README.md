@@ -3,6 +3,10 @@
 An NHL statistics and independent scouting website. This is a deployable static web application with **automatic NHL data loading**, an optional **scheduled NHL data refresh workflow**, and an **optional Supabase database for private, cross-device scouting reports**.
 
 
+## Easy-to-read interface (2026-10-12)
+
+The homepage has a three-step guide. The player table initially shows the essential columns; visitors may toggle advanced metrics on. Visible definitions explain every major score, and larger high-contrast text is the default. Use **A+ Larger text** in the top toolbar for an additional size increase that stays saved on that device. Player links work with Enter or Space, and site controls show a visible keyboard focus. No scoring formulas, private reports, or source data are changed.
+
 ## Player Report Cards (2026-10-12)
 
 Click a skater in Player Database to view six numerical metrics, position-specific season percentiles, plain-English explanations and your own six-trait eye-test grades. Positions are compared separately (C, LW, RW, D). 5v5 metrics include xGF%, CF%, FF%, ixG/60 and HDCF%; points/60 is all situations. Percentiles use midranks for ties and require at least 15 eligible same-position players. The games-played minimum is 3 during early-season play (league maximum <15 GP), and 10 afterward. No fabricated scouting grades or missing-value percentiles are shown.

@@ -58,7 +58,7 @@ jobs:
       - name: Assemble static website
         run: |
           mkdir -p _site/data
-          cp index.html styles.css learn.css advanced.css reportcards.css autoscout.css app.js learn.js advanced.js reportcards.js autoscout.js cloud.js config.js _site/
+          cp index.html styles.css learn.css advanced.css reportcards.css autoscout.css easy-read.css app.js learn.js advanced.js reportcards.js autoscout.js easy-read.js cloud.js config.js _site/
           touch _site/.nojekyll
           for file in data/nhl-*.json data/advanced-*.json; do
             if [ -f "$file" ]; then cp "$file" _site/data/; fi
