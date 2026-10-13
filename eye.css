@@ -52,3 +52,12 @@
  .vote-grid{grid-template-columns:1fr}
  .eye-trait{padding:10px}
 }
+
+/* Eight position-specific scouting skills, with 1–10 tap-friendly ratings. */
+.eye-grade-options{grid-template-columns:repeat(5,minmax(0,1fr));row-gap:8px}
+.eye-grade span{min-height:43px;font-size:.96rem}
+.eye-quick-options{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.eye-quick-btn{width:100%;min-width:0}
+.eye-quick .source-note{min-height:1.2em}
+@media(min-width:900px){.vote-grid{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:15px;row-gap:18px}}
+@media(max-width:560px){.eye-quick-btn{flex:unset}.eye-grade-options{gap:6px}}

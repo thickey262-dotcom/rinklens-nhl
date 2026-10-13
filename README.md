@@ -21,7 +21,21 @@ The site displays MoneyPuck player statistics alongside two **distinct** 0–100
 
    **Formula and reliability:** Convert all six components to same-position percentiles using midranks for ties; compute their weighted average; then apply `round(50 + (weighted average - 50) * effectiveGames / (effectiveGames + 10))`, where `effectiveGames = min(fiveGp, fiveToiMinutes / 12)`. GP thus influences the index in **two explicitly different ways**: 10% durability/availability and a conservative sample-size reliability adjustment. With equal on-ice rates, playing more games can improve the rating. **Small sample** means fewer than 20 five-on-five games or 300 five-on-five minutes; **Moderate sample** means fewer than 45 games or 750 minutes; **Larger sample** otherwise. These reflect sample size, not a scientific confidence interval. On-ice stats depend on teammates, opposition and deployment.
 
-3. **Eye Test**: one separate community eyewitness opinion score (20–100) from people who affirm they watched that player in the chosen season. Signed-in viewers rate six traits 1–5. The protected Supabase database computes the single public score. An Eye Test appears only after three distinct signed-in accounts contribute, to reduce identifiability. Otherwise the UI shows **—**. There is no model-estimated substitute.
+3. **Eye Test**: one separate, viewer-submitted opinion score (10–100) using **eight 1–10 traits** with different definitions for forwards and defensemen. Averages are not published until **three distinct signed-in accounts** have submitted valid ratings for the player and season. The player table still offers a one-click **Rate** button with an optional 1–10 quick-fill that explicitly fills all eight grades, followed by individual adjustments. One vote per user/player/season; updates or withdrawals require authentication.
+
+   | Underlying trait | Forwards | Defensemen |
+   | --- | --- | --- |
+   | skating | Skating & speed | Skating & mobility |
+   | shooting | Shooting & finishing | Point shots & offense |
+   | puck | Puck skills & playmaking | Passing & puck movement |
+   | iq | Offensive hockey IQ | Defensive reads & hockey IQ |
+   | positioning | Offensive positioning | Gap control & positioning |
+   | defense | Two-way defensive play | Defensive coverage |
+   | compete | Compete level & physicality | Board battles & physicality |
+   | transition | Transition offense | Breakouts & transition |
+
+   Each account assigns eight whole-number ratings between 1 and 10. The protected aggregate computes `round(avg((sum of eight grades) / 8 * 10))` to produce a score out of 100, and publishes eight per-trait averages rounded to one decimal in the interface. No user vote is inferred from MoneyPuck numbers and nobody is presented as a professional scout by default. The Supabase migration is tracked at `supabase/migrations/20261013_eye_test_eight_traits_10_scale.sql`; it refuses to convert prior 1–5 votes silently. There were zero votes when the migration was applied.
+
 
 No auto-scout ratings, official game ratings, "combined score", published-professional consensus column, additional statistical models, or speculative eye-test scores appear. The two available scores are never blended.
 
@@ -33,9 +47,9 @@ Eye Test scores are community opinions and may not reflect professional scouting
 
 ## Faster Eye Test rating
 
-The player table includes a **Rate** button in each Eye Test cell. Clicking it opens the player's details with Eye Test first; the MoneyPuck statistical breakdown is still available in a collapsed section. After email sign-in, viewers tap large **1–5** radio choices for each of the same six skills. The optional **Quick fill** buttons explicitly assign the selected grade to *all six* skills; the viewer can revise any trait individually before confirming they watched the player and saving. This shortcut does not invent separate scouting evidence or alter the scoring method. Once rated, a player shows an **Edit rating** option, and signed-in viewers may update or withdraw their own vote.
+The player table includes a **Rate** button in each Eye Test cell. Clicking it opens the player's details with Eye Test first; the MoneyPuck statistical breakdown is still available in a collapsed section. After email sign-in, viewers tap large **1–10** radio choices across eight position-specific skills. The optional **Quick fill** buttons explicitly assign the selected grade to *all eight* skills; the viewer can revise any trait individually before confirming they watched the player and saving. This shortcut does not invent separate scouting evidence or alter the scoring method. Once rated, a player shows an **Edit rating** option, and signed-in viewers may update or withdraw their own vote.
 
-The six-grade database schema, existing per-account/player/season uniqueness, server validation, vote privacy, and minimum three-reviewer threshold all remain unchanged. The Eye Test module is now exposed to the player table so it can show existing public scores and add/edit actions. Advanced Stats Score is not affected.
+The upgraded eight-grade database schema preserves per-account/player/season uniqueness, server validation, vote privacy, and the minimum three-reviewer threshold. The Eye Test module is now exposed to the player table so it can show existing public scores and add/edit actions. Advanced Stats Score is not affected.
 
 ## Player table pagination
 

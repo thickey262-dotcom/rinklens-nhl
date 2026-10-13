@@ -1,10 +1,34 @@
 'use strict';
 /* One Eye Test rating only: verified-format community votes, never a stats-derived proxy. */
 const RinkEye = (() => {
-  const TRAITS = [
-    ['skating','Skating'],['puck','Puck skills'],['iq','Hockey IQ'],
-    ['defense','Defensive play'],['compete','Compete level'],['transition','Transition']
-  ];
+  // Shared storage fields, with position-specific scouting meanings.
+  // Each submitted ballot rates all eight fields from 1 to 10.
+  const TRAITS = Object.freeze({
+    F: [
+      ['skating','Skating & speed'],
+      ['shooting','Shooting & finishing'],
+      ['puck','Puck skills & playmaking'],
+      ['iq','Offensive hockey IQ'],
+      ['positioning','Offensive positioning'],
+      ['defense','Two-way defensive play'],
+      ['compete','Compete level & physicality'],
+      ['transition','Transition offense']
+    ],
+    D: [
+      ['skating','Skating & mobility'],
+      ['positioning','Gap control & positioning'],
+      ['defense','Defensive coverage'],
+      ['iq','Defensive reads & hockey IQ'],
+      ['puck','Passing & puck movement'],
+      ['transition','Breakouts & transition'],
+      ['compete','Board battles & physicality'],
+      ['shooting','Point shots & offense']
+    ]
+  });
+  const KEYS = ['skating','puck','iq','defense','compete','transition','shooting','positioning'];
+  const ratingGroup = player => player?.pos === 'D' ? 'D' : ['C','L','R','LW','RW'].includes(player?.pos) ? 'F' : null;
+  const ratingTraits = player => TRAITS[ratingGroup(player)] || [];
+  const scale = Array.from({length:10},(_,i)=>i+1);
   let published = new Map(), own = new Map(), activeSeason = '', requestId = 0, saving = false, loadError = '';
   const validId = id => /^\d{6,10}$/.test(String(id));
   function score(id) {
@@ -42,11 +66,11 @@ const RinkEye = (() => {
       const client = RinkCloud.client;
       const [publicResult, ownResult] = await Promise.all([
         client.from('community_eye_scores')
-          .select('season_id,player_id,reviewer_count,skating,puck,iq,defense,compete,transition,score')
+          .select('season_id,player_id,reviewer_count,skating,puck,iq,defense,compete,transition,shooting,positioning,score')
           .eq('season_id',season),
         RinkCloud.user
           ? client.from('community_eye_votes')
-              .select('player_id,skating,puck,iq,defense,compete,transition')
+              .select('player_id,skating,puck,iq,defense,compete,transition,shooting,positioning')
               .eq('season_id',season)
           : Promise.resolve({data:[],error:null})
       ]);
@@ -56,8 +80,8 @@ const RinkEye = (() => {
       for (const row of publicResult.data || []) {
         if (row.season_id !== season || !validId(row.player_id)
             || Number(row.reviewer_count) < 3 || !Number.isInteger(row.score)
-            || row.score < 20 || row.score > 100
-            || !TRAITS.every(([key]) => Number(row[key]) >= 1 && Number(row[key]) <= 5)) continue;
+            || row.score < 10 || row.score > 100
+            || !KEYS.every(key => Number(row[key]) >= 1 && Number(row[key]) <= 10)) continue;
         published.set(String(row.player_id),row);
       }
       for (const row of ownResult.data || []) {
@@ -73,36 +97,36 @@ const RinkEye = (() => {
   }
   function panel(player) {
     const id = String(player.id), r = published.get(id), mine = own.get(id);
+    const group = ratingGroup(player), traits = ratingTraits(player);
     const s = score(id);
-    const heading = '<div class="eyebrow">VIEWER OPINION · SEPARATE FROM MONEYPUCK</div><h3>Eye Test</h3>';
+    const heading = '<div class="eyebrow">VIEWER OPINION · SEPARATE FROM MONEYPUCK</div><h3>Eye Test: '+(group==='D'?'Defenseman':'Forward')+'</h3>';
     const result = s === null
       ? '<p><strong>Not yet rated.</strong> Public scores appear only after at least three different signed-in viewers have rated the player for this season.</p>'
       : '<p><strong class="eye-score">'+s+'/100</strong> · Average of '+r.reviewer_count+' viewer'+(r.reviewer_count === 1?'':'s')+'. Not a professional scouting grade.</p>';
     const traitDetails = r
-      ? '<details><summary>See the six viewer averages</summary><div class="eye-traits">'+TRAITS.map(([key,name]) => '<div><span>'+name+'</span><b>'+Number(r[key]).toFixed(1)+'/5</b></div>').join('')+'</div></details>'
+      ? '<details><summary>See eight position-specific viewer averages</summary><div class="eye-traits">'+traits.map(([key,name]) => '<div><span>'+name+'</span><b>'+Number(r[key]).toFixed(1)+'/10</b></div>').join('')+'</div></details>'
       : '';
     let participation = '<p class="source-note">Eye Test is an opinion from viewers who say they watched this player. It is separate from MoneyPuck data, and contributors are not verified professional scouts.</p>';
     if (!RinkCloud.client || !RinkCloud.user) {
       participation += '<p>Rating takes about a minute after signing in.</p><button type="button" class="button primary eye-signin-action" data-eye-signin>Sign in to rate this player</button>';
     } else {
-      // Quick-fill deliberately sets all six grades to the same value; it never
-      // manufactures skill-by-skill distinctions that a viewer did not select.
-      const quickChoices=[1,2,3,4,5].map(v=>
-        '<button type="button" class="eye-quick-btn" data-eye-fill="'+v+'" aria-label="Apply '+v+' out of 5 to each skill">'
+      // Explicit quick fill sets all eight grades identically, not inferred from stats.
+      const quickChoices=scale.map(v=>
+        '<button type="button" class="eye-quick-btn" data-eye-fill="'+v+'" aria-label="Apply '+v+' out of 10 to all eight skills">'
         +v+'</button>').join('');
-      const traitChoices=TRAITS.map(([key,name])=>
+      const traitChoices=traits.map(([key,name])=>
         '<fieldset class="eye-trait"><legend>'+name+'</legend><div class="eye-grade-options">'
-        +[1,2,3,4,5].map(v=>'<label class="eye-grade">'
+        +scale.map(v=>'<label class="eye-grade">'
           +'<input type="radio" name="'+key+'" value="'+v+'" required'+(Number(mine?.[key])===v?' checked':'')+'>'
           +'<span>'+v+'</span></label>').join('')
         +'</div></fieldset>').join('');
       participation += '<form id="eyeVoteForm" data-eye-player="'+safe(id)+'"><h4>'+(mine?'Update your Eye Test rating':'Give your Eye Test rating')+'</h4>'
-        +(mine?'<p class="eye-saved"><strong>You rated this player.</strong> Change any grade below and save again.</p>':'<p>Choose 1–5 for each skill, based on games you actually watched.</p>')
+        +(mine?'<p class="eye-saved"><strong>You rated this player.</strong> Change any grade below and save again.</p>':'<p>Give each '+(group==='D'?'defenseman':'forward')+' skill a 1–10 grade based on games you actually watched.</p>')
         +'<fieldset class="eye-quick"><legend>Quick fill (optional)</legend>'
-        +'<p>Want the same grade for every skill? Tap a number, then adjust any individual skills below. This applies <strong>that exact grade to all six traits</strong>.</p>'
+        +'<p>Want the same grade for every skill? Tap a number, then adjust any individual skills below. This applies <strong>that exact grade to all eight traits</strong>.</p>'
         +'<div class="eye-quick-options">'+quickChoices+'</div>'
         +'<p id="eyeQuickStatus" class="source-note" aria-live="polite"></p></fieldset>'
-        +'<p class="eye-scale">1 = Needs work · 2 = Developing · 3 = Average · 4 = Strong · 5 = Excellent</p>'
+        +'<p class="eye-scale">1 = Poor · 3 = Below average · 5 = Average · 7 = Good · 9 = Excellent · 10 = Elite</p>'
         +'<div class="vote-grid">'+traitChoices+'</div>'
         +'<label class="watch-consent"><input type="checkbox" name="watched" required> I watched this player this season and agree to include my ratings in anonymous public averages.</label>'
         +'<div class="vote-buttons"><button type="submit" class="button primary">'+(mine?'Save updated rating':'Save Eye Test rating')+'</button>'
@@ -135,12 +159,12 @@ const RinkEye = (() => {
   async function submit(id,form) {
     if (saving) throw Error('A vote is already being saved.');
     if (!RinkCloud.user || !RinkCloud.client) throw Error('Sign in first.');
-    if (!validId(id) || !get(id) || !/^20\d{6}$/.test(state.season)) throw Error('Select a player in the current season.');
+    if (!validId(id) || !ratingGroup(get(id)) || !/^20\d{6}$/.test(state.season)) throw Error('Select a player in the current season.');
     if (!form.elements.namedItem('watched')?.checked) throw Error('Confirm that you watched this player this season.');
     const grades = {};
-    for (const [key] of TRAITS) {
+    for (const key of KEYS) {
       const grade = Number(form.elements.namedItem(key)?.value);
-      if (!Number.isInteger(grade) || grade < 1 || grade > 5) throw Error('Rate all six skills from 1 to 5.');
+      if (!Number.isInteger(grade) || grade < 1 || grade > 10) throw Error('Rate all eight position-specific skills from 1 to 10.');
       grades[key] = grade;
     }
     saving = true;
@@ -186,13 +210,13 @@ const RinkEye = (() => {
     if(fillButton) {
       const form=fillButton.closest('#eyeVoteForm');
       const grade=Number(fillButton.dataset.eyeFill);
-      if(form && Number.isInteger(grade) && grade>=1 && grade<=5) {
-        for(const [trait] of TRAITS) {
+      if(form && Number.isInteger(grade) && grade>=1 && grade<=10) {
+        for(const trait of KEYS) {
           const radio=form.querySelector('input[name="'+trait+'"][value="'+grade+'"]');
           if(radio)radio.checked=true;
         }
         const status=form.querySelector('#eyeQuickStatus');
-        if(status)status.textContent='All six skills set to '+grade+'/5. Review them individually, confirm you watched, then save.';
+        if(status)status.textContent='All eight skills set to '+grade+'/10. Review them individually, confirm you watched, then save.';
       }
       return;
     }
@@ -222,7 +246,7 @@ const RinkEye = (() => {
     try {await RinkCloud.signOut();}
     catch(error){document.getElementById('eyeSignInStatus').textContent='Could not sign out: '+error.message;}
   });
-  return {initialize,reload,score,count,hasOwn,panel};
+  return {initialize,reload,score,count,hasOwn,panel,ratingGroup,ratingTraits,KEYS};
 })();
 // The player table uses window.RinkEye to display scores and open direct rating.
 window.RinkEye = RinkEye;

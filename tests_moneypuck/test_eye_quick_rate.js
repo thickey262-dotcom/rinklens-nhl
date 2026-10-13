@@ -51,9 +51,21 @@ assert.equal(typeof eye.hasOwn,'function','table may show Edit rating');
 const body=eye.panel(player);
 assert.match(body,/Save Eye Test rating/);
 assert.match(body,/data-eye-fill="3"/);
+assert.match(body,/Eye Test: Forward/);
+assert.match(body,/Shooting & finishing/);
+assert.match(body,/Offensive positioning/);
+assert.ok(body.includes('value="10"'),'grade 10 must be offered');
+assert.ok(body.includes('data-eye-fill="10"'),'quick-fill grade 10 must be offered');
+const defender=eye.panel({...player,pos:'D'});
+assert.match(defender,/Eye Test: Defenseman/);
+assert.match(defender,/Gap control & positioning/);
+assert.match(defender,/Breakouts & transition/);
+assert.doesNotMatch(defender,/Offensive positioning/);
+assert.equal((defender.match(/type="radio"/g)||[]).length,80);
+
 assert.match(body,/same grade for every skill/i);
-assert.equal((body.match(/type="radio"/g)||[]).length,30,'six separately chosen skills, five grades each');
-for(const trait of ['skating','puck','iq','defense','compete','transition']){
+assert.equal((body.match(/type="radio"/g)||[]).length,80,'eight separately chosen skills, ten grades each');
+for(const trait of ['skating','puck','iq','defense','compete','transition','shooting','positioning']){
  assert.ok(body.includes('name="'+trait+'"'),'individual skill available: '+trait);
 }
 assert.match(tableSource,/data-eye-rate/,'one-click rate button in table');
@@ -68,39 +80,39 @@ const form={
  dataset:{eyePlayer:player.id},
  querySelector(selector){
   if(selector==='#eyeQuickStatus')return status;
-  const m=selector.match(/^input\[name="([a-z]+)"\]\[value="(\d)"\]$/);
+  const m=selector.match(/^input\[name="([a-z]+)"\]\[value="(\d{1,2})"\]$/);
   if(m)return selected[m[1]]??(selected[m[1]]={checked:false});
   if(selector==='[type="submit"]')return {disabled:false};
   return null;
  },
  elements:{namedItem(key){
   if(key==='watched')return {checked:true};
-  return {value:'4'};
+  return {value:'9'};
  }}
 };
 const button={
- dataset:{eyeFill:'4'},
+ dataset:{eyeFill:'9'},
  closest(selector){return selector==='[data-eye-fill]'?this:selector==='#eyeVoteForm'?form:null;}
 };
 (async()=>{
  const clickPromise=listeners.click({target:button});
  if(clickPromise)await clickPromise;
- assert.equal(Object.keys(selected).length,6,'quick-fill should set all six distinct grade controls');
+ assert.equal(Object.keys(selected).length,8,'quick-fill should set all eight distinct grade controls');
  assert.ok(Object.values(selected).every(x=>x.checked),'quick-fill should select all grades');
- assert.match(status.textContent,/All six skills set to 4\/5/);
+ assert.match(status.textContent,/All eight skills set to 9\/10/);
  const submitPromise=listeners.submit({target:form,preventDefault(){}});
  if(submitPromise)await submitPromise;
  assert.equal(posted.length,1,'one ballot should be submitted');
  const sent=posted[0].data;
  assert.equal(sent.season_id,state.season);
  assert.equal(sent.player_id,player.id);
- for(const key of ['skating','puck','iq','defense','compete','transition']){
-  assert.equal(sent[key],4);
+ for(const key of ['skating','puck','iq','defense','compete','transition','shooting','positioning']){
+  assert.equal(sent[key],9);
  }
  assert.equal(posted[0].opts.onConflict,'user_id,season_id,player_id');
  assert.ok(!Object.hasOwn(sent,'score'),'client must not forge aggregate Eye Test ratings');
  cloud.user=null;
  assert.match(eye.panel(player),/Sign in to rate this player/);
  assert.ok(!eyeSource.includes('service_role'),'no secret service API keys in the client');
- console.log('PASS: Eye Test quick-fill, six editable grades, one stored private ballot, sign-in gate, table rate action and score integration');
+ console.log('PASS: Eight Eye Test traits, 1–10 grades, quick-fill, one private vote, sign-in gate, rating workflow');
 })().catch(e=>{console.error(e);process.exitCode=1;});
