@@ -17,3 +17,6 @@
 .model-pill.missing{color:#9cb3bc;background:#1c2838}
 #modelCoverage{font-size:13px;color:#bad4e5}
 @media(max-width:600px){.model-panel{padding:15px}.model-heading h4{font-size:23px}}
+
+.report-auto-extra{margin:12px 0;border:1px solid #365463;border-radius:8px;padding:10px 14px}
+.report-auto-extra>summary{font-weight:800;cursor:pointer;font-size:15px;color:#b4dae9;padding:8px 0}
