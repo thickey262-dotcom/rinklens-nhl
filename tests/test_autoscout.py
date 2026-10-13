@@ -19,7 +19,7 @@ class AutoScoutTests(unittest.TestCase):
         self.assertIn('RinkAuto.invalidate()',adv)
         self.assertIn('autoscout.css',flow)
         self.assertIn('autoscout.js',flow)
-        self.assertIn('const consensusOrHuman=p=>eye(p)??RinkConsensus.score(p);',app)
+        self.assertIn('const consensusOrHuman=p=>eye(p)??RinkCommunity.eyeTest(p)?.score??null;',app)
         self.assertIn('const combined=p=>consensusOrHuman(p)===null?null',app)
     @unittest.skipUnless(shutil.which('node'),'Node unavailable')
     def test_automatic_estimate_calculation(self):
