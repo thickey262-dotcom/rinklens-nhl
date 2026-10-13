@@ -3,21 +3,23 @@
 The site displays MoneyPuck player statistics alongside two **distinct** 0–100 scores:
 
 1. **MoneyPuck statistics**: regular-season all-situations counting totals and 5-on-5 chance/shot metrics. `scripts/fetch_moneypuck.py` refreshes the public dataset daily using MoneyPuck's published season-summary CSV.
-2. **Advanced Stats Score**: one transparent RinkLens index derived exclusively from MoneyPuck's **five-on-five** expected-goal and shot metrics, never scouting or Eye Test input. Percentiles compare qualified same-season forwards to forwards and defensemen to defensemen. Position-specific weights:
+2. **Advanced Stats Score**: one transparent RinkLens 0–100 index derived from MoneyPuck's **five-on-five** metrics and five-on-five games played (GP). It is not a MoneyPuck-published score, Eye Test, or predictor of overall talent. Percentiles are calculated against qualified players at the same position (forwards and defensemen separately), within the selected season.
 
-   | MoneyPuck five-on-five metric | Forwards | Defensemen |
+   | MoneyPuck five-on-five component | Forwards | Defensemen |
    | --- | ---: | ---: |
-   | xGF% (expected-goal share) | 40% | 45% |
-   | ixG/60 (individual expected goals per 60) | 30% | 10% |
-   | CF% (shot attempts) | 10% | 15% |
-   | FF% (unblocked shot attempts) | 5% | 10% |
-   | HDCF% (high-danger shots) | 15% | 20% |
+   | xGF% (expected goals share) | 35% | 40% |
+   | ixG/60 (individual expected goals per 60) | 25% | 10% |
+   | CF% (shot attempt share) | 10% | 15% |
+   | FF% (unblocked attempt share) | 5% | 10% |
+   | HDCF% (high-danger shot share) | 15% | 15% |
+   | **Five-on-five games played (GP)** | **10%** | **10%** |
+   | **Total** | **100%** | **100%** |
 
-   Shot attempt shares are correlated, so they are intentionally downweighted versus expected-goal quality. More of the forward score comes from individual chance creation; more of the defense score comes from on-ice performance. The formula remains descriptive and does not isolate a player's impact from teammates, opponents or deployment.
+   **Why GP is weighted:** It recognizes availability and durability rather than just chance/shot rates. Games played is converted to a same-position percentile. It supplies 10% of the weighted index but **does not substitute for missing advanced metrics**. Four of the five advanced metrics are still required, including xGF% and ixG/60. Other missing metrics are not guessed: if exactly one optional advanced metric is missing, available weights are renormalized.
 
-   **Minimum five-on-five exposure:** `fiveGp >= 10` and `fiveToiMinutes >= 100` for an established season. Early seasons (highest all-situations GP under 15): minimum `fiveGp >= 3` and `fiveToiMinutes >= 30`. Player and peer values must be present in the original MoneyPuck CSV, not inferred from all-situations totals. Minimum 30 qualified same-position peers must have the metric. Four of the five metrics are required including xGF% and ixG/60. Renormalize weights only if one of the three optional metrics is unavailable. Missing mandatory inputs or missing 5v5 exposure yields a dash, never an invented score.
+   **Eligibility:** A player must have at least 10 five-on-five games (`fiveGp`) and 100 five-on-five minutes (`fiveToiMinutes`). Early in a season (when the league's maximum all-situations GP is under 15), thresholds are 3 games and 30 minutes. An included component must have at least 30 same-position qualified peers. Only original MoneyPuck five-on-five values count; do not infer missing data from all-situations ice time.
 
-   **Score:** weighted average of same-position metric percentiles, using midranks for ties, then adjusted toward a neutral 50: `round(50 + (average - 50) * effectiveGames / (effectiveGames + 10))`. Here `effectiveGames = min(fiveGp, fiveToiMinutes / 12)`. This reduces early or low-ice-time extremes while preserving the relative ranking of qualified peers. The reliability label is **Small sample** (<20 five-on-five GP OR <300 five-on-five minutes), **Moderate sample** (<45 GP OR <750 minutes), or **Larger sample** otherwise. Those labels concern sample size, not a certified level of statistical certainty.
+   **Formula and reliability:** Convert all six components to same-position percentiles using midranks for ties; compute their weighted average; then apply `round(50 + (weighted average - 50) * effectiveGames / (effectiveGames + 10))`, where `effectiveGames = min(fiveGp, fiveToiMinutes / 12)`. GP thus influences the index in **two explicitly different ways**: 10% durability/availability and a conservative sample-size reliability adjustment. With equal on-ice rates, playing more games can improve the rating. **Small sample** means fewer than 20 five-on-five games or 300 five-on-five minutes; **Moderate sample** means fewer than 45 games or 750 minutes; **Larger sample** otherwise. These reflect sample size, not a scientific confidence interval. On-ice stats depend on teammates, opposition and deployment.
 
 3. **Eye Test**: one separate community eyewitness opinion score (20–100) from people who affirm they watched that player in the chosen season. Signed-in viewers rate six traits 1–5. The protected Supabase database computes the single public score. An Eye Test appears only after three distinct signed-in accounts contribute, to reduce identifiability. Otherwise the UI shows **—**. There is no model-estimated substitute.
 

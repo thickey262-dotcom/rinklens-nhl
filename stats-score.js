@@ -1,6 +1,6 @@
 'use strict';
 /* RinkLens Advanced Stats Score:
- * MoneyPuck-only 5-on-5 percentiles, separate F/D weights.
+ * MoneyPuck-only 5-on-5 percentiles, separate F/D weights and 10% 5v5 GP.
  * Eligible players need documented 5v5 games and ice time, never proxy minutes.
  * Scores are descriptive—not player-value forecasts, MoneyPuck ratings or Eye Tests.
  */
@@ -10,19 +10,22 @@ const RinkStats = (() => {
     {key:'ixG60',label:'Individual expected goals / 60 (ixG/60)',digits:2},
     {key:'cfPct',label:'Shot-attempt share (CF%)',digits:1},
     {key:'ffPct',label:'Unblocked shot-attempt share (FF%)',digits:1},
-    {key:'hdCfPct',label:'High-danger shot share (HDCF%)',digits:1}
+    {key:'hdCfPct',label:'High-danger shot share (HDCF%)',digits:1},
+    {key:'fiveGp',label:'Five-on-five games played (GP)',digits:0}
   ]);
-  // More weight for shot creation by forwards; more weight for on-ice play by D.
-  // CF% and FF% overlap; keep their combined contribution limited.
+  // GP carries an explicit 10% availability/durability component alongside five advanced metrics.
+  // Relative to qualified players at the same position and in the same season.
   const WEIGHTS = Object.freeze({
-    F: Object.freeze({xgfPct:40,ixG60:30,cfPct:10,ffPct:5,hdCfPct:15}),
-    D: Object.freeze({xgfPct:45,ixG60:10,cfPct:15,ffPct:10,hdCfPct:20})
+    F: Object.freeze({xgfPct:35,ixG60:25,cfPct:10,ffPct:5,hdCfPct:15,fiveGp:10}),
+    D: Object.freeze({xgfPct:40,ixG60:10,cfPct:15,ffPct:10,hdCfPct:15,fiveGp:10})
   });
   const MIN_PEERS=30;
   let byId=new Map(),missingReasons=new Map(),minimumGames=10,minimumMinutes=100;
   const isNumber=v=>typeof v==='number'&&Number.isFinite(v);
   const group=p=>p?.pos==='D'?'D':['C','L','R','LW','RW'].includes(p?.pos)?'F':null;
-  const valid=(p,key)=>isNumber(p[key])&&p[key]>=0&&p[key]<=(key==='ixG60'?100:100);
+  const valid=(p,key)=>key==='fiveGp'
+    ? Number.isInteger(p.fiveGp)&&p.fiveGp>0&&p.fiveGp<=120
+    : isNumber(p[key])&&p[key]>=0&&p[key]<=100;
   const fiveMinutes=p=>isNumber(p?.fiveToiMinutes)&&p.fiveToiMinutes>0?p.fiveToiMinutes:null;
   const fiveGames=p=>isNumber(p?.fiveGp)&&p.fiveGp>0?p.fiveGp:null;
   function qualifies(p){
@@ -72,7 +75,10 @@ const RinkStats = (() => {
       if(!qualifies(p)){missingReasons.set(id,unavailable(p));continue;}
       const kind=group(p), weights=WEIGHTS[kind];
       const available=METRICS.filter(m=>valid(p,m.key)&&pools[kind][m.key].length>=MIN_PEERS);
-      if(available.length<4||!available.some(m=>m.key==='xgfPct')||!available.some(m=>m.key==='ixG60')){
+      // GP is never allowed to substitute for the minimum four actual advanced metrics.
+      const advanced=available.filter(m=>m.key!=='fiveGp');
+      if(!available.some(m=>m.key==='fiveGp')||advanced.length<4||
+         !advanced.some(m=>m.key==='xgfPct')||!advanced.some(m=>m.key==='ixG60')){
         missingReasons.set(id,unavailable(p));continue;
       }
       const denominator=available.reduce((sum,m)=>sum+weights[m.key],0);
@@ -82,6 +88,8 @@ const RinkStats = (() => {
         peers:pools[kind][m.key].length
       }));
       const raw=breakdown.reduce((sum,m)=>sum+m.weight*m.percentile,0)/denominator;
+      // GP also helps determine sample reliability, which is conceptually separate
+      // from the explicit 10% durability component in the weighted average.
       // A roughly 12-minute 5v5 game is one effective game; fewer minutes lowers certainty.
       // Never use an all-situations time-on-ice value to fill in 5v5 minutes.
       const effectiveGames=Math.min(fiveGames(p),fiveMinutes(p)/12);
@@ -108,10 +116,10 @@ const RinkStats = (() => {
     return '<section class="stat-score-panel"><div class="eyebrow">RINKLENS SCORE · MONEYPUCK DATA</div>'
       +'<h3>Advanced Stats Score <strong class="composite-score">'+data.score+'/100</strong></h3>'
       +'<p><span class="sample-label">'+data.reliabilityLabel+'</span> · '+data.fiveGp+' games, '+data.fiveToiMinutes.toFixed(1)+' minutes at five-on-five.</p>'
-      +'<p>Compared with qualified '+(data.group==='D'?'defensemen':'forwards')+' from this season only. Scores reflect these five metrics, not a full assessment of every skill.</p>'
+      +'<p>Compared with qualified '+(data.group==='D'?'defensemen':'forwards')+' from this season only. Five-on-five games played now makes up <strong>10%</strong> of this score, rewarding availability alongside five advanced metrics. More games also improve sample reliability, which is handled separately.</p>'
       +'<details><summary>View the score breakdown and position weights</summary>'
       +'<div class="table-wrap"><table><thead><tr><th>Metric</th><th>Player value</th><th>Position percentile</th><th>Weight</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
-      +'<p class="source-note">Weighted peer percentiles are averaged using '+data.metricWeight+'% of available metric weights (renormalized if one optional stat is missing). The result is pulled toward 50 using effective 5v5 games / (effective 5v5 games + 10), where effective 5v5 games = minimum of actual 5v5 games and 5v5 minutes / 12. Qualified players need '+data.minimumGames+' five-on-five games and '+data.minimumMinutes+' five-on-five minutes, and each metric needs 30 qualified peers. Equal values share a midrank.</p>'
+      +'<p class="source-note">Five-on-five games played earns a 10% weight based on the percentile among qualified players at the same position. The other five measures supply the remaining 90%, with available weights renormalized only when one optional advanced metric is missing. GP also contributes to the separate sample-size adjustment toward 50: effective 5v5 games / (effective 5v5 games + 10), where effective 5v5 games = min(actual 5v5 games, 5v5 minutes / 12). Qualified players need '+data.minimumGames+' five-on-five games and '+data.minimumMinutes+' five-on-five minutes; every included metric needs at least 30 qualified peers. Equal values share a midrank. More games can increase a player’s score even with identical per-minute performance because this index intentionally includes durability.</p>'
       +'</details>'+caveat+'</section>';
   }
   return {
