@@ -33,6 +33,6 @@ class AdvancedStatsTests(unittest.TestCase):
         self.assertIn('RinkReports.profile(p)',app)
         self.assertIn('RinkAdvanced.load(season)',app)
         self.assertIn('fetch_advanced.py',flow)
-        self.assertIn('advanced.css reportcards.css autoscout.css film.css app.js',flow)
+        self.assertIn('advanced.css reportcards.css autoscout.css app.js',flow)
 
 if __name__=='__main__':unittest.main()

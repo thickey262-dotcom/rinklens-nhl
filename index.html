@@ -11,7 +11,6 @@
   <link rel="stylesheet" href="advanced.css">
   <link rel="stylesheet" href="reportcards.css">
   <link rel="stylesheet" href="autoscout.css">
-  <link rel="stylesheet" href="film.css">
 </head>
 <body>
   <div class="app-shell">
@@ -22,7 +21,7 @@
         <button class="nav-item active" data-view="dashboard"><span class="nav-icon">◫</span> Overview</button>
         <button class="nav-item" data-view="players"><span class="nav-icon">▤</span> Player database</button>
         <button class="nav-item" data-view="scouting"><span class="nav-icon">◎</span> Scouting board <span id="ratedCountSide" class="nav-count">0</span></button>
-        <button class="nav-item" data-view="compare"><span class="nav-icon">⇄</span> Player comparison</button><button class="nav-item" data-view="film"><span class="nav-icon">▶</span> Film Lab</button>
+        <button class="nav-item" data-view="compare"><span class="nav-icon">⇄</span> Player comparison</button>
       </nav>
       <div class="side-label side-secondary">REFERENCE</div>
       <nav class="main-nav"><button class="nav-item" data-view="learn"><span class="nav-icon">◈</span> Stats explained</button><button class="nav-item" data-view="methodology"><span class="nav-icon">≡</span> Methodology</button><button class="nav-item" data-view="account"><span class="nav-icon">♙</span> Account & sync</button></nav>
@@ -77,45 +76,6 @@
 
         <section id="view-compare" class="view"><div class="section-header"><div><div class="eyebrow muted">SIDE BY SIDE</div><h1>Player comparison.</h1><p>Select up to two players from the database. Compare their production and any scouting reports you've created.</p></div><button class="secondary-button" data-go="players">+ Choose players</button></div><div id="comparisonContent" class="comparison-content"></div></section>
 
-        <section id="view-film" class="view" aria-labelledby="filmHeading">
-          <div class="section-header film-top"><div><div class="eyebrow muted">FILM ROOM / OBSERVATION FIRST</div><h1 id="filmHeading">Film Lab.</h1><p class="film-intro">Bring your own permitted hockey footage. Review a player's shifts, mark evidence, and save time-coded observations. The video stays in this browser. Optional AI can review selected still frames after you explicitly approve sending them.</p></div></div>
-          <div class="film-layout">
-            <section class="panel film-panel">
-              <h3>1. Watch your clip</h3>
-              <label for="filmPlayer">NHL player to evaluate</label><select id="filmPlayer" aria-label="Select player"><option value="">Choose a player…</option></select>
-              <label for="filmIdentifier">Player identity cue (required for AI)</label><input id="filmIdentifier" type="text" maxlength="20" placeholder="e.g., BUF #26 in white">
-              <label for="filmFile">Local video (MP4 / WebM, up to 300 MB)</label><input id="filmFile" type="file" accept="video/*">
-              <video id="filmVideo" controls playsinline preload="metadata" aria-label="Local hockey video"></video>
-              <div class="film-controls"><button class="secondary-button" id="filmCapture" type="button">◎ Capture current frame</button></div>
-              <h3 style="margin-top:20px">2. Capture the evidence</h3>
-              <p>Choose a short segment (2–120 seconds). Auto-sample six still frames for the optional vision review, or capture specific moments while watching.</p>
-              <div class="film-range"><label for="filmFrom">Start, seconds</label><input id="filmFrom" type="number" min="0" step="0.1" value="0"><label for="filmTo">End, seconds</label><input id="filmTo" type="number" min="0" step="0.1" value="30"></div>
-              <div class="film-controls"><button type="button" class="primary-button" id="filmSample">Sample six frames →</button></div>
-              <div class="film-count" id="filmFrameCount">0 frames selected (2–8 required for AI)</div>
-              <div id="filmFrames" class="film-frame-grid" aria-label="Selected frame thumbnails"></div>
-            </section>
-            <div>
-              <section class="panel film-panel">
-                <h3>3. Record what you actually saw</h3>
-                <label for="filmTrait">Scouting trait</label><select id="filmTrait"><option value="skating">Skating</option><option value="puck">Puck skills</option><option value="iq">Hockey IQ</option><option value="defense">Defensive play</option><option value="compete">Compete level</option><option value="transition">Transition</option></select>
-                <label for="filmGrade">Optional human grade</label><select id="filmGrade"><option value="">Observation only — no grade</option><option value="1">1 / 5</option><option value="2">2 / 5</option><option value="3">3 / 5</option><option value="4">4 / 5</option><option value="5">5 / 5</option></select>
-                <label for="filmNote">Observation (timestamp comes from video)</label><textarea id="filmNote" maxlength="500" placeholder="What did this player do? What is visible in the clip?"></textarea>
-                <div class="film-controls"><button class="primary-button" type="button" id="filmAddNote">+ Save film observation</button><button class="secondary-button" type="button" id="filmExport">↓ Export notes as JSON</button></div>
-                <div id="filmObservations" aria-label="Saved film notes"></div>
-              </section>
-              <section class="panel film-panel" style="margin-top:16px">
-                <h3>4. Optional AI frame review</h3>
-                <p><b>This is a limited still-image assessment, not automatic puck tracking or a full-game eye test.</b> It cannot reliably evaluate a player's speed, habits, or decision-making from a few screenshots. Results are tentative with timestamps and remain separate from your manually graded profile.</p>
-                <p class="film-legal">Uses Gemini 2.5 Flash-Lite via your signed-in Supabase account. To enable it, create a free, non-billed Google AI Studio API key and save it privately in Supabase as GEMINI_API_KEY. There is no paid-model fallback. Only 2–8 selected frames are transmitted (not the original video). Google may use free-tier inputs to improve its products; free-tier rate limits apply.</p>
-                <label class="film-consent" for="filmConsent"><input id="filmConsent" type="checkbox"> I have permission to process this footage and consent to sending only my selected frames to Google Gemini. I understand free-tier submissions may be used to improve Google products.</label>
-                <div class="film-controls"><button class="secondary-button" type="button" id="filmCheckGemini">✓ Check Gemini connection</button><button class="secondary-button" type="button" id="filmAnalyze">Review frames with AI →</button></div><div id="filmCheckResult" class="film-check-result" role="status" aria-live="polite">Press “Check Gemini connection” above to verify Google access. No video is needed. If nothing changes, reload the page with Ctrl+Shift+R.</div><p class="film-count">Connection check requires sign-in but sends no video frames and does not generate any AI content or use model tokens.</p>
-                <div id="filmStatus" class="film-status" role="status" aria-live="polite">Film Lab ready. Choose a player and local clip to begin.</div>
-                <div id="filmAIResults" aria-label="AI film-review observations"></div>
-              </section>
-            </div>
-          </div>
-        </section>
-
         <section id="view-learn" class="view" aria-labelledby="learnHeading">
           <div class="learn-intro">
             <div><div class="eyebrow">RINKLENS STATS SCHOOL / ZERO JARGON REQUIRED</div><h1 id="learnHeading">The stats, <em>without the headache.</em></h1><p>Confused by CF%, xG or PDO? Choose a stat, change the example numbers and learn what to watch for on the ice. Then test yourself before the next group chat argument.</p></div>
@@ -154,8 +114,6 @@
   <script src="reportcards.js"></script>
   <script src="autoscout.js"></script>
   <script src="app.js"></script>
-  <script src="film-core.js"></script>
-  <script src="film.js?v=20261012-connection-fix"></script>
   <script src="learn.js"></script>
 </body>
 </html>
