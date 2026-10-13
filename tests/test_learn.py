@@ -24,7 +24,7 @@ class StatsSchoolTests(unittest.TestCase):
 
     def test_deploy_includes_new_assets(self):
         workflow = (ROOT / '.github/workflows/rinklens.yml').read_text(encoding='utf-8')
-        self.assertIn('ea-ratings.css app.js learn.js advanced.js reportcards.js autoscout.js ea-ratings.js', workflow)
+        self.assertIn('cp index.html styles.css learn.css advanced.css reportcards.css autoscout.css film.css app.js learn.js advanced.js reportcards.js autoscout.js film-core.js film.js cloud.js config.js _site/', workflow)
 
     @unittest.skipUnless(shutil.which('node'), 'Node.js unavailable')
     def test_lesson_javascript_parses(self):

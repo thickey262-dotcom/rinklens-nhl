@@ -43,11 +43,7 @@ jobs:
         continue-on-error: true
         run: python scripts/fetch_advanced.py --seasons 20262027 20252026 20242025
 
-      - name: Import verified EA SPORTS NHL 27 player ratings
-        continue-on-error: true
-        run: python scripts/fetch_ea_nhl27.py
-
-      - name: Commit updated real-data snapshots
+      - name: Commit updated real-data snapshots (daily or manual run)
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           git config user.name 'github-actions[bot]'
@@ -62,9 +58,9 @@ jobs:
       - name: Assemble static website
         run: |
           mkdir -p _site/data
-          cp index.html styles.css learn.css advanced.css reportcards.css autoscout.css film.css ea-ratings.css app.js learn.js advanced.js reportcards.js autoscout.js ea-ratings.js film-core.js film.js cloud.js config.js _site/
+          cp index.html styles.css learn.css advanced.css reportcards.css autoscout.css film.css app.js learn.js advanced.js reportcards.js autoscout.js film-core.js film.js cloud.js config.js _site/
           touch _site/.nojekyll
-          for file in data/nhl-*.json data/advanced-*.json data/ea-nhl27.json; do
+          for file in data/nhl-*.json data/advanced-*.json; do
             if [ -f "$file" ]; then cp "$file" _site/data/; fi
           done
 

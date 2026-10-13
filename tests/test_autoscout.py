@@ -19,8 +19,7 @@ class AutoScoutTests(unittest.TestCase):
         self.assertIn('RinkAuto.invalidate()',adv)
         self.assertIn('autoscout.css',flow)
         self.assertIn('autoscout.js',flow)
-        self.assertIn('const comparisonEye=p=>eye(p)??eaEye(p);',app)
-        self.assertIn('const combined=p=>comparisonEye(p)===null?null',app)
+        self.assertIn("const combined=p=>eye(p)===null?null",app)
     @unittest.skipUnless(shutil.which('node'),'Node unavailable')
     def test_automatic_estimate_calculation(self):
         subprocess.run(['node',str(ROOT/'tests/test_autoscout.js')],check=True,capture_output=True)
