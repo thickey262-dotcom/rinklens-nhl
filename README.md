@@ -1,5 +1,16 @@
 # RinkLens v2 — NHL analytics + eye-test scouting
 
+
+## EA SPORTS NHL 27–based eye-test proxy (2026–27 only)
+
+RinkLens displays verified **EA SPORTS NHL 27 overall video-game ratings (OVR, 40–99 on the released list)** alongside NHL analytics and the separate human scouting grades. EA is a third-party opinion-based game rating, **not video scouting**. Source: https://www.ea.com/games/nhl/ratings .
+
+A GitHub Actions import reads the official EA position-rating leaderboard (including paginated pages), validates the source and each rating, and saves a dated snapshot to data/ea-nhl27.json. The public EA ratings pages contain the **top 300 overall players**, not the complete in-game roster; the snapshot includes goalies, but the site's main NHL database tracks skaters only. EA entries are matched by exact normalized full name (accent-insensitive) and defense-versus-forward position, excluding duplicate-name ambiguities. Missing/unmatched players display an em dash—ratings are never fabricated.
+
+The main player database has an **EA 27 OVR** column and sort option. Individual player profiles list available public acceleration, speed, passing, deking, and shot attributes; comparisons show EA OVR separately. The existing human **EYE TEST** score and its private scouting data remain unchanged. When a manual six-trait scouting grade exists, the combined evaluation uses that. For unscouted skaters with an EA rating, the blended combined score **uses EA OVR as a labeled fallback**, not as a claimed human or video-derived score. The default blend is 60% NHL statistical index / 40% human or EA fallback and is adjustable on the comparison page. The EA 27 proxy applies only when the selected NHL season is 2026–27, not retrospectively to older seasons. The stat-only Auto Scout Estimate stays separate.
+
+Because official EA public ratings are only a partial leaderboard, **not every NHL skater will have an EA proxy**. RinkLens deliberately does not generate fictional “EA” ratings from other stats. Data is publicly sourced; this integration is independently developed and not endorsed by EA SPORTS or the NHL.
+
 ## Film Lab: free-tier Gemini 2.5 Flash-Lite
 
 RinkLens Film Lab keeps original videos in the browser; only explicitly consented JPEG frames are sent to Google's Gemini 2.5 Flash-Lite vision endpoint. The optional AI backend uses a server-only GEMINI_API_KEY secret in Supabase from an UNBILLED Google AI Studio project, with no paid model fallback. Free-tier limits apply and Google's free tier may use submissions to improve its products. It does not generate or save automatic human scouting grades.
