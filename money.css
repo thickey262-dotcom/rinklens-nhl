@@ -11,3 +11,10 @@
 .weight-list strong{color:#f9cf99}
 .weight-bar{height:9px;background:#293d4c;display:block;grid-column:1/-1;border-radius:99px}
 .weight-bar i{height:100%;display:block;background:#e7b77d;border-radius:99px}
+
+/* Score confidence is a sample-size description, not another rating. */
+.advanced-score-cell .sample-label{display:block;color:#b8cccf;font-size:.72rem;font-weight:600;line-height:1.4}
+.advanced-score-cell .sample-label.is-small{color:#f2c187}
+.stat-score-panel .sample-label{display:inline-block;background:#45505a;border:1px solid #82919b;color:#f8e0be;font-weight:700;padding:3px 8px;border-radius:7px;font-size:.85rem}
+.method-weights th,.method-weights td{white-space:normal}
+.method-weights td{font-weight:800;color:#f9cf99}

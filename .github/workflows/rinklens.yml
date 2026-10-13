@@ -36,6 +36,8 @@ jobs:
           node tests_moneypuck/test_stats_score.js
       - name: Update MoneyPuck player statistics
         run: python scripts/fetch_moneypuck.py --seasons 20262027 20252026 20242025
+      - name: Validate refreshed MoneyPuck 5v5 ice time and score coverage
+        run: node tests_moneypuck/test_moneypuck_snapshots.js
       - name: Save refreshed public MoneyPuck snapshots
         run: |
           git config user.name 'github-actions[bot]'

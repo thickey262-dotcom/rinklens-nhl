@@ -20,17 +20,21 @@
 <section id="compare" class="section"><div class="heading"><span class="eyebrow">HEAD TO HEAD</span><h2>Compare two players</h2><p>Choose players using the Compare buttons in the table. Values are from the selected season.</p></div><div id="comparison" class="panel">Select up to two players from the table above.</div></section>
 <section id="stats-score-method" class="section">
 <div class="heading"><span class="eyebrow">ONE TRANSPARENT MONEYPUCK-BASED SCORE</span><h2>How the Advanced Stats Score works</h2>
-<p>A simple 0–100 summary of five separate MoneyPuck 5-on-5 statistics. We compare forwards with forwards and defensemen with defensemen <strong>within the selected season</strong>. This is a descriptive RinkLens calculation, not a score provided by MoneyPuck.</p></div>
-<div class="panel"><div class="weight-list">
-<div><span>Expected goals share (xGF%)</span><strong>35%</strong><span class="weight-bar"><i style="width:35%"></i></span></div>
-<div><span>Individual expected goals per 60 (ixG/60)</span><strong>25%</strong><span class="weight-bar"><i style="width:25%"></i></span></div>
-<div><span>Shot-attempt share (CF%)</span><strong>15%</strong><span class="weight-bar"><i style="width:15%"></i></span></div>
-<div><span>High-danger shot share (HDCF%)</span><strong>15%</strong><span class="weight-bar"><i style="width:15%"></i></span></div>
-<div><span>Unblocked shot-attempt share (FF%)</span><strong>10%</strong><span class="weight-bar"><i style="width:10%"></i></span></div>
-</div>
-<p><strong>Calculation:</strong> Convert each available stat into a position-group percentile, multiply by its weight, add the results, then adjust the total toward 50 when the player has played relatively few games. A player needs at least four of the five metrics, including xGF% and ixG/60; available weights are rescaled when one other metric is missing. At least 30 peers with a given metric are required.</p>
-<p><strong>Sample-size rule:</strong> At least 10 games, reduced to 3 while the season's top games-played total is below 15. Early scores are more conservative because the sample is small. A dash (—) means insufficient information, not a bad rating.</p>
-<p class="source-note"><strong>Advanced Stats Score</strong> is statistical and automatic. <strong>Eye Test</strong> is based on separate viewers' opinions. They are never combined. Neither score is an official league talent rating.</p></div></section>
+<p>A simple 0–100 summary of five separate MoneyPuck 5-on-5 statistics. Forwards and defensemen use different weights and are compared only with their position group <strong>within the selected season</strong>. Scores require real five-on-five minutes and games. This is a descriptive RinkLens calculation, not a score provided by MoneyPuck.</p></div>
+<div class="panel">
+<div class="table-wrap"><table class="method-weights"><thead><tr><th>MoneyPuck 5v5 metric</th><th>Forwards</th><th>Defensemen</th></tr></thead>
+<tbody><tr><th>Expected goals share (xGF%)</th><td>40%</td><td>45%</td></tr>
+<tr><th>Individual expected goals / 60 (ixG/60)</th><td>30%</td><td>10%</td></tr>
+<tr><th>Shot-attempt share (CF%)</th><td>10%</td><td>15%</td></tr>
+<tr><th>Unblocked shot-attempt share (FF%)</th><td>5%</td><td>10%</td></tr>
+<tr><th>High-danger shot share (HDCF%)</th><td>15%</td><td>20%</td></tr>
+<tr><th>Total</th><td>100%</td><td>100%</td></tr></tbody></table></div>
+<p><strong>Why different weights?</strong> Forwards get more emphasis on their own expected-goal creation. Defensemen get more emphasis on on-ice chance and shot shares. CF% and FF% overlap, so they receive less weight than chance-quality measures. These are transparent editorial choices—not a validated all-around player-value model.</p>
+<p><strong>Eligibility:</strong> A player must have at least 10 five-on-five games and 100 minutes of five-on-five ice time. Early in the season (until the most games played by any skater reaches 15), the requirements are 3 five-on-five games and 30 five-on-five minutes. At least 30 qualified players at the same position group must have data for each included metric.</p>
+<p><strong>Calculation:</strong> Take the same-position, same-season percentile of each available metric, apply the corresponding weights, and average. xGF% and ixG/60 must be available, with at least two other metrics. If one optional metric is missing, rescale the remaining weights rather than treating it as zero. The result is adjusted toward 50 using effective five-on-five games / (effective games + 10); effective games is the lesser of actual five-on-five games and five-on-five minutes / 12.</p>
+<p><strong>Reliability labels:</strong> Small sample: fewer than 20 five-on-five games or 300 five-on-five minutes. Moderate sample: fewer than 45 five-on-five games or 750 minutes. Larger sample: at least 45 games and 750 minutes. Labels describe sample size, not certainty that a player is good or bad.</p>
+<p class="source-note"><strong>Advanced Stats Score</strong> uses MoneyPuck 5v5 data only. <strong>Eye Test</strong> is a separate community opinion. Scores are never combined. A dash means that required evidence is unavailable, not a zero rating.</p>
+</div></section>
 <section id="eyetest" class="section"><div class="heading"><span class="eyebrow">ONE OPINION SCORE · NOT MONEYPUCK DATA</span><h2>Eye Test</h2><p>A score out of 100 calculated solely from six observation grades submitted by signed-in fans who say they watched that player during the selected season. It is not an AI rating or professional scouting assessment.</p></div>
 <div class="panel"><p id="eyeCoverage" class="subtle">Loading Eye Test scores…</p><p id="eyeAvailability" role="status" class="subtle">Scores are shown after at least three different accounts contribute.</p><h3>Contribute your own Eye Test</h3><p id="eyeAccountState">Sign in to rate players from games you watched.</p>
 <form id="eyeSignInForm"><div id="eyeSignedOut"><label class="eye-email-label" for="eyeEmail">Email for a secure sign-in link</label><div class="eye-signin-row"><input type="email" id="eyeEmail" autocomplete="email" placeholder="you@example.com" required><button type="submit" class="button primary">Email me a sign-in link</button></div></div></form>

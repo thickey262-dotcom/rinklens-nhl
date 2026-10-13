@@ -16,11 +16,36 @@ class MoneyPuckTests(unittest.TestCase):
         self.assertEqual(result[0]["cfPct"],52)
         self.assertEqual(result[0]["hdCfPct"],60)
         self.assertAlmostEqual(result[0]["ixG60"],1)
+        self.assertEqual(result[0]["fiveGp"],10)
+        self.assertEqual(result[0]["fiveToiMinutes"],150)
+        self.assertAlmostEqual(result[0]["toi"],20)
+        self.assertNotEqual(result[0]["fiveToiMinutes"],result[0]["toi"] * result[0]["gp"])
     def test_no_invented_missing_metrics(self):
         row={"playerId":"5","name":"Missing","team":"CAR","position":"D","situation":"all","icetime":"1000","games_played":"2","I_F_points":"0"}
         result=mp.normalize([row])
         self.assertIsNone(result[0]["xgfPct"])
         self.assertIsNone(result[0]["a"])
+        self.assertIsNone(result[0]["fiveGp"])
+        self.assertIsNone(result[0]["fiveToiMinutes"])
+    def test_no_fake_five_on_five_time_from_all_situations(self):
+        all_row={"playerId":"1010101","name":"No Five","team":"BUF","position":"C",
+                 "situation":"all","icetime":"7200","games_played":"12","I_F_points":"2"}
+        five_row={"playerId":"1010101","name":"No Five","team":"BUF","position":"C",
+                  "situation":"5on5","icetime":"0","games_played":"0"}
+        result=mp.normalize([all_row,five_row])
+        self.assertEqual(len(result),1)
+        self.assertIsNone(result[0]["fiveToiMinutes"])
+        self.assertIsNone(result[0]["fiveGp"])
+
+    def test_fractional_minutes_derived_from_five_on_five_seconds(self):
+        common={"playerId":"5555555","name":"Time Test","team":"NYR","position":"D",
+                "games_played":"5","I_F_points":"1"}
+        all_row=dict(common,situation="all",icetime="5000")
+        five_row=dict(common,situation="5on5",icetime="2447",I_F_xGoals="0.2")
+        result=mp.normalize([all_row,five_row])
+        self.assertAlmostEqual(result[0]["fiveToiMinutes"],40.783,places=3)
+        self.assertNotAlmostEqual(result[0]["fiveToiMinutes"],5000/60)
+
     def test_goalies_excluded(self):
         r={"playerId":"5","name":"Goalie","team":"CAR","position":"G","situation":"all","icetime":"1000","games_played":"2"}
         self.assertEqual(mp.normalize([r]),[])

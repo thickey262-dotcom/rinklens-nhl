@@ -106,6 +106,8 @@ def normalize(rows):
             "ixG60": round(ixg * 3600 / five_seconds, 3) if ixg is not None and five_seconds else None,
             "hdCfPct": high_danger_share(five),
             "fiveGp": round(nonnegative(five, "games_played")) if nonnegative(five, "games_played") is not None else None,
+            # MoneyPuck reports "icetime" in seconds. Never substitute all-situations TOI.
+            "fiveToiMinutes": round(five_seconds / 60, 3) if five_seconds is not None and five_seconds > 0 else None,
         })
     return sorted(result, key=lambda p: (-(p["p"] if p["p"] is not None else -1), p["name"]))
 
