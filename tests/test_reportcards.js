@@ -10,7 +10,8 @@ for(let i=0;i<20;i++)players.push({id:'D'+i,name:'D '+i,pos:'D',gp:5,p:i+2,toi:2
 const ctx={S:{players,source:'nhl',season:'20262027'},RinkAdvanced:{read:(p,key)=>p.advanced?.[key]??null},
  RinkAuto:{panel:()=>'<div class="auto-scout-panel">Auto Scout Estimate</div>'},
  RinkConsensus:{panel:()=>'<div class="consensus-panel">No verified report</div>'},
- RinkModel:{panel:()=>'<div class="model-panel">Stats only</div>'}, reportFor:()=>null,eye:()=>null,n:Number,traits:[],seasonLabel:()=> '2026–27',esc: x=>String(x).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;')};
+ RinkModel:{panel:()=>'<div class="model-panel">Stats only</div>'},
+ RinkCommunity:{eyeTest:()=>null,panel:()=>'<div class="community-panel">Community votes</div>'}, reportFor:()=>null,eye:()=>null,n:Number,traits:[],seasonLabel:()=> '2026–27',esc: x=>String(x).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;')};
 vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(path.join(ROOT,'reportcards.js'),'utf8')+'\nthis.R = RinkReports;',ctx);
 const R=ctx.R;

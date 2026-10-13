@@ -3,6 +3,16 @@
 An NHL statistics and independent scouting website. This is a deployable static web application with **automatic NHL data loading**, an optional **scheduled NHL data refresh workflow**, and an **optional Supabase database for private, cross-device scouting reports**.
 
 
+## Community Eye Test — opt-in eyewitness voting
+
+RinkLens now accepts **separate, voluntary six-trait community votes** from signed-in users who affirm they have actually watched the player. Voters choose 1–5 for skating, puck skills, hockey IQ, defensive play, compete level and transition. **Private scouting reports are NEVER published as votes automatically.** A vote can be edited or withdrawn, and it is stored in the linked Supabase database rather than browser storage. Voting is one account per player per season (not one person: determined abusers could create more accounts, and no independent expertise check is performed).
+
+The public `community_eye_scores` table contains aggregate scores and trait averages **only after three distinct authenticated accounts** submit ratings. `community_eye_votes` has row-level security, so viewers can read only their own ballots. Individual voters' names, account IDs and raw scores are never in the public aggregate. Server triggers recompute aggregates on inserts, updates and deletions. The data model enforces six numeric scores from 1 to 5, unique account/player/season voting, non-anonymous Supabase accounts, and a short edit cooldown. Moderation, CAPTCHA, and verified-reviewer tiers are future enhancements, not currently claimed as active.
+
+The **Eye Test Score** is 70% attributed professional scouting consensus and 30% community eyewitness scores when both qualify. If only one source qualifies, that source is shown explicitly, not relabeled as a complete consensus. Players with neither have **no eye-test score**. The personal scouting grade takes precedence in the existing 60% stats / 40% observational Combined score; if personal scouting is absent, the qualified Eye Test Score is used. **Statistical model ratings are never substituted for missing eyewitness evaluations.**
+
+The community voter interface is located inside any real player's profile. Signed-in accounts use the existing secure email-link sign-in process. Ratings are season-specific; published prospect reports are only shown as a professional consensus for their relevant supported season. A minimum sample size is a privacy and reliability gate, not proof of rating quality. This is fan-submitted material, not a representation of professional expertise.
+
 ## Complete NHL player model coverage (2024–2027)
 
 Every qualifying skater in the three NHL datasets receives an independently calculated **stats-only model rating**, not an eyewitness grade or professional scouting consensus: 920/920 in 2024–25, 940/940 in 2025–26 and 661/661 in 2026–27, as verified by the GitHub Actions build and coverage tests.
