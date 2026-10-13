@@ -31,6 +31,12 @@ The Eye Test feature uses the previously configured Supabase backend and its exi
 
 Eye Test scores are community opinions and may not reflect professional scouting accuracy. A signed-in account is not proof of reviewer expertise. The frontend never fabricates missing scores or mixes MoneyPuck statistics into the Eye Test.
 
+## Faster Eye Test rating
+
+The player table includes a **Rate** button in each Eye Test cell. Clicking it opens the player's details with Eye Test first; the MoneyPuck statistical breakdown is still available in a collapsed section. After email sign-in, viewers tap large **1–5** radio choices for each of the same six skills. The optional **Quick fill** buttons explicitly assign the selected grade to *all six* skills; the viewer can revise any trait individually before confirming they watched the player and saving. This shortcut does not invent separate scouting evidence or alter the scoring method. Once rated, a player shows an **Edit rating** option, and signed-in viewers may update or withdraw their own vote.
+
+The six-grade database schema, existing per-account/player/season uniqueness, server validation, vote privacy, and minimum three-reviewer threshold all remain unchanged. The Eye Test module is now exposed to the player table so it can show existing public scores and add/edit actions. Advanced Stats Score is not affected.
+
 ## Player table pagination
 
 The player database displays **25 players per page** with Previous/Next navigation, an exact shown-range counter and page total. Results are filtered and sorted across the entire season **before** taking the 25-player slice. Searching, changing team or position, changing sorting, or loading another season resets to page 1. Eye Test updates and comparison selections preserve the current page. Zero-result searches hide pagination without disrupting the underlying statistics or ratings.

@@ -66,7 +66,8 @@ function render(){
  updatePagination(allRows.length);
  $('results').textContent=allRows.length+' matching players · '+PAGE_SIZE+' per page';
  const rows=allRows.slice((state.page-1)*PAGE_SIZE,state.page*PAGE_SIZE);
- $('rows').innerHTML=rows.length?rows.map(p=>'<tr><td><button type="button" class="player-name" data-open="'+safe(p.id)+'">'+safe(p.name)+'</button><small>'+safe(p.team)+' · '+safe(p.pos)+'</small></td>'+[['gp',0],['g',0],['a',0],['p',0],['p60',2],['xgfPct',1],['cfPct',1],['ixG60',2]].map(([k,d])=>'<td>'+show(p[k],d)+'</td>').join('')+'<td class="advanced-score-cell" title="'+safe(RinkStats.label(p)??RinkStats.reason(p)??'Score unavailable')+'">'+(RinkStats.score(p)??'—')+(RinkStats.label(p)?'<small class="sample-label '+(RinkStats.label(p)==='Small sample'?'is-small':'')+'">'+safe(RinkStats.label(p))+'</small>':'')+'</td><td class="eye-table">'+(window.RinkEye?.score(p.id)??'—')+'</td><td><button type="button" class="mini" data-compare="'+safe(p.id)+'" aria-label="Compare '+safe(p.name)+'">'+(state.selected.includes(p.id)?'✓ Added':'+ Add')+'</button></td></tr>').join(''):'<tr><td colspan="12">No matching players found.</td></tr>';
+ $('rows').innerHTML=rows.length?rows.map(p=>'<tr><td><button type="button" class="player-name" data-open="'+safe(p.id)+'">'+safe(p.name)+'</button><small>'+safe(p.team)+' · '+safe(p.pos)+'</small></td>'+[['gp',0],['g',0],['a',0],['p',0],['p60',2],['xgfPct',1],['cfPct',1],['ixG60',2]].map(([k,d])=>'<td>'+show(p[k],d)+'</td>').join('')+'<td class="advanced-score-cell" title="'+safe(RinkStats.label(p)??RinkStats.reason(p)??'Score unavailable')+'">'+(RinkStats.score(p)??'—')+(RinkStats.label(p)?'<small class="sample-label '+(RinkStats.label(p)==='Small sample'?'is-small':'')+'">'+safe(RinkStats.label(p))+'</small>':'')+'</td><td class="eye-table">'+(window.RinkEye?.score(p.id)??'—')
+  +'<button type="button" class="mini eye-rate-link" data-eye-rate="'+safe(p.id)+'" aria-label="'+(window.RinkEye?.hasOwn(p.id)?'Update':'Rate')+' Eye Test for '+safe(p.name)+'">'+(window.RinkEye?.hasOwn(p.id)?'Edit rating':'Rate')+'</button></td><td><button type="button" class="mini" data-compare="'+safe(p.id)+'" aria-label="Compare '+safe(p.name)+'">'+(state.selected.includes(p.id)?'✓ Added':'+ Add')+'</button></td></tr>').join(''):'<tr><td colspan="12">No matching players found.</td></tr>';
 }
 function renderCompare(){
  if(!state.selected.length){$('comparison').textContent='Select up to two players from the table above.';return}
@@ -75,13 +76,24 @@ function renderCompare(){
 }
 function detail(id){
  const p=get(id);if(!p)return;
- $('detail').innerHTML='<div class="eyebrow">MONEYPUCK PLAYER STATISTICS</div><h2 id="dialogTitle">'+safe(p.name)+'</h2><p>'+safe(p.team)+' · '+safe(p.pos)+' · '+state.season.slice(0,4)+'–'+state.season.slice(6)+'</p><div class="detail-grid">'+fields.map(([k,name,d])=>'<div><span>'+name+'</span><strong>'+show(p[k],d)+'</strong></div>').join('')+'</div>'+RinkStats.panel(p)+'<p class="source-note">MoneyPuck regular-season skater data. Counting totals are all situations; xGF%, CF%, FF%, ixG/60 and HDCF% are 5-on-5. These statistics are not scouting opinions.</p><a href="https://moneypuck.com/data.htm" target="_blank" rel="noopener noreferrer">View MoneyPuck source ↗</a>'+(window.RinkEye?RinkEye.panel(p):'');
- $('modal').hidden=false;$('close').focus();
+ const eye=window.RinkEye?RinkEye.panel(p):'';
+ // Put the rating controls first instead of hiding them beneath the long stat breakdown.
+ $('detail').innerHTML='<div class="eyebrow">PLAYER PROFILE · '+safe(p.team)+'</div><h2 id="dialogTitle">'+safe(p.name)+'</h2>'
+  +'<p>'+safe(p.team)+' · '+safe(p.pos)+' · '+state.season.slice(0,4)+'–'+state.season.slice(6)+'</p>'
+  +eye
+  +'<details class="player-stat-details"><summary>See MoneyPuck statistics and Advanced Stats Score</summary>'
+  +'<div class="detail-grid">'+fields.map(([k,name,d])=>'<div><span>'+name+'</span><strong>'+show(p[k],d)+'</strong></div>').join('')+'</div>'
+  +RinkStats.panel(p)
+  +'<p class="source-note">MoneyPuck regular-season skater data. Counting totals are all situations; xGF%, CF%, FF%, ixG/60 and HDCF% are 5-on-5. Statistics are not scouting opinions.</p>'
+  +'<a href="https://moneypuck.com/data.htm" target="_blank" rel="noopener noreferrer">View MoneyPuck source ↗</a></details>';
+ $('modal').hidden=false;
+ $('close').focus();
 }
 function close(){$('modal').hidden=true;}
 document.addEventListener('click',event=>{
- const open=event.target.closest('[data-open]'),comp=event.target.closest('[data-compare]'),remove=event.target.closest('[data-remove]');
+ const open=event.target.closest('[data-open]'),rate=event.target.closest('[data-eye-rate]'),comp=event.target.closest('[data-compare]'),remove=event.target.closest('[data-remove]');
  if(open)detail(open.dataset.open);
+ if(rate)detail(rate.dataset.eyeRate);
  if(comp){const id=comp.dataset.compare;state.selected=state.selected.includes(id)?state.selected.filter(x=>x!==id):[...state.selected.slice(-1),id];render();renderCompare();}
  if(remove){state.selected=state.selected.filter(x=>x!==remove.dataset.remove);render();renderCompare();}
  if(event.target===$('modal'))close();

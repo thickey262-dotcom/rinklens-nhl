@@ -35,6 +35,7 @@ jobs:
           node --check cloud.js
           node tests_moneypuck/test_stats_score.js
           node tests_moneypuck/test_pagination.js
+          node tests_moneypuck/test_eye_quick_rate.js
       - name: Update MoneyPuck player statistics
         run: python scripts/fetch_moneypuck.py --seasons 20262027 20252026 20242025
       - name: Validate refreshed MoneyPuck 5v5 ice time and score coverage

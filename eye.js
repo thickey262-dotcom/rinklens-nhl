@@ -12,6 +12,7 @@ const RinkEye = (() => {
     return published.get(String(id))?.score ?? null;
   }
   function count(id) { return published.get(String(id))?.reviewer_count ?? 0; }
+  function hasOwn(id) { return !!RinkCloud.user && activeSeason===state.season && own.has(String(id)); }
   function publishUpdates() {
     if (typeof render === 'function') render();
     if (typeof renderCompare === 'function') renderCompare();
@@ -80,17 +81,33 @@ const RinkEye = (() => {
     const traitDetails = r
       ? '<details><summary>See the six viewer averages</summary><div class="eye-traits">'+TRAITS.map(([key,name]) => '<div><span>'+name+'</span><b>'+Number(r[key]).toFixed(1)+'/5</b></div>').join('')+'</div></details>'
       : '';
-    let participation = '<p class="source-note">Eye Test is an opinion from people who confirm they watched the player, not a calculation from hockey statistics. Voters are not independently verified as scouts.</p>';
+    let participation = '<p class="source-note">Eye Test is an opinion from viewers who say they watched this player. It is separate from MoneyPuck data, and contributors are not verified professional scouts.</p>';
     if (!RinkCloud.client || !RinkCloud.user) {
-      participation += '<button type="button" class="mini" data-eye-signin>Sign in to rate this player</button>';
+      participation += '<p>Rating takes about a minute after signing in.</p><button type="button" class="button primary eye-signin-action" data-eye-signin>Sign in to rate this player</button>';
     } else {
-      participation += '<form id="eyeVoteForm" data-eye-player="'+safe(id)+'"><h4>'+(mine?'Update your Eye Test vote':'Give your Eye Test rating')+'</h4><p>Rate what you observed while watching this player in the selected season.</p><div class="vote-grid">'
-        + TRAITS.map(([key,name]) => '<label>'+name+'<select name="'+key+'" required><option value="">Choose a grade</option>'
-          + [1,2,3,4,5].map(v=>'<option value="'+v+'"'+(Number(mine?.[key])===v?' selected':'')+'>'+v+' — '+['','Needs work','Developing','Average','Strong','Excellent'][v]+'</option>').join('')+'</select></label>').join('')
-        + '</div><label class="watch-consent"><input type="checkbox" name="watched" required> I watched this player this season and agree to contribute my grades to anonymous public averages.</label>'
-        + '<div class="vote-buttons"><button type="submit" class="button primary">'+(mine?'Update my vote':'Submit my vote')+'</button>'
-        + (mine?'<button type="button" class="mini" data-eye-withdraw="'+safe(id)+'">Withdraw my vote</button>':'')
-        + '</div><p class="source-note">One vote per account, player and season. Votes can be updated or withdrawn, subject to the server’s anti-spam limits.</p></form>';
+      // Quick-fill deliberately sets all six grades to the same value; it never
+      // manufactures skill-by-skill distinctions that a viewer did not select.
+      const quickChoices=[1,2,3,4,5].map(v=>
+        '<button type="button" class="eye-quick-btn" data-eye-fill="'+v+'" aria-label="Apply '+v+' out of 5 to each skill">'
+        +v+'</button>').join('');
+      const traitChoices=TRAITS.map(([key,name])=>
+        '<fieldset class="eye-trait"><legend>'+name+'</legend><div class="eye-grade-options">'
+        +[1,2,3,4,5].map(v=>'<label class="eye-grade">'
+          +'<input type="radio" name="'+key+'" value="'+v+'" required'+(Number(mine?.[key])===v?' checked':'')+'>'
+          +'<span>'+v+'</span></label>').join('')
+        +'</div></fieldset>').join('');
+      participation += '<form id="eyeVoteForm" data-eye-player="'+safe(id)+'"><h4>'+(mine?'Update your Eye Test rating':'Give your Eye Test rating')+'</h4>'
+        +(mine?'<p class="eye-saved"><strong>You rated this player.</strong> Change any grade below and save again.</p>':'<p>Choose 1–5 for each skill, based on games you actually watched.</p>')
+        +'<fieldset class="eye-quick"><legend>Quick fill (optional)</legend>'
+        +'<p>Want the same grade for every skill? Tap a number, then adjust any individual skills below. This applies <strong>that exact grade to all six traits</strong>.</p>'
+        +'<div class="eye-quick-options">'+quickChoices+'</div>'
+        +'<p id="eyeQuickStatus" class="source-note" aria-live="polite"></p></fieldset>'
+        +'<p class="eye-scale">1 = Needs work · 2 = Developing · 3 = Average · 4 = Strong · 5 = Excellent</p>'
+        +'<div class="vote-grid">'+traitChoices+'</div>'
+        +'<label class="watch-consent"><input type="checkbox" name="watched" required> I watched this player this season and agree to include my ratings in anonymous public averages.</label>'
+        +'<div class="vote-buttons"><button type="submit" class="button primary">'+(mine?'Save updated rating':'Save Eye Test rating')+'</button>'
+        +(mine?'<button type="button" class="mini" data-eye-withdraw="'+safe(id)+'">Withdraw my vote</button>':'')
+        +'</div><p class="source-note">One vote per signed-in account, player and season. You can update or withdraw your vote. Individual ratings stay private; only averages with three or more accounts become public.</p></form>';
     }
     return '<section id="eyePanel" class="eye-panel" data-eye-player="'+safe(id)+'">'+heading+result+traitDetails+participation+'</section>';
   }
@@ -165,6 +182,20 @@ const RinkEye = (() => {
     catch(error) {message('Could not save: '+String(error.message || error).slice(0,180));button.disabled=false;}
   });
   document.addEventListener('click',async event=>{
+    const fillButton=event.target.closest('[data-eye-fill]');
+    if(fillButton) {
+      const form=fillButton.closest('#eyeVoteForm');
+      const grade=Number(fillButton.dataset.eyeFill);
+      if(form && Number.isInteger(grade) && grade>=1 && grade<=5) {
+        for(const [trait] of TRAITS) {
+          const radio=form.querySelector('input[name="'+trait+'"][value="'+grade+'"]');
+          if(radio)radio.checked=true;
+        }
+        const status=form.querySelector('#eyeQuickStatus');
+        if(status)status.textContent='All six skills set to '+grade+'/5. Review them individually, confirm you watched, then save.';
+      }
+      return;
+    }
     if(event.target.closest('[data-eye-signin]')) {
       close();
       document.getElementById('eyetest')?.scrollIntoView({behavior:'smooth',block:'start'});
@@ -191,6 +222,8 @@ const RinkEye = (() => {
     try {await RinkCloud.signOut();}
     catch(error){document.getElementById('eyeSignInStatus').textContent='Could not sign out: '+error.message;}
   });
-  return {initialize,reload,score,count,panel};
+  return {initialize,reload,score,count,hasOwn,panel};
 })();
+// The player table uses window.RinkEye to display scores and open direct rating.
+window.RinkEye = RinkEye;
 RinkEye.initialize();

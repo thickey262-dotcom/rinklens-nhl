@@ -21,3 +21,34 @@
 .vote-buttons{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 #eyeMessage{font-weight:650;color:#a8e6d6}
 @media(max-width:560px){.vote-grid,.eye-traits{grid-template-columns:1fr}}
+
+/* Faster Eye Test entry: one-tap ratings, optional honest quick-fill, large targets. */
+.eye-rate-link{display:block;margin-top:7px;min-width:68px;min-height:36px;border-color:#70949e}
+.eye-quick{margin:18px 0 15px;padding:14px;border:1px solid #48748a;border-radius:12px;background:#122736}
+.eye-quick legend{font-weight:800;padding:0 7px}
+.eye-quick p{margin:3px 0 10px;font-size:.93rem}
+.eye-quick-options{display:flex;gap:8px;flex-wrap:wrap}
+.eye-quick-btn{width:48px;height:48px;border-radius:10px;border:2px solid #7da4b1;background:#1d3c50;color:#f5fafd;font-weight:800;font-size:1.2rem}
+.eye-quick-btn:hover{background:#306075}
+.eye-quick-btn:focus-visible{outline:3px solid #ffd7a1}
+.eye-trait{margin:0;padding:11px 12px 12px;min-width:0;border:1px solid #4a6776;border-radius:11px}
+.eye-trait legend{font-weight:750;padding:0 5px}
+.eye-grade-options{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.eye-grade{display:block!important;position:relative;cursor:pointer;min-width:0}
+.eye-grade input{position:absolute;opacity:0;width:100%;height:100%;inset:0;cursor:pointer}
+.eye-grade span{display:grid;place-items:center;min-height:44px;border:2px solid #4a7481;border-radius:9px;background:#1b3446;color:#eff9fc;font-weight:750;transition:background .12s,border-color .12s}
+.eye-grade input:checked+span{background:#a7ebe3;color:#0a2432;border-color:#a7ebe3}
+.eye-grade input:focus-visible+span{outline:3px solid #ffd7a1;outline-offset:3px}
+.eye-scale{color:#c8dce2;font-size:.88rem;margin:7px 0 16px}
+.eye-saved{padding:11px;background:#244a47;border-radius:8px;color:#d9ffea}
+.eye-signin-action{border:0}
+.eye-panel{margin-top:16px}
+.player-stat-details{margin:25px 0}
+.player-stat-details>summary{font-weight:750;cursor:pointer;min-height:44px;display:list-item;padding:12px;border:1px solid #456173;border-radius:9px;color:#aae9df}
+.player-dialog{scroll-padding-top:16px}
+@media(max-width:560px){
+ .eye-panel{padding:14px}
+ .eye-quick-btn{flex:1 0 17%}
+ .vote-grid{grid-template-columns:1fr}
+ .eye-trait{padding:10px}
+}
