@@ -1,0 +1,19 @@
+/* Accessible source-labeled full-league statistical evaluation; not an eye-test grade. */
+.model-panel{margin:16px 0;padding:19px;border:1px solid #34618a;background:#12283e;border-radius:10px}
+.model-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.model-heading h4{font-size:27px;margin:5px 0}
+.model-label{font-size:12px;font-weight:800;color:#a9d8f5;letter-spacing:.3px}
+.model-number{font:800 38px var(--display);white-space:nowrap;color:#b5deff}
+.model-number small{font-size:15px;color:#a4c3d3}
+.model-panel p,.model-panel li{font-size:14px;line-height:1.65;color:#cee0e9;margin:9px 0}
+.model-panel strong{color:#f3f9ff}
+.model-confidence{font-weight:800;color:#bddeea!important}
+.model-panel details{border-top:1px solid #385a72;padding:10px 0}
+.model-panel summary{font-size:15px;cursor:pointer;color:#a9d8f5;font-weight:800}
+.model-panel ul{padding-left:20px}
+.model-panel a{color:#b7eaff;text-decoration:underline}
+.model-pill{background:#183b53;color:#cfedff;border:1px solid #397190;padding:7px 10px;border-radius:5px;font-weight:800;display:inline-block;min-width:43px;text-align:center}
+.model-pill small{display:block;font-size:10px;color:#a4d6f0;font-weight:700}
+.model-pill.missing{color:#9cb3bc;background:#1c2838}
+#modelCoverage{font-size:13px;color:#bad4e5}
+@media(max-width:600px){.model-panel{padding:15px}.model-heading h4{font-size:23px}}
