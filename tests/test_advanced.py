@@ -29,10 +29,11 @@ class AdvancedStatsTests(unittest.TestCase):
         html=(ROOT/'index.html').read_text()
         app=(ROOT/'app.js').read_text()
         flow=(ROOT/'.github/workflows/rinklens.yml').read_text()
-        self.assertIn('<script src="advanced.js"></script>\n  <script src="reportcards.js"></script>\n  <script src="autoscout.js"></script>\n  <script src="app.js"></script>',html)
+        self.assertIn('src="scouting-consensus.js"',html)
+        self.assertLess(html.index('src="scouting-consensus.js"'),html.index('src="app.js"'))
         self.assertIn('RinkReports.profile(p)',app)
         self.assertIn('RinkAdvanced.load(season)',app)
         self.assertIn('fetch_advanced.py',flow)
-        self.assertIn('advanced.css reportcards.css autoscout.css easy-read.css app.js',flow)
+        self.assertIn('advanced.css reportcards.css autoscout.css scouting-consensus.css easy-read.css app.js',flow)
 
 if __name__=='__main__':unittest.main()
