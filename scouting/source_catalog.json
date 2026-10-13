@@ -927,6 +927,390 @@
           ]
         }
       ]
+    },
+    {
+      "id": "8484166",
+      "name": "Adam Fantilli",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Mike G. Morreale (NHL.com)",
+          "date": "2023-04-04",
+          "url": "https://www.nhl.com/news/connor-bedard-adam-fantilli-top-2023-draft-prospects-compared-to-curre-343080920",
+          "notes": [
+            {
+              "trait": "compete",
+              "level": "elite",
+              "evidence": "Central Scouting highlights his competitiveness and drive against older opponents."
+            },
+            {
+              "trait": "transition",
+              "level": "strong",
+              "evidence": "The scouting report credits the speed at which he dictates a game and carries play forward."
+            }
+          ]
+        },
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Adam Kimelman (NHL.com)",
+          "date": "2023-06-29",
+          "url": "https://www.nhl.com/news/2023-nhl-draft-complete-first-round-results-345072810",
+          "notes": [
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "The first-round analysis praises vision and identifying attacking opportunities."
+            },
+            {
+              "trait": "puck",
+              "level": "elite",
+              "evidence": "NHL draft analysis calls his offensive skills elite and credits creative execution."
+            },
+            {
+              "trait": "compete",
+              "level": "strong",
+              "evidence": "The NHL write-up identifies a physical edge and willingness to play through contact."
+            }
+          ]
+        },
+        {
+          "publisher": "The Hockey Writers",
+          "author": "Matthew Zator",
+          "date": "2023-03-08",
+          "url": "https://thehockeywriters.com/adam-fantilli-2023-nhl-draft-prospect-profile/",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "elite",
+              "evidence": "The profile identifies his exceptional acceleration, edgework and powerful skating."
+            },
+            {
+              "trait": "puck",
+              "level": "elite",
+              "evidence": "The author's scouting analysis highlights high-end handling, accurate shooting and playmaking."
+            },
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "The writer emphasizes creativity and understanding when choosing attacking routes."
+            },
+            {
+              "trait": "compete",
+              "level": "elite",
+              "evidence": "The report describes a powerful motor, work ethic and physical intensity."
+            },
+            {
+              "trait": "transition",
+              "level": "strong",
+              "evidence": "The profile emphasizes long end-to-end rushes and attacking with speed."
+            },
+            {
+              "trait": "defense",
+              "level": "limited",
+              "evidence": "The analyst explicitly identifies defensive play as a part of his game still developing."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8484153",
+      "name": "Leo Carlsson",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Mike G. Morreale (NHL.com)",
+          "date": "2023-04-04",
+          "url": "https://www.nhl.com/news/connor-bedard-adam-fantilli-top-2023-draft-prospects-compared-to-curre-343080920",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "Central Scouting highlights mobility, skating speed and strength."
+            },
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "The evaluation credits passing range, shot execution and puck skills."
+            },
+            {
+              "trait": "iq",
+              "level": "elite",
+              "evidence": "Scouts particularly praise his understanding, anticipation and reading options."
+            },
+            {
+              "trait": "defense",
+              "level": "strong",
+              "evidence": "Central Scouting describes an effective two-way approach and responsible use of size."
+            },
+            {
+              "trait": "compete",
+              "level": "elite",
+              "evidence": "The scouting analysis highlights hard work and willingness to compete across the ice."
+            }
+          ]
+        },
+        {
+          "publisher": "The Hockey Writers",
+          "author": "Peter Baracchini",
+          "date": "2023-03-05",
+          "url": "https://thehockeywriters.com/leo-carlsson-2023-nhl-draft-prospect-profile/",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "The profile values his mobility and effective skating pace."
+            },
+            {
+              "trait": "puck",
+              "level": "elite",
+              "evidence": "The report credits creative handling and control even against experienced opponents."
+            },
+            {
+              "trait": "iq",
+              "level": "elite",
+              "evidence": "The author highlights his anticipation and quick interpretation of plays."
+            },
+            {
+              "trait": "defense",
+              "level": "strong",
+              "evidence": "The report emphasizes his two-way value and defensive attention."
+            },
+            {
+              "trait": "compete",
+              "level": "strong",
+              "evidence": "The analyst notes he remains engaged even against older professional opposition."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8484227",
+      "name": "Will Smith",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Mike G. Morreale (NHL.com)",
+          "date": "2023-04-04",
+          "url": "https://www.nhl.com/news/connor-bedard-adam-fantilli-top-2023-draft-prospects-compared-to-curre-343080920",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "Central Scouting credits skating speed that helps him play at a high pace."
+            },
+            {
+              "trait": "puck",
+              "level": "elite",
+              "evidence": "Scouts identify his shooting and passing skills as leading assets."
+            },
+            {
+              "trait": "transition",
+              "level": "strong",
+              "evidence": "The report describes consistently driving the pace of play in attacking sequences."
+            }
+          ]
+        },
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Adam Kimelman (NHL.com)",
+          "date": "2023-06-29",
+          "url": "https://www.nhl.com/news/2023-nhl-draft-complete-first-round-results-345072810",
+          "notes": [
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "The draft analysis describes versatile attacking decisions beyond raw scoring totals."
+            }
+          ]
+        },
+        {
+          "publisher": "The Hockey Writers",
+          "author": "Logan Horn",
+          "date": "2023-03-04",
+          "url": "https://thehockeywriters.com/will-smith-2023-nhl-draft-prospect-profile/",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "The author credits agility and maneuvering though notes top-end skating is not elite."
+            },
+            {
+              "trait": "puck",
+              "level": "elite",
+              "evidence": "The profile highlights deceptive handling, passing out of pressure and inventive attacks."
+            },
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "The scouting analysis describes attacking creativity and anticipatory reads."
+            },
+            {
+              "trait": "transition",
+              "level": "strong",
+              "evidence": "The report highlights skilled offensive execution at speed and attacks off the rush."
+            },
+            {
+              "trait": "defense",
+              "level": "strong",
+              "evidence": "The author calls his junior defensive game dependable despite offensive emphasis."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8484186",
+      "name": "Ryan Leonard",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Mike G. Morreale (NHL.com)",
+          "date": "2023-04-04",
+          "url": "https://www.nhl.com/news/connor-bedard-adam-fantilli-top-2023-draft-prospects-compared-to-curre-343080920",
+          "notes": [
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "Central Scouting credits advanced scoring instincts and handling talent."
+            },
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "The report highlights reading plays and adapting to the situation."
+            },
+            {
+              "trait": "defense",
+              "level": "strong",
+              "evidence": "Scouts describe growing dedication to the full two-hundred-foot game."
+            },
+            {
+              "trait": "compete",
+              "level": "elite",
+              "evidence": "The evaluation praises physical intensity, leadership and constant engagement."
+            }
+          ]
+        },
+        {
+          "publisher": "The Hockey Writers",
+          "author": "Eugene Helfrick",
+          "date": "2023-03-21",
+          "url": "https://thehockeywriters.com/ryan-leonard-2023-nhl-draft-prospect-profile/",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "The profile praises sturdy, quick skating and maintaining pace under pressure."
+            },
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "The report recognizes useful scoring touch and puck protection through contact."
+            },
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "The author highlights smart positioning and finding chances after recovering the puck."
+            },
+            {
+              "trait": "defense",
+              "level": "strong",
+              "evidence": "The assessment praises responsible defensive decisions and helping at both ends."
+            },
+            {
+              "trait": "compete",
+              "level": "elite",
+              "evidence": "The analyst stresses willingness to battle and work along the boards."
+            },
+            {
+              "trait": "transition",
+              "level": "strong",
+              "evidence": "The article describes turning defensive puck wins into up-ice rush opportunities."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8484164",
+      "name": "Dalibor Dvorsky",
+      "reports": [
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Mike G. Morreale (NHL.com)",
+          "date": "2023-06-27",
+          "url": "https://www.nhl.com/news/2023-mock-nhl-draft-first-round-344260368",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "strong",
+              "evidence": "NHL draft analysis calls him a capable skater when creating offense."
+            },
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "The profile praises possession, vision and tight-space handling."
+            },
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "The writer emphasizes finding passing options and making plays under pressure."
+            },
+            {
+              "trait": "compete",
+              "level": "strong",
+              "evidence": "The assessment notes an ability to win puck battles in corners."
+            }
+          ]
+        },
+        {
+          "publisher": "NHL.com / Central Scouting",
+          "author": "Adam Kimelman (NHL.com)",
+          "date": "2023-06-29",
+          "url": "https://www.nhl.com/news/2023-nhl-draft-complete-first-round-results-345072810",
+          "notes": [
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "The NHL analysis highlights his handling and protection skills in traffic."
+            }
+          ]
+        },
+        {
+          "publisher": "The Hockey Writers",
+          "author": "Logan Horn",
+          "date": "2023-03-05",
+          "url": "https://thehockeywriters.com/dalibor-dvorsky-2023-nhl-draft-prospect-profile/",
+          "notes": [
+            {
+              "trait": "skating",
+              "level": "limited",
+              "evidence": "The scouting profile identifies speed and first-step pace as development needs."
+            },
+            {
+              "trait": "puck",
+              "level": "strong",
+              "evidence": "The analyst credits dangerous release, creative handling and challenging passes."
+            },
+            {
+              "trait": "iq",
+              "level": "strong",
+              "evidence": "The report recognizes sound anticipation and defensive instincts."
+            },
+            {
+              "trait": "defense",
+              "level": "strong",
+              "evidence": "The writer considers his positional defending an important strength."
+            },
+            {
+              "trait": "compete",
+              "level": "strong",
+              "evidence": "His scouting strengths include willingness to compete and persist in puck battles."
+            }
+          ]
+        }
+      ]
     }
   ]
 }
