@@ -1,11 +1,12 @@
-# RinkLens — MoneyPuck statistics + one Eye Test score
+# RinkLens — MoneyPuck statistics + Advanced Stats Score + Eye Test
 
-The site displays exactly two kinds of player information:
+The site displays MoneyPuck player statistics alongside two **distinct** 0–100 scores:
 
 1. **MoneyPuck statistics**: regular-season all-situations counting totals and 5-on-5 chance/shot metrics. `scripts/fetch_moneypuck.py` refreshes the public dataset daily using MoneyPuck's published season-summary CSV.
-2. **Eye Test**: one separate community eyewitness opinion score (20–100) from people who affirm they watched that player in the chosen season. Signed-in viewers rate six traits 1–5. The protected Supabase database computes the single public score. An Eye Test appears only after three distinct signed-in accounts contribute, to reduce identifiability. Otherwise the UI shows **—**. There is no model-estimated substitute.
+2. **Advanced Stats Score**: one custom RinkLens index derived exclusively from five MoneyPuck 5-on-5 statistics. Each input is ranked by its percentile among qualified same-season forwards (F) or defensemen (D). Weights: xGF% 35%, ixG/60 25%, CF% 15%, HDCF% 15%, FF% 10%. Missing single non-required input has its remaining available weights normalized. xGF%, ixG/60 and at least two other metrics are required. The peer group must contain at least 30 qualified players per metric. Minimum player and peer eligibility is 10 GP, or 3 GP if the highest GP in that season is under 15. The weighted percentile average is adjusted toward a neutral 50: final score = round(50 + (weighted percentile average − 50) × GP/(GP+10)). This descriptive composite is not an official MoneyPuck score, not scouting, and not predictive. Players missing essential inputs or qualifying games show a dash.
+3. **Eye Test**: one separate community eyewitness opinion score (20–100) from people who affirm they watched that player in the chosen season. Signed-in viewers rate six traits 1–5. The protected Supabase database computes the single public score. An Eye Test appears only after three distinct signed-in accounts contribute, to reduce identifiability. Otherwise the UI shows **—**. There is no model-estimated substitute.
 
-No auto-scout ratings, official game ratings, "combined score", published-professional consensus column, statistical rating index, or speculative eye-test scores appear.
+No auto-scout ratings, official game ratings, "combined score", published-professional consensus column, additional statistical models, or speculative eye-test scores appear. The two available scores are never blended.
 
 ## Eye Test participation
 
@@ -15,8 +16,8 @@ Scores are a community opinion and may not reflect professional scouting accurac
 
 ## Hosting and tests
 
-GitHub Pages publishes only `index.html`, `money.css`, `money.js`, `eye.css`, `eye.js`, the existing `cloud.js` and public `config.js` plus `data/moneypuck-*.json`. No private API keys should ever be committed; the publishable key is client-safe and backed by RLS. Tests run in GitHub Actions on each push. Stored MoneyPuck snapshots are reused when a refresh fails.
+GitHub Pages publishes only `index.html`, `money.css`, `money.js`, `stats-score.js`, `eye.css`, `eye.js`, the existing `cloud.js` and public `config.js` plus `data/moneypuck-*.json`. No private API keys should ever be committed; the publishable key is client-safe and backed by RLS. Tests run in GitHub Actions on each push. Stored MoneyPuck snapshots are reused when a refresh fails.
 
 MoneyPuck data is credited with source links for non-commercial, attributed use. Commercial use requires permission: https://moneypuck.com/data.htm
 
-To verify locally: `node --check money.js && node --check eye.js && python -m unittest discover -s tests_moneypuck -v`.
+To verify locally: `node --check stats-score.js && node --check money.js && node --check eye.js && python -m unittest discover -s tests_moneypuck -v`.

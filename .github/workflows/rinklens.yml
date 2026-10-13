@@ -29,9 +29,11 @@ jobs:
         run: python -m unittest discover -s tests_moneypuck -v
       - name: Validate public website JavaScript
         run: |
+          node --check stats-score.js
           node --check money.js
           node --check eye.js
           node --check cloud.js
+          node tests_moneypuck/test_stats_score.js
       - name: Update MoneyPuck player statistics
         run: python scripts/fetch_moneypuck.py --seasons 20262027 20252026 20242025
       - name: Save refreshed public MoneyPuck snapshots
@@ -43,10 +45,10 @@ jobs:
             git commit -m 'chore(data): refresh MoneyPuck-only snapshots'
             git push origin HEAD:main
           fi
-      - name: Assemble MoneyPuck + Eye Test website
+      - name: Assemble MoneyPuck stats, composite, and Eye Test website
         run: |
           mkdir -p _site/data
-          cp index.html money.css money.js eye.css eye.js cloud.js config.js _site/
+          cp index.html money.css money.js stats-score.js eye.css eye.js cloud.js config.js _site/
           cp data/moneypuck-*.json _site/data/
           touch _site/.nojekyll
           if grep -Ei 'autoscout|community-eye\\.js|scouting-consensus|model-ratings|film-lab|nhl-[0-9]|advanced-[0-9]' _site/index.html; then
