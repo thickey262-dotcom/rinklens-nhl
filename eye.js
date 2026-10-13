@@ -29,32 +29,53 @@ const RinkEye = (() => {
   const ratingGroup = player => player?.pos === 'D' ? 'D' : ['C','L','R','LW','RW'].includes(player?.pos) ? 'F' : null;
   const ratingTraits = player => TRAITS[ratingGroup(player)] || [];
   const scale = Array.from({length:10},(_,i)=>i+1);
-  let published = new Map(), own = new Map(), activeSeason = '', requestId = 0, saving = false, loadError = '';
+  let published = new Map(), own = new Map(), ownAccount = null, activeSeason = '', requestId = 0, saving = false, loadError = '';
   const validId = id => /^\d{6,10}$/.test(String(id));
   function score(id) {
     if (activeSeason !== state.season || !validId(id)) return null;
     return published.get(String(id))?.score ?? null;
   }
   function count(id) { return published.get(String(id))?.reviewer_count ?? 0; }
+  // Private preview is based only on this signed-in user's eight saved ballot fields.
+  // It is never written into community_eye_scores or visible to another account.
+  function personalScore(id) {
+    if (activeSeason !== state.season || !validId(id) || !RinkCloud.user ||
+        RinkCloud.user.id !== ownAccount) return null;
+    const ballot = own.get(String(id));
+    if (!ballot || !KEYS.every(key => Number.isInteger(Number(ballot[key]))
+      && Number(ballot[key]) >= 1 && Number(ballot[key]) <= 10)) return null;
+    return Math.round(KEYS.reduce((sum,key)=>sum+Number(ballot[key]),0) / KEYS.length * 10);
+  }
+  function display(id) {
+    const community = score(id), personal = personalScore(id);
+    const value = community ?? personal;
+    return {value,community,personal,
+      label:community !== null ? 'Community Eye Test' : personal !== null ? 'Your Rating (Private)' : ''};
+  }
   function hasOwn(id) { return !!RinkCloud.user && activeSeason===state.season && own.has(String(id)); }
   function publishUpdates() {
     if (typeof render === 'function') render();
     if (typeof renderCompare === 'function') renderCompare();
     const slot = document.getElementById('eyePanel');
-    if (slot && slot.dataset.eyePlayer) {
+    if (slot?.dataset?.eyePlayer) {
       const player = get(slot.dataset.eyePlayer);
       if (player) slot.outerHTML = panel(player);
     }
     const countEl = document.getElementById('eyeCoverage');
     if (countEl) countEl.textContent = published.size + ' players with community Eye Test scores this season';
     const note = document.getElementById('eyeAvailability');
-    if (note) note.textContent = loadError || (published.size ? 'Qualified viewer averages are shown in the player table.' : 'No qualified Eye Test scores yet. Three different signed-in viewers are needed before a score appears.');
+    if (note) note.textContent = loadError || (published.size ? 'Public averages are shown when three reviewers qualify. Your own saved ratings are visible privately while signed in.' : 'Your saved Eye Test ratings are visible privately when you sign in. A public community average requires three different signed-in reviewers.');
   }
   async function reload(season = state.season) {
     const req = ++requestId;
+    const requestedAccount = RinkCloud.user?.id ?? null;
+    // Never show a previous user's private ballots or ballots for another season.
+    if (season !== activeSeason || requestedAccount !== ownAccount) {
+      published = new Map();
+      own = new Map();
+    }
     activeSeason = season;
-    published = new Map();
-    own = new Map();
+    ownAccount = requestedAccount;
     loadError = '';
     publishUpdates();
     if (!RinkCloud.client) {
@@ -74,19 +95,26 @@ const RinkEye = (() => {
               .eq('season_id',season)
           : Promise.resolve({data:[],error:null})
       ]);
-      if (req !== requestId || season !== state.season) return;
+      if (req !== requestId || season !== state.season || requestedAccount !== (RinkCloud.user?.id ?? null)) return;
       if (publicResult.error) throw publicResult.error;
       if (ownResult.error) throw ownResult.error;
+      const publicNext = new Map();
+      const ownNext = new Map();
       for (const row of publicResult.data || []) {
         if (row.season_id !== season || !validId(row.player_id)
             || Number(row.reviewer_count) < 3 || !Number.isInteger(row.score)
             || row.score < 10 || row.score > 100
             || !KEYS.every(key => Number(row[key]) >= 1 && Number(row[key]) <= 10)) continue;
-        published.set(String(row.player_id),row);
+        publicNext.set(String(row.player_id),row);
       }
       for (const row of ownResult.data || []) {
-        if (validId(row.player_id)) own.set(String(row.player_id),row);
+        if (requestedAccount && validId(row.player_id) &&
+            KEYS.every(key => Number.isInteger(Number(row[key])) &&
+            Number(row[key]) >= 1 && Number(row[key]) <= 10)) ownNext.set(String(row.player_id),row);
       }
+      published = publicNext;
+      own = ownNext;
+      ownAccount = requestedAccount;
       loadError = '';
     } catch (error) {
       if (req !== requestId) return;
@@ -98,11 +126,14 @@ const RinkEye = (() => {
   function panel(player) {
     const id = String(player.id), r = published.get(id), mine = own.get(id);
     const group = ratingGroup(player), traits = ratingTraits(player);
-    const s = score(id);
+    const s = score(id), personal = personalScore(id);
     const heading = '<div class="eyebrow">VIEWER OPINION · SEPARATE FROM MONEYPUCK</div><h3>Eye Test: '+(group==='D'?'Defenseman':'Forward')+'</h3>';
-    const result = s === null
-      ? '<p><strong>Not yet rated.</strong> Public scores appear only after at least three different signed-in viewers have rated the player for this season.</p>'
-      : '<p><strong class="eye-score">'+s+'/100</strong> · Average of '+r.reviewer_count+' viewer'+(r.reviewer_count === 1?'':'s')+'. Not a professional scouting grade.</p>';
+    const result = '<div class="eye-result">'
+      +(personal !== null ? '<p><strong class="eye-score">'+personal+'/100</strong> <span class="eye-private-label">Your Rating (Private)</span><small>Only you can see your individual rating when signed in.</small></p>' : '')
+      +(s === null
+        ? '<p class="eye-pending"><strong>Community score pending.</strong> A public average appears after three different signed-in viewers rate this player. '+(personal !== null ? 'Your rating has been saved.' : 'You can submit your own rating below.')+'</p>'
+        : '<p><strong class="eye-score">'+s+'/100</strong> <span class="eye-public-label">Community Eye Test</span><small>Average of '+r.reviewer_count+' viewer'+(r.reviewer_count===1?'':'s')+'. Not a professional scouting grade.</small></p>')
+      +'</div>';
     const traitDetails = r
       ? '<details><summary>See eight position-specific viewer averages</summary><div class="eye-traits">'+traits.map(([key,name]) => '<div><span>'+name+'</span><b>'+Number(r[key]).toFixed(1)+'/10</b></div>').join('')+'</div></details>'
       : '';
@@ -169,14 +200,21 @@ const RinkEye = (() => {
     }
     saving = true;
     try {
-      const season = state.season;
+      const season = state.season, currentUser = RinkCloud.user.id;
       const result = await RinkCloud.client.from('community_eye_votes').upsert(
         {user_id:RinkCloud.user.id,season_id:season,player_id:id,...grades},
         {onConflict:'user_id,season_id,player_id'}
       );
       if (result.error) throw result.error;
+      // Immediately show this authenticated user's saved rating, even before
+      // the public 3-reviewer threshold is reached.
+      if (season === state.season && RinkCloud.user?.id === currentUser) {
+        ownAccount = currentUser;
+        own.set(String(id),{player_id:String(id),...grades});
+        publishUpdates();
+      }
       await reload(season);
-      return 'Your Eye Test vote was saved.';
+      return 'Your Eye Test rating was saved. Your private score is visible now; the community score requires three reviewers.';
     } finally { saving = false; }
   }
   async function withdraw(id) {
@@ -184,12 +222,16 @@ const RinkEye = (() => {
     if (!RinkCloud.user || !RinkCloud.client || !get(id)) throw Error('Sign in and select a valid player.');
     saving = true;
     try {
-      const season=state.season;
+      const season=state.season, currentUser=RinkCloud.user.id;
       const result=await RinkCloud.client.from('community_eye_votes').delete()
         .eq('user_id',RinkCloud.user.id).eq('season_id',season).eq('player_id',id);
       if (result.error) throw result.error;
+      if (season === state.season && RinkCloud.user?.id === currentUser) {
+        own.delete(String(id));
+        publishUpdates();
+      }
       await reload(season);
-      return 'Your vote was withdrawn.';
+      return 'Your Eye Test vote was withdrawn.';
     } finally {saving=false;}
   }
   function message(s) {
@@ -246,7 +288,7 @@ const RinkEye = (() => {
     try {await RinkCloud.signOut();}
     catch(error){document.getElementById('eyeSignInStatus').textContent='Could not sign out: '+error.message;}
   });
-  return {initialize,reload,score,count,hasOwn,panel,ratingGroup,ratingTraits,KEYS};
+  return {initialize,reload,score,count,hasOwn,personalScore,display,panel,ratingGroup,ratingTraits,KEYS};
 })();
 // The player table uses window.RinkEye to display scores and open direct rating.
 window.RinkEye = RinkEye;

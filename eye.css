@@ -61,3 +61,14 @@
 .eye-quick .source-note{min-height:1.2em}
 @media(min-width:900px){.vote-grid{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:15px;row-gap:18px}}
 @media(max-width:560px){.eye-quick-btn{flex:unset}.eye-grade-options{gap:6px}}
+
+/* Signed-in, private Eye Test results remain distinct from public consensus. */
+.eye-result{display:grid;gap:10px;margin:10px 0 18px}
+.eye-result p{margin:0}
+.eye-result small{display:block;color:#c4d6df;font-size:.87rem;margin-top:4px}
+.eye-private-label,.eye-public-label{display:inline-block;vertical-align:middle;font-weight:750;padding:4px 9px;border:1px solid #73939c;border-radius:8px;font-size:.83rem;margin-left:8px}
+.eye-private-label{background:#283e56;color:#e4f2ff}
+.eye-public-label{background:#1d5144;color:#d7fae4}
+.eye-pending{background:#213446;border:1px dashed #6b8b9b;padding:12px;border-radius:8px;color:#d9e9f0}
+.eye-table small{display:block;font-size:.73rem;line-height:1.5;color:#c3dae2}
+.eye-table .eye-personal-note{color:#a7ddff}
