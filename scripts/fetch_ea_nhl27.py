@@ -2,6 +2,7 @@
 """Download source-backed NHL 27 ratings. Missing ratings stay missing."""
 import datetime as dt
 from html.parser import HTMLParser
+from http.client import IncompleteRead
 import json,os,re,unicodedata
 from pathlib import Path
 from urllib.request import Request,urlopen
@@ -52,20 +53,31 @@ def parse_html(source,pos):
 def fetch_page(url):
  req=Request(url,headers={'User-Agent':'Mozilla/5.0 (compatible; RinkLens/1.0; educational ratings display)',
    'Accept':'text/html,application/xhtml+xml','Accept-Language':'en-US,en;q=0.8'})
- with urlopen(req,timeout=25) as r:return r.read(4500000).decode('utf-8','replace')
+ try:
+  with urlopen(req,timeout=25) as r:payload=r.read(4500000)
+ except IncompleteRead as ex:
+  # EA's CDN can truncate large SSR HTML after the useful player table.
+  # Keep the partial only when a complete HTML row table was received.
+  payload=ex.partial
+  if payload.count(b'</tr>')<15:raise
+ return payload.decode('utf-8','replace')
 
 def name_key(value):
  s=unicodedata.normalize('NFKD',str(value)).casefold().replace('ø','o').replace('đ','d')
  return re.sub(r'[^a-z0-9]','', ''.join(c for c in s if not unicodedata.combining(c)))
 def collect(fetcher=fetch_page):
- players=[];errors=[]
+ players=[];errors=[];covered=set()
  for slug,pos in POSITIONS.items():
-  try:
-   html=fetcher(URL+'/'+slug);rows=parse_html(html,pos)
-   print(f'EA NHL27 {slug}: HTML chars {len(html)}, table rows {len(rows)}')
-   if len(rows)<8:errors.append(f'{slug}: too few rows (tr={html.lower().count("<tr")}; OVR={html.count("OVR")})')
-   players.extend(rows)
-  except Exception as e:errors.append(f'{slug}: {str(e)[:130]}')
+  # EA's top-300 list paginates centers and left-defense across two pages.
+  pages=(1,2) if slug in ('center/Center','left-defense/Left%20Defense') else (1,)
+  for page in pages:
+   url=URL+'/'+slug+('?page='+str(page) if page>1 else '')
+   try:
+    html=fetcher(url);rows=parse_html(html,pos)
+    print(f'EA NHL27 {slug} page {page}: HTML chars {len(html)}, table rows {len(rows)}')
+    if len(rows)<8:errors.append(f'{slug} page {page}: too few rows (tr={html.lower().count("<tr")}; OVR={html.count("OVR")})')
+    else:covered.add((slug,page));players.extend(rows)
+   except Exception as e:errors.append(f'{slug} page {page}: {str(e)[:130]}')
  print('EA import notices:',errors)
  unique={};ambiguous=set()
  for p in players:
@@ -73,11 +85,14 @@ def collect(fetcher=fetch_page):
   if k in unique and (p['ovr']!=unique[k]['ovr'] or p['pos']!=unique[k]['pos']):ambiguous.add(k)
   else:unique[k]=p
  for k in ambiguous:unique.pop(k,None)
- if len(unique)<150:raise ValueError(f'Only {len(unique)} unique ratings retrieved; previous snapshot preserved')
+ # Do not overwrite a prior good snapshot with a partial CDN response.
+ expected={(slug,page) for slug in POSITIONS for page in ((1,2) if slug in ('center/Center','left-defense/Left%20Defense') else (1,))}
+ if covered!=expected or len(unique)<250:
+  raise ValueError(f'Only {len(unique)} unique ratings retrieved from {len(covered)}/{len(expected)} pages; previous snapshot preserved.')
  return {'source':'EA SPORTS NHL 27 public player ratings','game':'NHL 27',
   'updatedAt':dt.datetime.now(dt.timezone.utc).isoformat(),
   'sourceUrl':'https://www.ea.com/games/nhl/ratings',
-  'scope':'Published top-rated players only; not a complete roster',
+  'scope':'Official EA top 300 player ratings, not complete NHL game roster',
   'players':sorted(unique.values(),key=lambda p:(p.get('rank',999),p['name']))}
 def save(data):
  target=ROOT/'data'/'ea-nhl27.json';target.parent.mkdir(parents=True,exist_ok=True)
