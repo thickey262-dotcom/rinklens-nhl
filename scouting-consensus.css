@@ -1,0 +1,24 @@
+/* Conservative attribution-first scouting panel. It is not a human eye-test score. */
+.consensus-panel{margin:18px 0;padding:20px;border:1px solid #467477;border-radius:10px;background:#15313a;color:#eaf8f4}
+.consensus-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.consensus-kicker{font-size:12px;color:#b7e8da;font-weight:800;letter-spacing:.5px}
+.consensus-heading h4{font-size:28px;margin:6px 0}
+.consensus-score{display:flex;flex-direction:column;align-items:end;gap:0;text-align:right}
+.consensus-score strong{font:800 30px var(--display);color:#95e8d2;white-space:nowrap}
+.consensus-score small{font-size:13px;color:#c6ded7;white-space:nowrap}
+.consensus-panel>p,.consensus-panel details p{font-size:15px;line-height:1.65;color:#cddfe3;margin:12px 0}
+.consensus-panel details{padding:10px 0}
+.consensus-panel summary{font-size:16px;color:#b9f0e5;cursor:pointer;font-weight:800;padding:12px 0}
+.consensus-traits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0 18px}
+.consensus-trait{padding:12px;border:1px solid #3d626a;background:#102734;border-radius:7px;min-width:0}
+.consensus-trait>span{font-size:15px;font-weight:800}
+.consensus-trait>b{display:block;font-size:19px;color:#98ead1;margin:6px 0}
+.consensus-trait li,.consensus-sources li{font-size:13px;color:#d1e2e8;line-height:1.6;margin:7px 0}
+.consensus-trait ul{margin:5px 0 0;padding-left:20px}
+.consensus-panel a{color:#a3f1db;text-decoration:underline;text-underline-offset:2px}
+.consensus-panel h5{font-size:16px;margin:10px 0}
+.consensus-empty{background:#142536;border-color:#345161}
+.consensus-pill{display:inline-block;padding:5px 9px;border:1px solid #4c7c74;border-radius:5px;background:#17413b;color:#b0f2dc;font-weight:800}
+.consensus-pill.missing{background:transparent;color:#9db7c4;border-color:#344a58}
+.consensus-footnote{display:block;font-size:11px;color:#c0d5dc;margin-top:4px}
+@media(max-width:650px){.consensus-traits{grid-template-columns:1fr}.consensus-heading{align-items:start}.consensus-heading h4{font-size:24px}}
