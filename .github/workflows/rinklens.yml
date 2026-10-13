@@ -43,6 +43,9 @@ jobs:
         continue-on-error: true
         run: python scripts/fetch_advanced.py --seasons 20262027 20252026 20242025
 
+      - name: Build full-league statistical ratings
+        run: python scripts/build_full_league_ratings.py
+
       - name: Recalculate evidence-based scouting consensus
         run: python scripts/build_scouting_consensus.py
 
@@ -61,9 +64,9 @@ jobs:
       - name: Assemble static website
         run: |
           mkdir -p _site/data
-          cp index.html styles.css learn.css advanced.css reportcards.css autoscout.css scouting-consensus.css easy-read.css app.js learn.js advanced.js reportcards.js autoscout.js scouting-consensus.js easy-read.js cloud.js config.js _site/
+          cp index.html styles.css learn.css advanced.css reportcards.css autoscout.css scouting-consensus.css model-ratings.css easy-read.css app.js learn.js advanced.js reportcards.js autoscout.js scouting-consensus.js model-ratings.js easy-read.js cloud.js config.js _site/
           touch _site/.nojekyll
-          for file in data/nhl-*.json data/advanced-*.json data/scouting-consensus.json; do
+          for file in data/nhl-*.json data/advanced-*.json data/scouting-consensus.json data/model-rating-*.json; do
             if [ -f "$file" ]; then cp "$file" _site/data/; fi
           done
 
