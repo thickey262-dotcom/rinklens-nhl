@@ -18,3 +18,12 @@
 .stat-score-panel .sample-label{display:inline-block;background:#45505a;border:1px solid #82919b;color:#f8e0be;font-weight:700;padding:3px 8px;border-radius:7px;font-size:.85rem}
 .method-weights th,.method-weights td{white-space:normal}
 .method-weights td{font-weight:800;color:#f9cf99}
+
+/* Player database pagination */
+.pagination{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:22px;padding-top:18px;border-top:1px solid #304459;color:#c7dae4;font-size:.95rem}
+.pagination[hidden]{display:none}
+.pagination-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pagination-controls .mini{min-height:44px;padding:10px 15px;font-weight:700}
+.pagination-controls .mini:disabled{cursor:not-allowed;opacity:.46}
+#pageNumber{font-weight:700;min-width:95px;text-align:center}
+@media(max-width:560px){.pagination{justify-content:center;text-align:center}.pagination-controls{justify-content:center}}

@@ -1,6 +1,7 @@
 'use strict';
 const $ = id => document.getElementById(id);
-const state = {players:[],season:'20262027',selected:[],token:0,ready:false};
+const PAGE_SIZE = 25;
+const state = {players:[],season:'20262027',selected:[],token:0,ready:false,page:1};
 const safe = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const missing = value => typeof value !== 'number' || !Number.isFinite(value);
 const show = (value,digits=0) => missing(value) ? '—' : Number(value).toFixed(digits);
@@ -11,7 +12,8 @@ function status(message,isError=false){$('status').textContent=message;$('status
 function position(p){return p.pos==='D'?'D':'F'}
 async function load(){
  const season=$('season').value,token=++state.token;
- state.season=season;state.selected=[];state.players=[];state.ready=false;
+ state.season=season;state.selected=[];state.players=[];state.ready=false;state.page=1;
+ updatePagination(0);
  RinkStats.calculate([]);
  $('rows').innerHTML='';$('playerCount').textContent='—';$('updated').textContent='—';$('seasonSummary').textContent=season.slice(0,4)+'–'+season.slice(6);
  status('Loading MoneyPuck data for '+$('season').selectedOptions[0].text+'…');renderCompare();
@@ -32,15 +34,38 @@ async function load(){
   status('Player statistics: MoneyPuck · Regular season · Goals, assists and points: all situations · Advanced metrics: 5-on-5. RinkLens Advanced Stats Score: computed from MoneyPuck metrics. Eye Test: separate viewer ratings.');
   render();
   if(window.RinkEye) void RinkEye.reload(season);
- }catch(err){if(token!==state.token)return;status('MoneyPuck statistics are currently unavailable for this season. No substitute or estimated data is shown. '+err.message,true);$('rows').innerHTML='<tr><td colspan="12">No verified MoneyPuck data available.</td></tr>';$('results').textContent='0 players';}
+ }catch(err){if(token!==state.token)return;status('MoneyPuck statistics are currently unavailable for this season. No substitute or estimated data is shown. '+err.message,true);$('rows').innerHTML='<tr><td colspan="12">No verified MoneyPuck data available.</td></tr>';$('results').textContent='0 players';updatePagination(0);}
 }
 function filtered(){
  const q=$('search').value.trim().toLowerCase(),t=$('team').value,pos=$('position').value,sort=$('sort').value;
  const sortValue = p => sort==='eye'?(window.RinkEye?.score(p.id)??null):sort==='advanced'?RinkStats.score(p):p[sort];
  return state.players.filter(p=>(!q||p.name.toLowerCase().includes(q)||p.team.toLowerCase().includes(q))&&(!t||p.team===t)&&(!pos||position(p)===pos)).sort((a,b)=>sort==='name'?a.name.localeCompare(b.name):(missing(sortValue(a))?(missing(sortValue(b))?0:1):missing(sortValue(b))?-1:sortValue(b)-sortValue(a))||a.name.localeCompare(b.name));
 }
+function updatePagination(total){
+ const maxPages=Math.max(1,Math.ceil(total/PAGE_SIZE));
+ state.page=Math.max(1,Math.min(state.page,maxPages));
+ const start=(state.page-1)*PAGE_SIZE;
+ $('pagination').hidden=total===0;
+ $('pageSummary').textContent=total ? 'Showing '+(start+1)+'–'+Math.min(start+PAGE_SIZE,total)+' of '+total+' players' : 'No matching players';
+ $('pageNumber').textContent='Page '+state.page+' of '+maxPages;
+ $('pagePrev').disabled=state.page===1;
+ $('pageNext').disabled=state.page===maxPages;
+}
+function changePage(direction){
+ if(!state.ready)return;
+ const total=filtered().length;
+ const last=Math.max(1,Math.ceil(total/PAGE_SIZE));
+ const next=Math.max(1,Math.min(last,state.page+direction));
+ if(next===state.page)return;
+ state.page=next;
+ render();
+ document.querySelector('#players .table-wrap')?.scrollIntoView({behavior:'auto',block:'start'});
+}
 function render(){
- const rows=filtered();$('results').textContent=rows.length+' players';
+ const allRows=filtered();
+ updatePagination(allRows.length);
+ $('results').textContent=allRows.length+' matching players · '+PAGE_SIZE+' per page';
+ const rows=allRows.slice((state.page-1)*PAGE_SIZE,state.page*PAGE_SIZE);
  $('rows').innerHTML=rows.length?rows.map(p=>'<tr><td><button type="button" class="player-name" data-open="'+safe(p.id)+'">'+safe(p.name)+'</button><small>'+safe(p.team)+' · '+safe(p.pos)+'</small></td>'+[['gp',0],['g',0],['a',0],['p',0],['p60',2],['xgfPct',1],['cfPct',1],['ixG60',2]].map(([k,d])=>'<td>'+show(p[k],d)+'</td>').join('')+'<td class="advanced-score-cell" title="'+safe(RinkStats.label(p)??RinkStats.reason(p)??'Score unavailable')+'">'+(RinkStats.score(p)??'—')+(RinkStats.label(p)?'<small class="sample-label '+(RinkStats.label(p)==='Small sample'?'is-small':'')+'">'+safe(RinkStats.label(p))+'</small>':'')+'</td><td class="eye-table">'+(window.RinkEye?.score(p.id)??'—')+'</td><td><button type="button" class="mini" data-compare="'+safe(p.id)+'" aria-label="Compare '+safe(p.name)+'">'+(state.selected.includes(p.id)?'✓ Added':'+ Add')+'</button></td></tr>').join(''):'<tr><td colspan="12">No matching players found.</td></tr>';
 }
 function renderCompare(){
@@ -64,5 +89,7 @@ document.addEventListener('click',event=>{
 $('close').addEventListener('click',close);
 document.addEventListener('keydown',event=>{if(event.key==='Escape')close()});
 $('season').addEventListener('change',load);
-['search','team','position','sort'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));
+['search','team','position','sort'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',()=>{state.page=1;render();}));
+$('pagePrev').addEventListener('click',()=>changePage(-1));
+$('pageNext').addEventListener('click',()=>changePage(1));
 load();

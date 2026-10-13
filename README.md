@@ -29,6 +29,10 @@ The Eye Test feature uses the previously configured Supabase backend and its exi
 
 Eye Test scores are community opinions and may not reflect professional scouting accuracy. A signed-in account is not proof of reviewer expertise. The frontend never fabricates missing scores or mixes MoneyPuck statistics into the Eye Test.
 
+## Player table pagination
+
+The player database displays **25 players per page** with Previous/Next navigation, an exact shown-range counter and page total. Results are filtered and sorted across the entire season **before** taking the 25-player slice. Searching, changing team or position, changing sorting, or loading another season resets to page 1. Eye Test updates and comparison selections preserve the current page. Zero-result searches hide pagination without disrupting the underlying statistics or ratings.
+
 ## Hosting and tests
 
 GitHub Pages publishes only `index.html`, `money.css`, `money.js`, `stats-score.js`, `eye.css`, `eye.js`, the existing `cloud.js` and public `config.js` plus `data/moneypuck-*.json`. No private API keys should ever be committed; the publishable key is client-safe and backed by RLS. Tests run in GitHub Actions on each push, including real snapshot completeness checks. Published advanced ratings need verified MoneyPuck 5v5 ice-time values. An unavailable or outdated source never leads to backfilled or guessed exposure. Stored MoneyPuck snapshots are retained when a refresh fails, although deployment fails its completeness check if they predate the ice-time field.
