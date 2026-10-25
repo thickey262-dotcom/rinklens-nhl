@@ -100,7 +100,7 @@ const eye=vm.runInNewContext(eyeSource+'\nRinkEye;',context);
   await eye.reload(state.season);
   assert.equal(eye.score(player.id),80);
   assert.equal(eye.personalScore(player.id),70);
-  assert.equal(eye.display(player.id).label,'Community Eye Test');
+  assert.equal(eye.display(player.id).label,'Combined Eye Test (3 reviewers)');
   assert.match(moneyView.eyeCell(player.id),/Your Rating \(Private\): 70\/100/);
   console.log('PASS: saved Eye Test visible to owner, public threshold remains three, safe account switching and distinct community/personal scores.');
 })().catch(err=>{console.error(err);process.exitCode=1});
