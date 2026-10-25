@@ -63,7 +63,7 @@ const eye=vm.runInNewContext(eyeSource+'\nRinkEye;',context);
   assert.equal(eye.display(player.id).label,'Your Combined Preview (Private)');
   assert.match(eye.panel(player),/70\/100/);
   assert.match(eye.panel(player),/Your Combined Preview \(Private\)/);
-  assert.match(eye.panel(player),/Community score pending/);
+  assert.match(eye.panel(player),/Community average pending/);
 
   // Exercise the table's private/public labeling helper using the same module.
   const moneyView=new Function('window','safe',moneySource.slice(
