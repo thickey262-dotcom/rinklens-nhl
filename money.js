@@ -5,7 +5,7 @@ const state = {players:[],season:'20262027',selected:[],token:0,ready:false,page
 const safe = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const missing = value => typeof value !== 'number' || !Number.isFinite(value);
 const show = (value,digits=0) => missing(value) ? '—' : Number(value).toFixed(digits);
-const fields=[['gp','Games played',0],['g','Goals',0],['a','Assists',0],['p','Points',0],['p60','Points per 60 · all situations',2],['xgfPct','Expected goals share · 5-on-5',1],['cfPct','Corsi share · 5-on-5',1],['ffPct','Fenwick share · 5-on-5',1],['ixG60','Individual expected goals per 60 · 5-on-5',2],['hdCfPct','High-danger shot share · 5-on-5',1]];
+const fields=[['gp','Games played',0],['g','Goals',0],['a','Assists',0],['p','Points',0],['p60','Points per 60 · all situations',2],['fiveToiMinutes','Total 5-on-5 minutes',1],['xgfPct','Expected goals share · 5-on-5',1],['cfPct','Corsi share · 5-on-5',1],['ffPct','Fenwick share · 5-on-5',1],['ixG60','Individual expected goals per 60 · 5-on-5',2],['hdCfPct','High-danger shot share · 5-on-5',1]];
 const label = p => p.name + ' (' + p.team + ', ' + p.pos + ')';
 const get = id => state.players.find(p=>p.id===id);
 // Public community averages and the current viewer's private Eye Test are distinct.

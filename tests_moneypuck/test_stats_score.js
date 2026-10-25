@@ -17,9 +17,10 @@ for(const kind of ['F','D']){
   assert.equal(Object.values(stats.WEIGHTS[kind]).reduce((sum,v)=>sum+v,0),100);
 }
 assert.notEqual(stats.WEIGHTS.F.ixG60,stats.WEIGHTS.D.ixG60);
-assert.equal(stats.WEIGHTS.F.fiveGp,10,'forward GP component must be 10%');
-assert.equal(stats.WEIGHTS.D.fiveGp,10,'defense GP component must be 10%');
-assert.ok(stats.METRICS.some(m=>m.key==='fiveGp'),'GP must be visible in the component breakdown');
+assert.equal(stats.WEIGHTS.F.fiveToiMinutes,10,'forward total minutes must be 10%');
+assert.equal(stats.WEIGHTS.D.fiveToiMinutes,10,'defense total minutes must be 10%');
+assert.ok(stats.METRICS.some(m=>m.key==='fiveToiMinutes'),'total minutes must be included in score breakdown');
+assert.ok(!stats.METRICS.some(m=>m.key==='fiveGp'),'5v5 games no longer get a direct weight');
 assert.equal(stats.minimumGames,10);
 assert.equal(stats.minimumMinutes,100);
 stats.calculate([...forwards,...defense]);
@@ -118,48 +119,70 @@ assert.ok(stats.score(specialF[0])>stats.score(specialD[0]),
 assert.ok(!moduleCode.includes('community_eye_votes')&&!moduleCode.includes('RinkEye'),
   'Advanced Stats Score cannot mix in Eye Test votes or grades');
 
-// Isolate the independent 10% games-played component with otherwise identical metrics.
-// Distinct GP and proportional five-on-five minutes give a durability advantage.
-const identicalF=make(40,'C',40,480);
-const identicalD=make(35,'D',40,480);
-for(const p of [...identicalF,...identicalD]){
+// Isolate the explicit 10% five-on-five minutes component, independent of GP.
+// Equal underlying shot/xG metrics and equal GP: only total 5v5 minutes differ.
+const equalF=make(40,'C',45,540),equalD=make(35,'D',45,540);
+for(const p of [...equalF,...equalD]){
   Object.assign(p,{xgfPct:50,ixG60:.5,cfPct:50,ffPct:50,hdCfPct:50});
 }
-identicalF[0].fiveGp=70;identicalF[0].fiveToiMinutes=840;
-identicalF[1].fiveGp=20;identicalF[1].fiveToiMinutes=240;
-identicalD[0].fiveGp=70;identicalD[0].fiveToiMinutes=840;
-identicalD[1].fiveGp=20;identicalD[1].fiveToiMinutes=240;
-stats.calculate([...identicalF,...identicalD]);
-for(const group of [identicalF,identicalD]){
-  const more=stats.forPlayer(group[0]);
-  const less=stats.forPlayer(group[1]);
-  assert.ok(more&&less,'players with valid 5v5 exposure must be scored');
-  assert.equal(more.breakdown.length,6,'all five advanced stats plus GP included');
-  const gpPart=more.breakdown.find(m=>m.key==='fiveGp');
-  assert.equal(gpPart.weight,10,'10% GP is included explicitly');
-  assert.equal(gpPart.value,70,'GP uses five-on-five count');
-  assert.ok(gpPart.percentile>less.breakdown.find(m=>m.key==='fiveGp').percentile);
-  assert.equal(more.metricWeight,100,'sum of weights must be 100');
-  for(const m of more.breakdown.filter(m=>m.key!=='fiveGp')){
-    assert.equal(m.percentile,50,'identical advanced stats all tie at 50th percentile');
-  }
-  assert.ok(more.raw>less.raw,'GP improves weighted average even when advanced metrics are identical');
-  assert.ok(more.score>less.score,'the resulting score reflects 5v5 GP');
+for(const peers of [equalF,equalD]){
+  peers[0].fiveToiMinutes=900;
+  peers[1].fiveToiMinutes=150;
 }
-// All-situations GP is not an input to the 10% GP component.
-const original=stats.score(identicalF[0]);
-identicalF[0].gp=95;
-stats.calculate([...identicalF,...identicalD]);
-assert.equal(stats.score(identicalF[0]),original,'all-situations GP must not replace 5v5 GP');
-assert.equal(stats.forPlayer(identicalF[0]).breakdown.find(m=>m.key==='fiveGp').value,70);
-// GP must not turn a three-advanced-metric player into a passing four-metric player.
-identicalF[0].ffPct=null;
-identicalF[0].hdCfPct=null;
-stats.calculate([...identicalF,...identicalD]);
-assert.equal(stats.score(identicalF[0]),null,'GP cannot replace two missing advanced metrics');
-// No GP/no qualifying exposure -> no score, not an implied zero.
-identicalF[0].fiveGp=null;
-stats.calculate([...identicalF,...identicalD]);
-assert.equal(stats.score(identicalF[0]),null);
-
-console.log('PASS: position-specific 10% 5v5 GP, separate 5v5 exposure, advanced metrics, sample labels, missing inputs, shrinkage, Eye Test independence.');
+stats.calculate([...equalF,...equalD]);
+for(const peers of [equalF,equalD]){
+  const higher=stats.forPlayer(peers[0]),lower=stats.forPlayer(peers[1]);
+  assert.ok(higher&&lower,'eligible players must receive scores');
+  assert.equal(higher.breakdown.length,6,'five advanced stats plus five-on-five total minutes');
+  assert.equal(higher.metricWeight,100);
+  const minutesMetric=higher.breakdown.find(m=>m.key==='fiveToiMinutes');
+  const lowMetric=lower.breakdown.find(m=>m.key==='fiveToiMinutes');
+  assert.equal(minutesMetric.weight,10);
+  assert.equal(minutesMetric.value,900);
+  assert.equal(lowMetric.value,150);
+  assert.ok(minutesMetric.percentile>lowMetric.percentile,'more total ice time raises the position percentile');
+  assert.equal(higher.fiveGp,lower.fiveGp,'GP stays identical in this comparison');
+  for(const metric of higher.breakdown.filter(m=>m.key!=='fiveToiMinutes')){
+    assert.equal(metric.percentile,50,'identical advanced metrics should tie at 50th percentile');
+  }
+  assert.ok(higher.raw>lower.raw,'total 5v5 minutes alone affects the unshrunk weighted average');
+  assert.ok(higher.score>lower.score,'total 5v5 minutes affect the final score');
+  assert.equal(higher.breakdown.some(m=>m.key==='fiveGp'),false,'GP no longer in breakdown');
+}
+// Two skaters with exactly equal minutes but different games should tie in
+// the raw weighted composite; their *reliability adjustment* may still differ.
+const sameMinutes=equalF.map(p=>({...p,fiveToiMinutes:540}));
+sameMinutes[0].fiveGp=65;
+sameMinutes[1].fiveGp=20;
+stats.calculate([...sameMinutes,...equalD]);
+const g0=stats.forPlayer(sameMinutes[0]),g1=stats.forPlayer(sameMinutes[1]);
+assert.equal(g0.raw,g1.raw,'games played must not directly influence the unshrunk composite');
+assert.ok(g0.effectiveGames>g1.effectiveGames,'GP still matters for sample reliability');
+const rawBefore=stats.forPlayer(sameMinutes[0]).raw;
+sameMinutes[0].gp=95;
+stats.calculate([...sameMinutes,...equalD]);
+assert.equal(stats.forPlayer(sameMinutes[0]).raw,rawBefore,'all-situations GP never enters this composite');
+// Missing or bogus 5v5 minutes cannot be inferred from all-situations TOI.
+sameMinutes[0].fiveToiMinutes=null;
+sameMinutes[0].toi=99999;
+stats.calculate([...sameMinutes,...equalD]);
+assert.equal(stats.score(sameMinutes[0]),null);
+assert.match(stats.reason(sameMinutes[0]),/missing/);
+sameMinutes[0].fiveToiMinutes=99.9;
+stats.calculate([...sameMinutes,...equalD]);
+assert.equal(stats.score(sameMinutes[0]),null,'100-minute eligibility threshold retained');
+sameMinutes[0].fiveToiMinutes=540;
+sameMinutes[0].fiveGp=9;
+stats.calculate([...sameMinutes,...equalD]);
+assert.equal(stats.score(sameMinutes[0]),null,'10-game eligibility threshold retained');
+// Minutes cannot stand in for missing required advanced metrics.
+sameMinutes[0].fiveGp=65;
+sameMinutes[0].ffPct=null;
+sameMinutes[0].hdCfPct=null;
+stats.calculate([...sameMinutes,...equalD]);
+assert.equal(stats.score(sameMinutes[0]),null,'total minutes cannot replace two missing advanced metrics');
+// Small sample criteria still use both games and ice time.
+const lowSample=make(40,'C',12,140).concat(make(35,'D',12,140));
+stats.calculate(lowSample);
+assert.equal(stats.label(lowSample[0]),'Small sample');
+console.log('PASS: position-specific 10% total 5v5 minutes, independent GP sample reliability, min exposure, missing inputs, and Eye Test separation.');

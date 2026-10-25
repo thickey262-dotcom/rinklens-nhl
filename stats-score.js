@@ -1,6 +1,6 @@
 'use strict';
 /* RinkLens Advanced Stats Score:
- * MoneyPuck-only 5-on-5 percentiles, separate F/D weights and 10% 5v5 GP.
+ * MoneyPuck-only 5-on-5 percentiles, separate F/D weights and 10% total 5v5 minutes.
  * Eligible players need documented 5v5 games and ice time, never proxy minutes.
  * Scores are descriptive—not player-value forecasts, MoneyPuck ratings or Eye Tests.
  */
@@ -11,20 +11,20 @@ const RinkStats = (() => {
     {key:'cfPct',label:'Shot-attempt share (CF%)',digits:1},
     {key:'ffPct',label:'Unblocked shot-attempt share (FF%)',digits:1},
     {key:'hdCfPct',label:'High-danger shot share (HDCF%)',digits:1},
-    {key:'fiveGp',label:'Five-on-five games played (GP)',digits:0}
+    {key:'fiveToiMinutes',label:'Total five-on-five ice time (minutes)',digits:1}
   ]);
-  // GP carries an explicit 10% availability/durability component alongside five advanced metrics.
-  // Relative to qualified players at the same position and in the same season.
+  // Total 5v5 minutes carry an explicit 10% usage/availability component.
+  // Percentiles are compared among qualified peers of the same position and season.
   const WEIGHTS = Object.freeze({
-    F: Object.freeze({xgfPct:35,ixG60:25,cfPct:10,ffPct:5,hdCfPct:15,fiveGp:10}),
-    D: Object.freeze({xgfPct:40,ixG60:10,cfPct:15,ffPct:10,hdCfPct:15,fiveGp:10})
+    F: Object.freeze({xgfPct:35,ixG60:25,cfPct:10,ffPct:5,hdCfPct:15,fiveToiMinutes:10}),
+    D: Object.freeze({xgfPct:40,ixG60:10,cfPct:15,ffPct:10,hdCfPct:15,fiveToiMinutes:10})
   });
   const MIN_PEERS=30;
   let byId=new Map(),missingReasons=new Map(),minimumGames=10,minimumMinutes=100;
   const isNumber=v=>typeof v==='number'&&Number.isFinite(v);
   const group=p=>p?.pos==='D'?'D':['C','L','R','LW','RW'].includes(p?.pos)?'F':null;
-  const valid=(p,key)=>key==='fiveGp'
-    ? Number.isInteger(p.fiveGp)&&p.fiveGp>0&&p.fiveGp<=120
+  const valid=(p,key)=>key==='fiveToiMinutes'
+    ? isNumber(p.fiveToiMinutes)&&p.fiveToiMinutes>0&&p.fiveToiMinutes<=100000
     : isNumber(p[key])&&p[key]>=0&&p[key]<=100;
   const fiveMinutes=p=>isNumber(p?.fiveToiMinutes)&&p.fiveToiMinutes>0?p.fiveToiMinutes:null;
   const fiveGames=p=>isNumber(p?.fiveGp)&&p.fiveGp>0?p.fiveGp:null;
@@ -75,9 +75,9 @@ const RinkStats = (() => {
       if(!qualifies(p)){missingReasons.set(id,unavailable(p));continue;}
       const kind=group(p), weights=WEIGHTS[kind];
       const available=METRICS.filter(m=>valid(p,m.key)&&pools[kind][m.key].length>=MIN_PEERS);
-      // GP is never allowed to substitute for the minimum four actual advanced metrics.
-      const advanced=available.filter(m=>m.key!=='fiveGp');
-      if(!available.some(m=>m.key==='fiveGp')||advanced.length<4||
+      // Total 5v5 minutes must be present but cannot substitute for four advanced metrics.
+      const advanced=available.filter(m=>m.key!=='fiveToiMinutes');
+      if(!available.some(m=>m.key==='fiveToiMinutes')||advanced.length<4||
          !advanced.some(m=>m.key==='xgfPct')||!advanced.some(m=>m.key==='ixG60')){
         missingReasons.set(id,unavailable(p));continue;
       }
@@ -88,8 +88,8 @@ const RinkStats = (() => {
         peers:pools[kind][m.key].length
       }));
       const raw=breakdown.reduce((sum,m)=>sum+m.weight*m.percentile,0)/denominator;
-      // GP also helps determine sample reliability, which is conceptually separate
-      // from the explicit 10% durability component in the weighted average.
+      // Games and minutes determine sample reliability separately from the
+      // explicit 10% total-minutes component in the weighted average.
       // A roughly 12-minute 5v5 game is one effective game; fewer minutes lowers certainty.
       // Never use an all-situations time-on-ice value to fill in 5v5 minutes.
       const effectiveGames=Math.min(fiveGames(p),fiveMinutes(p)/12);
@@ -116,10 +116,10 @@ const RinkStats = (() => {
     return '<section class="stat-score-panel"><div class="eyebrow">RINKLENS SCORE · MONEYPUCK DATA</div>'
       +'<h3>Advanced Stats Score <strong class="composite-score">'+data.score+'/100</strong></h3>'
       +'<p><span class="sample-label">'+data.reliabilityLabel+'</span> · '+data.fiveGp+' games, '+data.fiveToiMinutes.toFixed(1)+' minutes at five-on-five.</p>'
-      +'<p>Compared with qualified '+(data.group==='D'?'defensemen':'forwards')+' from this season only. Five-on-five games played now makes up <strong>10%</strong> of this score, rewarding availability alongside five advanced metrics. More games also improve sample reliability, which is handled separately.</p>'
+      +'<p>Compared with qualified '+(data.group==='D'?'defensemen':'forwards')+' from this season only. Total five-on-five ice time makes up <strong>10%</strong> of this score, rewarding minutes played alongside five advanced metrics. Games played still contributes to the separate eligibility and sample-reliability checks, but is no longer a weighted scoring component.</p>'
       +'<details><summary>View the score breakdown and position weights</summary>'
       +'<div class="table-wrap"><table><thead><tr><th>Metric</th><th>Player value</th><th>Position percentile</th><th>Weight</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
-      +'<p class="source-note">Five-on-five games played earns a 10% weight based on the percentile among qualified players at the same position. The other five measures supply the remaining 90%, with available weights renormalized only when one optional advanced metric is missing. GP also contributes to the separate sample-size adjustment toward 50: effective 5v5 games / (effective 5v5 games + 10), where effective 5v5 games = min(actual 5v5 games, 5v5 minutes / 12). Qualified players need '+data.minimumGames+' five-on-five games and '+data.minimumMinutes+' five-on-five minutes; every included metric needs at least 30 qualified peers. Equal values share a midrank. More games can increase a player’s score even with identical per-minute performance because this index intentionally includes durability.</p>'
+      +'<p class="source-note">Total five-on-five minutes earn a 10% weight based on the percentile among qualified players at the same position and season. The other five measures supply the remaining 90%, with available weights renormalized only when one optional advanced metric is missing. Actual games and five-on-five minutes still influence the separate sample-size adjustment toward 50: effective 5v5 games / (effective 5v5 games + 10), where effective 5v5 games = min(actual 5v5 games, 5v5 minutes / 12). Qualified players need '+data.minimumGames+' five-on-five games and '+data.minimumMinutes+' five-on-five minutes; every included metric needs at least 30 qualified peers. Equal values share a midrank. More five-on-five minutes can increase a player’s score even with identical underlying shot and chance rates; additional games affect it only through sample eligibility and reliability.</p>'
       +'</details>'+caveat+'</section>';
   }
   return {
