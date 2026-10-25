@@ -68,7 +68,7 @@ const ctx={state,RinkCloud:cloud,get:id=>skaters.find(p=>p.id===id),
   safe:String,render(){},renderCompare(){},close(){},document:{
     getElementById:element,addEventListener(type,fn){callbacks[type]=fn;}
   },window:{confirm:()=>true},console};
-const instance=vm.runInNewContext(baseCode+'\n'+eyeCode+'\nRinkEye;',ctx);
+const instance=vm.runInNewContext(baseCode+'\nRinkBase.calculate(state.players);\n'+eyeCode+'\nRinkEye;',ctx);
 (async()=>{
  await instance.reload(state.season);
  let d=instance.display(player.id);
