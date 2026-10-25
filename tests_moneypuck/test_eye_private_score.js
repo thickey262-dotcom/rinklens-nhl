@@ -60,9 +60,9 @@ const eye=vm.runInNewContext(eyeSource+'\nRinkEye;',context);
   assert.equal(eye.score(player.id),null,'private ballot does not create a public score');
   assert.equal(eye.personalScore(player.id),70);
   assert.equal(eye.display(player.id).value,70);
-  assert.equal(eye.display(player.id).label,'Your Rating (Private)');
+  assert.equal(eye.display(player.id).label,'Your Combined Preview (Private)');
   assert.match(eye.panel(player),/70\/100/);
-  assert.match(eye.panel(player),/Your Rating \(Private\)/);
+  assert.match(eye.panel(player),/Your Combined Preview \(Private\)/);
   assert.match(eye.panel(player),/Community score pending/);
 
   // Exercise the table's private/public labeling helper using the same module.
@@ -70,7 +70,7 @@ const eye=vm.runInNewContext(eyeSource+'\nRinkEye;',context);
     moneySource.indexOf('function eyeDisplay('),moneySource.indexOf('function status('))+
     '\nreturn {eyeCell,eyeDisplay};')(context.window,String);
   assert.match(moneyView.eyeCell(player.id),/70\/100/);
-  assert.match(moneyView.eyeCell(player.id),/Your Rating \(Private\)/);
+  assert.match(moneyView.eyeCell(player.id),/Your Combined Preview \(Private\)/);
 
   // Browser refresh / repeated fetch restores viewer's ballot (no published tally).
   await eye.reload(state.season);
@@ -82,7 +82,7 @@ const eye=vm.runInNewContext(eyeSource+'\nRinkEye;',context);
   await eye.reload(state.season);
   assert.equal(eye.personalScore(player.id),null);
   assert.equal(eye.display(player.id).value,null);
-  assert.doesNotMatch(eye.panel(player),/Your Rating \(Private\)/);
+  assert.doesNotMatch(eye.panel(player),/Your Combined Preview \(Private\)/);
   cloud.user={id:user2,email:'viewer2@example.com'};
   await eye.reload(state.season);
   assert.equal(eye.personalScore(player.id),null,'different signed-in user cannot see previous account');
