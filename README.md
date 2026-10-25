@@ -1,6 +1,6 @@
-# RinkLens — MoneyPuck statistics + Advanced Stats Score + Eye Test
+# RinkLens — MoneyPuck stats, NHL ranking-formula baseline, and fan Eye Test
 
-The site displays MoneyPuck player statistics alongside two **distinct** 0–100 scores:
+The site displays MoneyPuck player statistics alongside an Advanced Stats Score and a separate Eye Test system with a labeled statistical starting baseline:
 
 1. **MoneyPuck statistics**: regular-season all-situations counting totals and 5-on-5 chance/shot metrics. `scripts/fetch_moneypuck.py` refreshes the public dataset daily using MoneyPuck's published season-summary CSV.
 2. **Advanced Stats Score**: one transparent RinkLens 0–100 index derived from MoneyPuck's **five-on-five** metrics and five-on-five games played (GP). It is not a MoneyPuck-published score, Eye Test, or predictor of overall talent. Percentiles are calculated against qualified players at the same position (forwards and defensemen separately), within the selected season.
@@ -37,13 +37,21 @@ The site displays MoneyPuck player statistics alongside two **distinct** 0–100
    Each account assigns eight whole-number ratings between 1 and 10. The protected aggregate computes `round(avg((sum of eight grades) / 8 * 10))` to produce a score out of 100, and publishes eight per-trait averages rounded to one decimal in the interface. No user vote is inferred from MoneyPuck numbers and nobody is presented as a professional scout by default. The Supabase migration is tracked at `supabase/migrations/20261013_eye_test_eight_traits_10_scale.sql`; it refuses to convert prior 1–5 votes silently. There were zero votes when the migration was applied.
 
 
-No auto-scout ratings, official game ratings, "combined score", published-professional consensus column, additional statistical models, or speculative eye-test scores appear. The two available scores are never blended.
+The Advanced Stats Score is distinct from the formula-based starting Eye Test estimate. The combined Eye Test incorporates human submissions when available. The statistical starting value is explicitly disclosed and must never be presented as a scout's observation; no unsupported professional scouting or AI claims are made.
 
 ## Eye Test participation
 
 The Eye Test feature uses the previously configured Supabase backend and its existing `community_eye_votes` (RLS-protected individual ballots) and `community_eye_scores` (aggregated, threshold-gated public values) tables. It does not use the unused `scouting_reports` table and does not publicize private notes. Authentication is via existing email magic link; account sign-in is optional for readers.
 
-Eye Test scores are community opinions and may not reflect professional scouting accuracy. A signed-in account is not proof of reviewer expertise. The frontend never fabricates missing scores or mixes MoneyPuck statistics into the Eye Test.
+Eye Test scores are community opinions and may not reflect professional scouting accuracy. A signed-in account is not proof of reviewer expertise. The frontend never fabricates viewer grades. The combined score transparently combines a MoneyPuck-derived statistical baseline with actual saved viewer opinions; the Advanced Stats Score remains a separate rating.
+
+## Statistical starting Eye Test baseline (NHL Career Ranking formula adaptation)
+
+RinkLens calculates a 0–100 **Formula Baseline**, using the final position-specific weights from the user's separate NHL Player Ranking project. **Forwards:** games played 35%, average time on ice per game 20%, points per game 45%. **Defensemen:** games played 35%, average time on ice per game 25%, points per game 40%. The input data come exclusively from MoneyPuck's selected **season**, not an imported career database. Each component is converted to a same-season, same-position midrank percentile and combined by its weight. The weighted percentile is pulled toward a neutral 50 by GP/(GP+10) to limit one-game outliers. Eligible skaters must have positive GP and valid MoneyPuck TOI/points; there must be at least 20 same-position peers. Skaters missing inputs show a dash. The original career formula's 100-career-game threshold cannot be applied to a single season. Goalie ratings are not supported by the skater-only MoneyPuck feed.
+
+**Blending with viewers:** until a public human grade exists, the **Combined Eye Test** equals the Formula Baseline and is labeled accordingly. A signed-in viewer who personally submits an Eye Test grade sees an **own-account private preview** weighted 70% formula baseline / 30% that viewer's eight-grade average; this does not expose the voter's private ballot to other accounts. After three different accounts have contributed a publishable aggregate, the **public Combined Eye Test** uses 50% formula baseline / 50% community grade. Four reviewers = 40% baseline / 60% community grade; five or more = 30% baseline / 70% community grade. The unblended community average and unblended baseline are visible separately in the player profile. Missing baseline falls back to actual available human rating; lack of both yields a dash. A formula-only score is **not** a real scouting observation and does not pretend to grade skating, compete, IQ, etc.
+
+The existing MoneyPuck **Advanced Stats Score** is untouched and remains separate from the baseline and blended Eye Test. The existing Supabase RLS minimum-three-reviewer public threshold is not loosened; a private preview appears after the first viewer's own saved vote. Formula source: `eye-base.js`; coverage/weighting tests: `tests_moneypuck/test_eye_base.js`.
 
 ## Faster Eye Test rating
 

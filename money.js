@@ -25,6 +25,7 @@ async function load(){
  state.season=season;state.selected=[];state.players=[];state.ready=false;state.page=1;
  updatePagination(0);
  RinkStats.calculate([]);
+ if(typeof RinkBase!=='undefined')RinkBase.calculate([]);
  $('rows').innerHTML='';$('playerCount').textContent='—';$('updated').textContent='—';$('seasonSummary').textContent=season.slice(0,4)+'–'+season.slice(6);
  status('Loading MoneyPuck data for '+$('season').selectedOptions[0].text+'…');renderCompare();
  if(window.RinkEye) void RinkEye.reload(season);
@@ -36,12 +37,13 @@ async function load(){
   if(data.source!=='moneypuck'||data.season!==season||!Array.isArray(data.players)||!data.players.length)throw Error('Invalid MoneyPuck snapshot');
   state.players=data.players.filter(p=>typeof p.name==='string'&&typeof p.id==='string'&&p.gp>0);
   RinkStats.calculate(state.players);
+  if(typeof RinkBase!=='undefined')RinkBase.calculate(state.players);
   state.ready=true;
   $('playerCount').textContent=state.players.length.toLocaleString();
   $('updated').textContent=data.updatedAt?new Date(data.updatedAt).toLocaleDateString():'Not recorded';
   const teams=[...new Set(state.players.map(p=>p.team))].sort();
   $('team').innerHTML='<option value="">All teams</option>'+teams.map(t=>'<option value="'+safe(t)+'">'+safe(t)+'</option>').join('');
-  status('Player statistics: MoneyPuck · Regular season · Goals, assists and points: all situations · Advanced metrics: 5-on-5. RinkLens Advanced Stats Score: computed from MoneyPuck metrics. Eye Test: separate viewer ratings.');
+  status('MoneyPuck season statistics loaded. Advanced Stats Score uses 5-on-5 metrics. Formula Baseline uses games played, average ice time and points/game. Eye Test grades are separately submitted by viewers.');
   render();
   if(window.RinkEye) void RinkEye.reload(season);
  }catch(err){if(token!==state.token)return;status('MoneyPuck statistics are currently unavailable for this season. No substitute or estimated data is shown. '+err.message,true);$('rows').innerHTML='<tr><td colspan="12">No verified MoneyPuck data available.</td></tr>';$('results').textContent='0 players';updatePagination(0);}
@@ -82,7 +84,9 @@ function render(){
 function renderCompare(){
  if(!state.selected.length){$('comparison').textContent='Select up to two players from the table above.';return}
  const p=state.selected.map(get).filter(Boolean);
- $('comparison').innerHTML='<div class="comparison-head">'+p.map(x=>'<div><strong>'+safe(x.name)+'</strong><small>'+safe(x.team)+' · '+safe(x.pos)+'</small><button type="button" class="mini" data-remove="'+safe(x.id)+'">Remove</button></div>').join('')+'</div><div class="table-wrap"><table><thead><tr><th>Statistic</th>'+p.map(x=>'<th>'+safe(x.name)+'</th>').join('')+'</tr></thead><tbody>'+fields.map(([k,name,d])=>'<tr><th>'+name+'</th>'+p.map(x=>'<td>'+show(x[k],d)+'</td>').join('')+'</tr>').join('')+'<tr><th>Advanced Stats Score · MoneyPuck-based /100</th>'+p.map(x=>'<td>'+String(RinkStats.score(x)??'—')+(RinkStats.label(x)?'<small>'+safe(RinkStats.label(x))+'</small>':'')+'</td>').join('')+'</tr>'+'<tr><th>Eye Test · community or your private rating /100</th>'+p.map(x=>'<td>'+eyeCell(x.id)+'</td>').join('')+'</tr>'+'</tbody></table></div>';
+ $('comparison').innerHTML='<div class="comparison-head">'+p.map(x=>'<div><strong>'+safe(x.name)+'</strong><small>'+safe(x.team)+' · '+safe(x.pos)+'</small><button type="button" class="mini" data-remove="'+safe(x.id)+'">Remove</button></div>').join('')+'</div><div class="table-wrap"><table><thead><tr><th>Statistic</th>'+p.map(x=>'<th>'+safe(x.name)+'</th>').join('')+'</tr></thead><tbody>'+fields.map(([k,name,d])=>'<tr><th>'+name+'</th>'+p.map(x=>'<td>'+show(x[k],d)+'</td>').join('')+'</tr>').join('')+'<tr><th>Advanced Stats Score · MoneyPuck-based /100</th>'+p.map(x=>'<td>'+String(RinkStats.score(x)??'—')+(RinkStats.label(x)?'<small>'+safe(RinkStats.label(x))+'</small>':'')+'</td>').join('')+'</tr>'+'<tr><th>Combined Eye Test (baseline + available viewer grades)</th>'+p.map(x=>'<td>'+eyeCell(x.id)+'</td>').join('')+'</tr>'
+  +'<tr><th>Formula baseline · MoneyPuck-derived /100</th>'+p.map(x=>'<td>'+String((typeof RinkBase!=='undefined'?RinkBase.score(x):null)??'—')+'</td>').join('')+'</tr>'
+  +'<tr><th>Human viewer average /100</th>'+p.map(x=>'<td>'+String(eyeDisplay(x.id)?.community??eyeDisplay(x.id)?.personal??'—')+'</td>').join('')+'</tr>'+'</tbody></table></div>';
 }
 function detail(id){
  const p=get(id);if(!p)return;

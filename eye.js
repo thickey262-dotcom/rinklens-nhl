@@ -47,10 +47,24 @@ const RinkEye = (() => {
     return Math.round(KEYS.reduce((sum,key)=>sum+Number(ballot[key]),0) / KEYS.length * 10);
   }
   function display(id) {
-    const community = score(id), personal = personalScore(id);
-    const value = community ?? personal;
-    return {value,community,personal,
-      label:community !== null ? 'Community Eye Test' : personal !== null ? 'Your Rating (Private)' : ''};
+    const community=score(id),personal=personalScore(id);
+    const player=get(id);
+    const base=(typeof RinkBase!=='undefined' ? RinkBase.score(player) : null);
+    const voters=count(id);
+    // Publicly blend only authorized community consensus (currently >= 3 accounts).
+    // For an owner with fewer reviewers, calculate a local private preview.
+    const isPublic=community!==null;
+    const human=isPublic?community:personal;
+    const humanWeight=human===null?0:isPublic
+      ? (voters>=5?0.70:voters===4?0.60:0.50)
+      : 0.30;
+    const value=human===null?base:base===null?human:
+      Math.round(base*(1-humanWeight)+human*humanWeight);
+    const label=isPublic?'Combined Eye Test ('+voters+' reviewers)'
+      : personal!==null?'Your Combined Preview (Private)'
+      : base!==null?'Formula Baseline · No public reviews':'';
+    return {value,base,community,personal,reviewers:voters,
+      humanWeight,label,isPrivate:!isPublic&&personal!==null};
   }
   function hasOwn(id) { return !!RinkCloud.user && activeSeason===state.season && own.has(String(id)); }
   function publishUpdates() {
@@ -64,7 +78,9 @@ const RinkEye = (() => {
     const countEl = document.getElementById('eyeCoverage');
     if (countEl) countEl.textContent = published.size + ' players with community Eye Test scores this season';
     const note = document.getElementById('eyeAvailability');
-    if (note) note.textContent = loadError || (published.size ? 'Public averages are shown when three reviewers qualify. Your own saved ratings are visible privately while signed in.' : 'Your saved Eye Test ratings are visible privately when you sign in. A public community average requires three different signed-in reviewers.');
+    if (note) note.textContent = loadError || (published.size
+      ? 'Formula-based starting scores are available for eligible skaters. Human grades update the blended Eye Test; public consensus requires three reviewers.'
+      : 'Formula baselines are available for eligible skaters. Rate a player to adjust your private preview; public human consensus requires three different reviewers.');
   }
   async function reload(season = state.season) {
     const req = ++requestId;
@@ -126,14 +142,23 @@ const RinkEye = (() => {
   function panel(player) {
     const id = String(player.id), r = published.get(id), mine = own.get(id);
     const group = ratingGroup(player), traits = ratingTraits(player);
-    const s = score(id), personal = personalScore(id);
+    const s=score(id),personal=personalScore(id),merged=display(id);
     const heading = '<div class="eyebrow">VIEWER OPINION · SEPARATE FROM MONEYPUCK</div><h3>Eye Test: '+(group==='D'?'Defenseman':'Forward')+'</h3>';
     const result = '<div class="eye-result">'
-      +(personal !== null ? '<p><strong class="eye-score">'+personal+'/100</strong> <span class="eye-private-label">Your Rating (Private)</span><small>Only you can see your individual rating when signed in.</small></p>' : '')
-      +(s === null
-        ? '<p class="eye-pending"><strong>Community score pending.</strong> A public average appears after three different signed-in viewers rate this player. '+(personal !== null ? 'Your rating has been saved.' : 'You can submit your own rating below.')+'</p>'
-        : '<p><strong class="eye-score">'+s+'/100</strong> <span class="eye-public-label">Community Eye Test</span><small>Average of '+r.reviewer_count+' viewer'+(r.reviewer_count===1?'':'s')+'. Not a professional scouting grade.</small></p>')
-      +'</div>';
+      +(merged.value !== null
+        ? '<p><strong class="eye-score">'+merged.value+'/100</strong> <span class="'+(merged.isPrivate?'eye-private-label':'eye-public-label')+'">'+merged.label+'</span><small>'
+          +(merged.base!==null&&merged.humanWeight>0
+            ? 'Formula baseline '+merged.base+'/100 · Human rating '+(merged.isPrivate?personal:s)+'/100 · Viewer weight '+Math.round(merged.humanWeight*100)+'%.'
+            : 'Seasonal statistical estimate only; no qualifying public viewer average yet.')
+          +'</small></p>'
+        : '<p><strong>Not enough MoneyPuck data for a starting estimate.</strong></p>')
+      +'<div class="eye-components">'
+      +(merged.base!==null?'<p><b>Starting formula estimate:</b> '+merged.base+'/100</p>':'')
+      +(personal!==null?'<p><b>Your actual Eye Test:</b> '+personal+'/100 <span class="eye-private-label">Private</span></p>':'')
+      +(s!==null?'<p><b>Community human-rating average:</b> '+s+'/100 ('+r.reviewer_count+' reviewers)</p>'
+         : '<p class="eye-pending"><b>Community average pending.</b> A public human average appears after three signed-in reviewers. '+(personal!==null?'Your own grade is included privately.':'You can contribute grades below.')+'</p>')
+      +'</div></div>'
+      +(typeof RinkBase!=='undefined'?RinkBase.panel(player):'');
     const traitDetails = r
       ? '<details><summary>See eight position-specific viewer averages</summary><div class="eye-traits">'+traits.map(([key,name]) => '<div><span>'+name+'</span><b>'+Number(r[key]).toFixed(1)+'/10</b></div>').join('')+'</div></details>'
       : '';
@@ -214,7 +239,7 @@ const RinkEye = (() => {
         publishUpdates();
       }
       await reload(season);
-      return 'Your Eye Test rating was saved. Your private score is visible now; the community score requires three reviewers.';
+      return 'Your Eye Test grade was saved. Your combined preview has updated. A public community average needs three reviewers.';
     } finally { saving = false; }
   }
   async function withdraw(id) {

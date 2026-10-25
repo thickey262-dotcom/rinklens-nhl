@@ -72,3 +72,15 @@
 .eye-pending{background:#213446;border:1px dashed #6b8b9b;padding:12px;border-radius:8px;color:#d9e9f0}
 .eye-table small{display:block;font-size:.73rem;line-height:1.5;color:#c3dae2}
 .eye-table .eye-personal-note{color:#a7ddff}
+
+/* Labeled statistical baseline within the human-observation workflow. */
+.eye-base-panel{border:1px solid #6e8091;background:#192c3b;border-radius:10px;margin:14px 0;padding:15px}
+.eye-base-panel h4{margin:4px 0 7px;color:#e6f4fc}
+.eye-base-panel h4 strong{color:#ffdf9f}
+.eye-base-panel p{font-size:.9rem}
+.eye-base-panel details summary{cursor:pointer;min-height:42px;padding:9px 0}
+.eye-base-panel .base-table{width:100%;font-size:.85rem}
+.eye-base-panel .base-table th,.eye-base-panel .base-table td{padding:7px 6px;text-align:left}
+.eye-components{border-top:1px solid #527181;margin-top:10px;padding-top:12px}
+.eye-components p{margin:6px 0}
+.eye-result .eye-public-label{max-width:100%;white-space:normal}

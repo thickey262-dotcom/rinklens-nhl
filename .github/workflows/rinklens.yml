@@ -29,6 +29,7 @@ jobs:
         run: python -m unittest discover -s tests_moneypuck -v
       - name: Validate public website JavaScript
         run: |
+          node --check eye-base.js
           node --check stats-score.js
           node --check money.js
           node --check eye.js
@@ -37,6 +38,7 @@ jobs:
           node tests_moneypuck/test_pagination.js
           node tests_moneypuck/test_eye_quick_rate.js
           node tests_moneypuck/test_eye_private_score.js
+          node tests_moneypuck/test_eye_base.js
       - name: Update MoneyPuck player statistics
         run: python scripts/fetch_moneypuck.py --seasons 20262027 20252026 20242025
       - name: Validate refreshed MoneyPuck 5v5 ice time and score coverage
@@ -53,7 +55,7 @@ jobs:
       - name: Assemble MoneyPuck stats, composite, and Eye Test website
         run: |
           mkdir -p _site/data
-          cp index.html money.css money.js stats-score.js eye.css eye.js cloud.js config.js _site/
+          cp index.html money.css money.js stats-score.js eye-base.js eye.css eye.js cloud.js config.js _site/
           cp data/moneypuck-*.json _site/data/
           touch _site/.nojekyll
           if grep -Ei 'autoscout|community-eye\\.js|scouting-consensus|model-ratings|film-lab|nhl-[0-9]|advanced-[0-9]' _site/index.html; then
