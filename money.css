@@ -27,3 +27,11 @@
 .pagination-controls .mini:disabled{cursor:not-allowed;opacity:.46}
 #pageNumber{font-weight:700;min-width:95px;text-align:center}
 @media(max-width:560px){.pagination{justify-content:center;text-align:center}.pagination-controls{justify-content:center}}
+
+/* Context reminders: every figure belongs to the selected regular season. */
+.season-notice{margin:4px 0 16px;padding:15px 18px;border:1px solid #527185;border-left:4px solid #93c6d2;border-radius:10px;background:#142b3b;color:#e5f2f7;line-height:1.5;font-size:1rem}
+.season-notice strong{color:#fff}
+.season-inline-notice,.season-detail-notice{margin:0 0 18px;padding:12px 14px;border:1px solid #4a6578;border-radius:9px;background:#1a3141;color:#dceaf1;line-height:1.45;font-size:.95rem}
+.season-detail-notice{margin:12px 0 20px}
+.season-inline-notice strong,.season-detail-notice strong{color:#fff}
+@media(max-width:520px){.season-notice{padding:13px 14px;font-size:.94rem}.season-inline-notice,.season-detail-notice{font-size:.9rem}}

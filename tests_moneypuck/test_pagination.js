@@ -22,6 +22,7 @@ function element(id){
    selectedOptions:[{text:'2026–27'}],
    classList:{toggle(){}},
    addEventListener(type,callback){handlers[id+':'+type]=callback;},
+   focus(){},
   });
  }
  return elements.get(id);
@@ -44,12 +45,23 @@ const ctx={
  })}),
  console,
 };
-const api=vm.runInNewContext(code+'\n({state,load,render,changePage,filtered})',ctx);
+const api=vm.runInNewContext(code+'\n({state,load,render,changePage,filtered,renderCompare,detail})',ctx);
 const countRows=()=> (element('rows').innerHTML.match(/<tr>/g)||[]).length;
 (async()=>{
  // The script starts an initial load on evaluation.
  await api.load();
  assert.equal(api.state.page,1);
+ assert.match(element('seasonNotice').textContent,/2026–27 regular season only/);
+ assert.match(element('seasonNotice').textContent,/not career totals/);
+ assert.match(element('playersSeasonNotice').textContent,/2026–27 season only/);
+ assert.match(element('compareSeasonNotice').textContent,/2026–27 season numbers only/);
+ api.detail(players[0].id);
+ assert.match(element('detail').innerHTML,/2026–27 regular season only/);
+ assert.match(element('detail').innerHTML,/Not career totals/);
+ api.state.selected=[players[0].id];
+ api.renderCompare();
+ assert.match(element('comparison').innerHTML,/2026–27 season only/);
+ api.state.selected=[];
  assert.equal(countRows(),25);
  assert.equal(element('pageSummary').textContent,'Showing 1–25 of 53 players');
  assert.equal(element('pageNumber').textContent,'Page 1 of 3');
@@ -126,9 +138,15 @@ const countRows=()=> (element('rows').innerHTML.match(/<tr>/g)||[]).length;
  await Promise.resolve();await Promise.resolve();await Promise.resolve();
  assert.equal(api.state.page,1);
  assert.equal(api.state.season,'20252026');
+ assert.match(element('seasonNotice').textContent,/2025–26 regular season only/);
+ assert.match(element('playersSeasonNotice').textContent,/2025–26 season only/);
+ assert.match(element('compareSeasonNotice').textContent,/2025–26 season numbers only/);
+ assert.doesNotMatch(element('seasonNotice').textContent,/2026–27/);
+ api.detail(players[0].id);
+ assert.match(element('detail').innerHTML,/2025–26 regular season only/);
  assert.equal(countRows(),25);
  assert.ok(code.includes('PAGE_SIZE = 25'));
  assert.ok(code.includes('allRows.slice('));
  assert.ok(!code.includes('PAGE_SIZE = 50'));
- console.log('PASS: 25 rows, partial last page, page boundaries, search/filter/sort/season reset, Eye Test render and comparison preservation.');
+ console.log('PASS: pagination, filtering, selected-season-only reminders in page/table/profile/compare, season changes, and Eye Test render.');
 })().catch(err=>{console.error(err);process.exitCode=1});

@@ -59,6 +59,10 @@ A successful Eye Test vote immediately shows **Your Rating (Private)**, calculat
 
 The upgraded eight-grade database schema preserves per-account/player/season uniqueness, server validation, vote privacy, and the minimum three-reviewer threshold. The Eye Test module is now exposed to the player table so it can show existing public scores and add/edit actions. Advanced Stats Score is not affected.
 
+## Selected-season reminders
+
+The site displays plain-language reminders that every NHL statistic, comparison, and formula-based rating refers **only to the currently selected regular season**, not a career or all-time total. The top overview, Players table, comparison section, player-detail dialog and page status all identify the exact selected season (e.g., 2026–27). The reminders automatically update when the season selector changes, including during loading. Counting stats (GP, G, A, PTS) are all-situations totals **within that season**; advanced metrics and the Advanced Stats Score use that season's five-on-five values. Season-specific Eye Test votes and the statistical baseline are also scoped to the selected year. No scoring weights or source data are changed by these labels.
+
 ## Player table pagination
 
 The player database displays **25 players per page** with Previous/Next navigation, an exact shown-range counter and page total. Results are filtered and sorted across the entire season **before** taking the 25-player slice. Searching, changing team or position, changing sorting, or loading another season resets to page 1. Eye Test updates and comparison selections preserve the current page. Zero-result searches hide pagination without disrupting the underlying statistics or ratings.

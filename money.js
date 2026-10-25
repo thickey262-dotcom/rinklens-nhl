@@ -20,9 +20,18 @@ function eyeCell(id) {
 }
 function status(message,isError=false){$('status').textContent=message;$('status').classList.toggle('error',isError)}
 function position(p){return p.pos==='D'?'D':'F'}
+function seasonLabel(){return state.season.slice(0,4)+'–'+state.season.slice(6);}
+function updateSeasonNotices(){
+ const name=seasonLabel();
+ $('seasonNotice').textContent=name+' regular season only. All player numbers and rankings reflect the selected season, not career totals. Choose another season above to view that season.';
+ $('playersSeasonNotice').textContent='Showing '+name+' season only — not career totals. GP, goals, assists and points include all situations; advanced metrics use 5-on-5.';
+ $('compareSeasonNotice').textContent='Comparisons use '+name+' season numbers only, not career statistics.';
+}
+
 async function load(){
  const season=$('season').value,token=++state.token;
  state.season=season;state.selected=[];state.players=[];state.ready=false;state.page=1;
+ updateSeasonNotices();
  updatePagination(0);
  RinkStats.calculate([]);
  if(typeof RinkBase!=='undefined')RinkBase.calculate([]);
@@ -43,7 +52,7 @@ async function load(){
   $('updated').textContent=data.updatedAt?new Date(data.updatedAt).toLocaleDateString():'Not recorded';
   const teams=[...new Set(state.players.map(p=>p.team))].sort();
   $('team').innerHTML='<option value="">All teams</option>'+teams.map(t=>'<option value="'+safe(t)+'">'+safe(t)+'</option>').join('');
-  status('MoneyPuck season statistics loaded. Advanced Stats Score uses 5-on-5 metrics. Formula Baseline uses games played, average ice time and points/game. Eye Test grades are separately submitted by viewers.');
+  status(seasonLabel()+' regular season data loaded (not career totals). Advanced Stats Score uses 5-on-5 metrics. Formula Baseline uses season games played, average ice time and points/game. Eye Test grades are separately submitted by viewers.');
   render();
   if(window.RinkEye) void RinkEye.reload(season);
  }catch(err){if(token!==state.token)return;status('MoneyPuck statistics are currently unavailable for this season. No substitute or estimated data is shown. '+err.message,true);$('rows').innerHTML='<tr><td colspan="12">No verified MoneyPuck data available.</td></tr>';$('results').textContent='0 players';updatePagination(0);}
@@ -84,7 +93,7 @@ function render(){
 function renderCompare(){
  if(!state.selected.length){$('comparison').textContent='Select up to two players from the table above.';return}
  const p=state.selected.map(get).filter(Boolean);
- $('comparison').innerHTML='<div class="comparison-head">'+p.map(x=>'<div><strong>'+safe(x.name)+'</strong><small>'+safe(x.team)+' · '+safe(x.pos)+'</small><button type="button" class="mini" data-remove="'+safe(x.id)+'">Remove</button></div>').join('')+'</div><div class="table-wrap"><table><thead><tr><th>Statistic</th>'+p.map(x=>'<th>'+safe(x.name)+'</th>').join('')+'</tr></thead><tbody>'+fields.map(([k,name,d])=>'<tr><th>'+name+'</th>'+p.map(x=>'<td>'+show(x[k],d)+'</td>').join('')+'</tr>').join('')+'<tr><th>Advanced Stats Score · MoneyPuck-based /100</th>'+p.map(x=>'<td>'+String(RinkStats.score(x)??'—')+(RinkStats.label(x)?'<small>'+safe(RinkStats.label(x))+'</small>':'')+'</td>').join('')+'</tr>'+'<tr><th>Combined Eye Test (baseline + available viewer grades)</th>'+p.map(x=>'<td>'+eyeCell(x.id)+'</td>').join('')+'</tr>'
+ $('comparison').innerHTML='<p class="season-detail-notice"><strong>'+seasonLabel()+' season only.</strong> These are not career numbers.</p><div class="comparison-head">'+p.map(x=>'<div><strong>'+safe(x.name)+'</strong><small>'+safe(x.team)+' · '+safe(x.pos)+'</small><button type="button" class="mini" data-remove="'+safe(x.id)+'">Remove</button></div>').join('')+'</div><div class="table-wrap"><table><thead><tr><th>Statistic</th>'+p.map(x=>'<th>'+safe(x.name)+'</th>').join('')+'</tr></thead><tbody>'+fields.map(([k,name,d])=>'<tr><th>'+name+'</th>'+p.map(x=>'<td>'+show(x[k],d)+'</td>').join('')+'</tr>').join('')+'<tr><th>Advanced Stats Score · MoneyPuck-based /100</th>'+p.map(x=>'<td>'+String(RinkStats.score(x)??'—')+(RinkStats.label(x)?'<small>'+safe(RinkStats.label(x))+'</small>':'')+'</td>').join('')+'</tr>'+'<tr><th>Combined Eye Test (baseline + available viewer grades)</th>'+p.map(x=>'<td>'+eyeCell(x.id)+'</td>').join('')+'</tr>'
   +'<tr><th>Formula baseline · MoneyPuck-derived /100</th>'+p.map(x=>'<td>'+String((typeof RinkBase!=='undefined'?RinkBase.score(x):null)??'—')+'</td>').join('')+'</tr>'
   +'<tr><th>Human viewer average /100</th>'+p.map(x=>'<td>'+String(eyeDisplay(x.id)?.community??eyeDisplay(x.id)?.personal??'—')+'</td>').join('')+'</tr>'+'</tbody></table></div>';
 }
@@ -93,7 +102,8 @@ function detail(id){
  const eye=window.RinkEye?RinkEye.panel(p):'';
  // Put the rating controls first instead of hiding them beneath the long stat breakdown.
  $('detail').innerHTML='<div class="eyebrow">PLAYER PROFILE · '+safe(p.team)+'</div><h2 id="dialogTitle">'+safe(p.name)+'</h2>'
-  +'<p>'+safe(p.team)+' · '+safe(p.pos)+' · '+state.season.slice(0,4)+'–'+state.season.slice(6)+'</p>'
+  +'<p>'+safe(p.team)+' · '+safe(p.pos)+' · '+seasonLabel()+'</p>'
+  +'<p class="season-detail-notice"><strong>'+seasonLabel()+' regular season only.</strong> Not career totals. Goals, assists and points include all situations; advanced metrics are 5-on-5.</p>'
   +eye
   +'<details class="player-stat-details"><summary>See MoneyPuck statistics and Advanced Stats Score</summary>'
   +'<div class="detail-grid">'+fields.map(([k,name,d])=>'<div><span>'+name+'</span><strong>'+show(p[k],d)+'</strong></div>').join('')+'</div>'
