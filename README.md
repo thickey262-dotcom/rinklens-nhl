@@ -1,5 +1,7 @@
 # RinkLens — MoneyPuck stats, NHL ranking-formula baseline, and fan Eye Test
 
+The homepage has a short **What is RinkLens for?** introduction explaining that this is an approachable guide to advanced stats for everyday hockey fans: plain-English explanations, season-only comparisons, clear statistical ratings, and optional real fan Eye Test grades. It appears directly below the home hero so new visitors understand the site's purpose before reaching the data.
+
 The site displays MoneyPuck player statistics alongside an Advanced Stats Score and a separate Eye Test system with a labeled statistical starting baseline:
 
 1. **MoneyPuck statistics**: regular-season all-situations counting totals and 5-on-5 chance/shot metrics. `scripts/fetch_moneypuck.py` refreshes the public dataset daily using MoneyPuck's published season-summary CSV.

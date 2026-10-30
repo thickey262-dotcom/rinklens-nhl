@@ -11,6 +11,11 @@ class EyeTestUI(unittest.TestCase):
         for forbidden in ["model-ratings.js", "scouting-consensus.js", "autoscout.js", "community-eye.js", "Combined score", "Computer estimate", "Stats score"]:
             self.assertNotIn(forbidden,html)
         self.assertIn("Eye Test",html)
+        self.assertIn('aria-labelledby="purposeTitle"',html)
+        self.assertIn("What is RinkLens for?",html)
+        self.assertIn("plain-English explanations",html)
+        self.assertIn("season you select",html)
+        self.assertIn("not a player’s entire career",html)
         self.assertIn("RinkEye?.display",js)
         self.assertIn("eye-base.js",html)
         self.assertIn("Formula Baseline",eye)
