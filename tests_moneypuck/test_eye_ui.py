@@ -13,6 +13,8 @@ class EyeTestUI(unittest.TestCase):
         self.assertIn("Eye Test",html)
         self.assertIn('aria-labelledby="purposeTitle"',html)
         self.assertIn("What is RinkLens for?",html)
+        self.assertLess(html.index('<section id="home" class="purpose-intro"'), html.index('<section class="hero">'))
+        self.assertEqual(html.count('id="home"'),1)
         self.assertIn("plain-English explanations",html)
         self.assertIn("season you select",html)
         self.assertIn("not a player’s entire career",html)

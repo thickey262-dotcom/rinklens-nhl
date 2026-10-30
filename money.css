@@ -37,7 +37,8 @@
 @media(max-width:520px){.season-notice{padding:13px 14px;font-size:.94rem}.season-inline-notice,.season-detail-notice{font-size:.9rem}}
 
 /* A short, readable explanation of the purpose of RinkLens. */
-.purpose-intro{margin:0 0 20px;max-width:900px;border-left:3px solid #8cdbdd;padding:6px 0 7px 21px}
+.purpose-intro{margin:36px 0 0;max-width:900px;border-left:3px solid #8cdbdd;padding:6px 0 7px 21px}
+.purpose-intro+.hero{padding-top:30px}
 .purpose-intro h2{font-size:clamp(1.4rem,2.4vw,1.8rem);margin:0 0 10px;color:#f0f7fb}
 .purpose-intro p{font-size:1.05rem;line-height:1.7;color:#d0e0e8;margin:0}
 @media(max-width:520px){.purpose-intro{padding-left:15px}.purpose-intro p{font-size:1rem}}
