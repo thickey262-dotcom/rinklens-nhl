@@ -103,7 +103,7 @@ const instance=vm.runInNewContext(baseCode+'\nRinkBase.calculate(state.players);
  assert.equal(d.value,baseline,'an unreviewed skater starts at the statistical baseline');
  assert.match(d.label,/Formula Baseline/);
  assert.equal(d.humanWeight,0);
- assert.match(instance.panel(player),/ONE EYE TEST RANKING/);
+ assert.match(instance.panel(player),/SEASON EYE TEST SCORE/);
  const form={id:'eyeVoteForm',dataset:{eyePlayer:player.id},
   querySelector(){return {disabled:false};},
   elements:{namedItem(k){return k==='watched'?{checked:true}:{value:'9'};}}
@@ -115,7 +115,7 @@ const instance=vm.runInNewContext(baseCode+'\nRinkBase.calculate(state.players);
  assert.equal(d.isPrivate,true);
  assert.equal(d.humanWeight,0.3);
  assert.equal(d.value,Math.round(baseline*.7+90*.3));
- assert.match(instance.panel(player),/Your Combined Preview \(Private\)/);
+ assert.match(instance.panel(player),/Eye Test · Your private preview/);
  assert.equal(base.score(player),baseline,'human votes cannot mutate MoneyPuck-only baseline');
  const aggregate=(n,score)=>({season_id:state.season,player_id:player.id,reviewer_count:n,
   score,skating:8,puck:8,iq:8,defense:8,compete:8,transition:8,shooting:8,positioning:8});
@@ -129,7 +129,7 @@ const instance=vm.runInNewContext(baseCode+'\nRinkBase.calculate(state.players);
    assert.equal(d.reviewers,reviewers);
    assert.equal(d.humanWeight,weight);
    assert.equal(d.value,Math.round(baseline*(1-weight)+80*weight));
-   assert.match(instance.panel(player),/published fan reviews/);
+   assert.match(instance.panel(player),/actual fan reviews/);
  }
  cloud.user=null;
  await instance.reload(state.season);

@@ -74,7 +74,7 @@ let covered=0,shifted=0;
    }
    const profile=eye.panel(sorted[0]);
    assert.equal((profile.match(/\/100/g)||[]).length,1,'one visible numeric ranking');
-   assert.match(profile,/6 RinkLens statistical evaluations/);
+   assert.match(profile,/Statistical estimate · no published fan reviews/);
    assert.match(profile,/Five extra statistical perspectives for top-100 players/);
    assert.doesNotMatch(eye.panel(sorted[100]),/Five extra statistical perspectives for top-100 players/);
    console.log('PASS '+season+': 100 top players have 5 extra models; '+state.players.length+' have one displayed Eye Test ranking');

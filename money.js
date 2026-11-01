@@ -13,11 +13,11 @@ function eyeDisplay(id) { return window.RinkEye?.display(id) ?? null; }
 function eyeCell(id) {
  const entry = eyeDisplay(id);
  if (!entry || entry.value === null) return '—';
- const main='<strong>'+entry.value+'/100</strong><small>Eye Test ranking</small>'
-   +(entry.modelEntries?'<small class="eye-model-source">'+entry.modelEntries+' RinkLens model evaluation'+(entry.modelEntries===1?'':'s')
-     +(entry.publicFanEntries?' + '+entry.publicFanEntries+' fans':' · awaiting public fan reviews')+'</small>':'')
-   +(entry.provisional?'<small>Provisional · small sample</small>':'')
-   +(entry.isPrivate?'<small class="eye-personal-note">Private preview includes your saved fan grade</small>':'');
+ const status=entry.isPrivate?'Private preview · includes your saved fan grade'
+   :entry.community!==null?'Fan-informed · '+entry.reviewers+' actual reviews'
+   :'Statistical estimate · no published fan reviews';
+ const main='<strong>'+entry.value+'/100</strong><small>'+safe(status)+'</small>'
+   +(entry.provisional?'<small>Provisional · small sample</small>':'');
  return main;
 }
 function advancedCell(p){
@@ -97,7 +97,7 @@ async function load(){
   const ranked=state.players.filter(p=>eyeDisplay(p.id)?.anchored).length;
   const temporary=state.players.filter(p=>RinkStats.anchor?.(p)?.provisional).length;
   const top100=typeof RinkLenses!=='undefined'?RinkLenses.total():0;
-  status(seasonLabel()+' regular season only. '+ranked+' of '+state.players.length+' skaters have a single Eye Test ranking (within ±5 of the advanced reference). The top '+top100+' qualified skaters receive five additional automated statistical evaluations. '+temporary+' skaters use provisional references. Fan votes remain authentic and separate.');
+  status(seasonLabel()+' season only. '+ranked+' of '+state.players.length+' skaters have an Eye Test score based on statistics (within ±5 of the advanced reference). '+top100+' top players use extra statistical calculations; '+temporary+' have provisional small-sample estimates. Published fan feedback requires three real reviewers.');
   render();
   if(window.RinkEye) void RinkEye.reload(season);
  }catch(err){if(token!==state.token)return;status('MoneyPuck statistics are currently unavailable for this season. No substitute or estimated data is shown. '+err.message,true);$('rows').innerHTML='<tr><td colspan="12">No verified MoneyPuck data available.</td></tr>';$('results').textContent='0 players';updatePagination(0);}
@@ -138,7 +138,7 @@ function render(){
 function renderCompare(){
  if(!state.selected.length){$('comparison').textContent='Select up to two players from the table above.';return}
  const p=state.selected.map(get).filter(Boolean);
- $('comparison').innerHTML='<p class="season-detail-notice"><strong>'+seasonLabel()+' season only.</strong> These are not career numbers.</p><div class="comparison-head">'+p.map(x=>'<div><strong>'+safe(x.name)+'</strong><small>'+safe(x.team)+' · '+safe(x.pos)+'</small><button type="button" class="mini" data-remove="'+safe(x.id)+'">Remove</button></div>').join('')+'</div><div class="table-wrap"><table><thead><tr><th>Statistic</th>'+p.map(x=>'<th>'+safe(x.name)+'</th>').join('')+'</tr></thead><tbody>'+fields.map(([k,name,d])=>'<tr><th>'+name+'</th>'+p.map(x=>'<td>'+show(x[k],d)+'</td>').join('')+'</tr>').join('')+'<tr><th>Advanced Stats Score (or provisional small-sample reference) /100</th>'+p.map(x=>'<td>'+advancedCell(x)+'</td>').join('')+'</tr>'+'<tr><th>Eye Test ranking · RinkLens model + eligible fan grades</th>'+p.map(x=>'<td>'+eyeCell(x.id)+'</td>').join('')+'</tr>'+'</tbody></table></div>';
+ $('comparison').innerHTML='<p class="season-detail-notice"><strong>'+seasonLabel()+' season only.</strong> These are not career numbers.</p><div class="comparison-head">'+p.map(x=>'<div><strong>'+safe(x.name)+'</strong><small>'+safe(x.team)+' · '+safe(x.pos)+'</small><button type="button" class="mini" data-remove="'+safe(x.id)+'">Remove</button></div>').join('')+'</div><div class="table-wrap"><table><thead><tr><th>Statistic</th>'+p.map(x=>'<th>'+safe(x.name)+'</th>').join('')+'</tr></thead><tbody>'+fields.map(([k,name,d])=>'<tr><th>'+name+'</th>'+p.map(x=>'<td>'+show(x[k],d)+'</td>').join('')+'</tr>').join('')+'<tr><th>Advanced Stats Score (or provisional small-sample reference) /100</th>'+p.map(x=>'<td>'+advancedCell(x)+'</td>').join('')+'</tr>'+'<tr><th>Eye Test score · estimate plus eligible fan feedback</th>'+p.map(x=>'<td>'+eyeCell(x.id)+'</td>').join('')+'</tr>'+'</tbody></table></div>';
 }
 function detail(id){
  const p=get(id);if(!p)return;

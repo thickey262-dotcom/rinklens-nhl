@@ -76,9 +76,9 @@ const RinkEye = (() => {
       Math.round(base*(1-humanWeight)+human*humanWeight);
     const value=reference&&unboundedValue!==null
       ?cap(unboundedValue,reference.score):unboundedValue;
-    const label=isPublic?'Combined Eye Test ('+voters+' reviewers)'
-      : personal!==null?'Your Combined Preview (Private)'
-      : reference?(reference.provisional?'Eye Test · Provisional starting estimate':'Eye Test · RinkLens starting estimate')
+    const label=isPublic?'Eye Test · Fan-informed ('+voters+' reviewers)'
+      : personal!==null?'Eye Test · Your private preview'
+      : reference?(reference.provisional?'Eye Test · Provisional statistical estimate':'Eye Test · Statistical estimate')
       : base!==null?'Formula Baseline · No public reviews':'';
     // RinkLens supplies one clearly marked MODEL contribution for any player
     // with a statistical estimate. It is never an authenticated human ballot,
@@ -106,14 +106,13 @@ const RinkEye = (() => {
     if (countEl){
       const modelCount=(state.players||[]).filter(p=>display(p.id).modelEntries>0).length;
       const enriched=(state.players||[]).filter(p=>display(p.id).modelEntries===6).length;
-      countEl.textContent=modelCount+' skaters with one Eye Test ranking · '+enriched
-        +' top-100 players with five extra statistical evaluations · '+published.size
-        +' with eligible public fan feedback. RinkLens models do not count as human voters.';
+      countEl.textContent=modelCount+' players with Eye Test estimates · '+published.size
+        +' with published fan feedback (at least three real reviewers). The estimates are not fan votes.';
     }
     const note = document.getElementById('eyeAvailability');
     if (note) note.textContent = loadError || (published.size
-      ? 'One Eye Test ranking per player: a RinkLens statistical starting point, updated with eligible fan grades. Public fan feedback requires three people.'
-      : 'One Eye Test ranking per player starts with the RinkLens statistical model. Your fan grade can update your private preview; three human votes are needed for the public blend.');
+      ? 'Eye Test scores begin as statistical estimates. Published fan feedback is included only after three real people submit grades.'
+      : 'Eye Test scores are statistical estimates until real fan feedback qualifies. Your vote can update your private preview; public fan results require three actual reviewers.');
   }
   async function reload(season = state.season) {
     const req = ++requestId;
@@ -176,28 +175,28 @@ const RinkEye = (() => {
     const id = String(player.id), r = published.get(id), mine = own.get(id);
     const group = ratingGroup(player), traits = ratingTraits(player);
     const s=score(id),personal=personalScore(id),merged=display(id);
-    const heading='<div class="eyebrow">ONE EYE TEST RANKING · RINKLENS + REAL FANS</div>'
+    const heading='<div class="eyebrow">SEASON EYE TEST SCORE</div>'
       +'<h3>Eye Test: '+(group==='D'?'Defenseman':'Forward')+'</h3>';
     const sources=merged.modelEntries
-      ? (merged.modelEntries===6?'6 RinkLens statistical evaluations (including five extra for the top 100)':'1 RinkLens statistical evaluation')
-        +' · all model-generated, not people'
-        +(merged.publicFanEntries?' + '+merged.publicFanEntries+' published fan review'+(merged.publicFanEntries===1?'':'s'):' · public fan average pending')
-      : (merged.publicFanEntries?merged.publicFanEntries+' published fan reviews':'No reliable model estimate available');
+      ? (merged.publicFanEntries
+        ? 'Statistical starting estimate + '+merged.publicFanEntries+' actual fan review'+(merged.publicFanEntries===1?'':'s')
+        : 'Statistical estimate · no published fan reviews')
+      : (merged.publicFanEntries?merged.publicFanEntries+' actual fan reviews':'No reliable statistical estimate available');
     const result='<div class="eye-result">'
       +(merged.value!==null
         ? '<p class="eye-unified-score"><strong class="eye-score">'+merged.value+'/100</strong> '
           +'<span class="'+(merged.isPrivate?'eye-private-label':'eye-public-label')+'">'
           +merged.label+'</span></p>'
         : '<p><strong>Eye Test ranking unavailable:</strong> insufficient statistics and no qualifying fan feedback.</p>')
-      +'<p class="eye-source-summary"><strong>Contributions:</strong> '+sources+'.</p>'
-      +(personal!==null?'<p class="eye-private-note">Your fan grade is saved and visible only to you; '
+      +'<p class="eye-source-summary"><strong>Score source:</strong> '+sources+'.</p>'
+      +(personal!==null?'<p class="eye-private-note">Your own fan grade is saved and visible only to you; '
           +(s!==null?'it is included in the qualified fan average.':'your private Eye Test preview includes it.')+'</p>':'')
       +(s===null?'<p class="eye-pending">Fan average pending: at least three distinct real reviewers are required before fan feedback affects the public ranking.</p>':'')
       +(merged.modelExtra.length===5?'<details class="eye-merge-details"><summary>Five extra statistical perspectives for top-100 players</summary>'
-        +'<p>These are alternate weightings of the same season’s verified five-on-five statistics, not separate fan reviews or new scouting observations. They contribute to the one RinkLens starting estimate alongside the original formula, with each model component bounded to five points from the advanced reference.</p>'
+        +'<p>These are alternate weightings of the same season’s five-on-five statistics. They are automated calculations, not additional fan reviews or observations, and contribute to one statistical starting estimate.</p>'
         +'<p><strong>Statistical perspectives:</strong> '+merged.modelExtra.map(x=>x.name).join(' · ')+'</p></details>':'')
       +'<details class="eye-merge-details"><summary>How the one Eye Test ranking is calculated</summary>'
-      +'<p>RinkLens starts with a position-based statistical estimate, then combines it with actual fan grades when eligible. With no fan ratings, it is a <strong>model-generated estimate, not a scouting observation</strong>. '
+      +'<p>The Eye Test starts with a position-based statistical estimate, then combines it with actual fan grades when eligible. Without qualifying fan ratings, the number is <strong>calculated from stats, not submitted by visitors or scouts</strong>. '
       +(merged.modelExtra.length===5?'For top-100 players, the model starting value is the equal average of six correlated statistical evaluations: the original baseline plus five alternate metric-weighted perspectives. For other skaters the starting value uses the original formula alone. ':'')
       +'One signed-in fan can see a private preview (70% model / 30% personal grade); '
       +'with three qualifying reviewers the public score uses 50% model / 50% fan average; '
@@ -209,7 +208,7 @@ const RinkEye = (() => {
     const traitDetails = r
       ? '<details><summary>See eight position-specific viewer averages</summary><div class="eye-traits">'+traits.map(([key,name]) => '<div><span>'+name+'</span><b>'+Number(r[key]).toFixed(1)+'/10</b></div>').join('')+'</div></details>'
       : '';
-    let participation = '<p class="source-note">Your authentic fan grade contributes to the same Eye Test ranking once eligible. The RinkLens model is not a human voter, and no model grade is stored as a fan submission. Fan ballots are private and unmodified; contributors are not verified professional scouts.</p>';
+    let participation = '<p class="source-note">Fan ratings come only from actual signed-in visitors. Automated statistical estimates are not fan submissions and do not count toward the three-reviewer requirement. Individual ballots remain private; reviewers are not verified professional scouts.</p>';
     if (!RinkCloud.client || !RinkCloud.user) {
       participation += '<p>Rating takes about a minute after signing in.</p><button type="button" class="button primary eye-signin-action" data-eye-signin>Sign in to rate this player</button>';
     } else {
