@@ -59,7 +59,7 @@ const RinkSources=(()=>{
        const ns=valid(nst[m.key])?nst[m.key]:null;
        if(ns===null)continue;
        const method=mp===null?'Natural Stat Trick only':'Two-source arithmetic mean';
-       next[m.key]=mp===null?ns:Math.round((mp+ns)*100)/100;
+       next[m.key]=mp===null?ns:Math.round(((mp+ns)/2)*100)/100;
        fields[m.key]={moneypuck:mp,nst:ns,result:next[m.key],method};
        if(mp!==null)averaged++;
      }
