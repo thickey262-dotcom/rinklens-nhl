@@ -35,14 +35,17 @@ const ctx={
   querySelector(){return {scrollIntoView(){scrollCount++;}}}
  },
  window:{RinkEye:null},
+ RinkSources:{COMPARABLE:[],blend(players){return {players,imported:false,matched:0,averaged:0,reason:'No NST export.'}}},
  RinkStats:{
   calculate(){},score(p){return p.p;},label(){return null;},reason(){return null;},
   panel(){return '';}
  },
- fetch:async url=>({ok:true,json:async()=>({
-  source:'moneypuck',season:url.match(/moneypuck-(\d{8})/)[1],
-  players,updatedAt:'2026-10-13T00:00:00Z'
- })}),
+ fetch:async url=>url==='data/nst-index.json'
+   ? {ok:true,json:async()=>({source:'naturalstattrick',seasons:[]})}
+   : {ok:true,json:async()=>({
+      source:'moneypuck',season:url.match(/moneypuck-(\d{8})/)[1],
+      players,updatedAt:'2026-10-13T00:00:00Z'
+   })},
  console,
 };
 const api=vm.runInNewContext(code+'\n({state,load,render,changePage,filtered,renderCompare,detail})',ctx);
