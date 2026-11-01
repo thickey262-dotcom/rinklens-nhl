@@ -72,11 +72,11 @@ async function load(){
   const moneypuckPlayers=data.players.filter(p=>typeof p.name==='string'&&typeof p.id==='string'&&p.gp>0);
   const nst=await loadNST(season);
   if(token!==state.token)return;
-  const sources=RinkSources.blend(moneypuckPlayers,nst,season);
+  const sources=RinkSources.blend(moneypuckPlayers,nst,season,data.updatedAt);
   state.players=sources.players;
   $('nstCoverage').textContent=sources.imported
-    ? 'Natural Stat Trick export: '+sources.reason+' Other values remain from MoneyPuck. Imported exports are not refreshed automatically.'
-    : 'Natural Stat Trick: no approved, matching 5-on-5 export imported for '+seasonLabel()+'. Currently showing MoneyPuck-only statistics.';
+    ? 'Natural Stat Trick 5-on-5 snapshot (as of '+new Date(nst.updatedAt).toLocaleDateString()+'): '+sources.reason+' Other values remain from MoneyPuck. NST does not refresh automatically.'
+    : 'Natural Stat Trick: '+sources.reason+' Currently showing MoneyPuck-only statistics for '+seasonLabel()+'.';
   RinkStats.calculate(state.players);
   if(typeof RinkBase!=='undefined')RinkBase.calculate(state.players);
   state.ready=true;

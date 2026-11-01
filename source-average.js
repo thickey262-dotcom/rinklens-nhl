@@ -16,18 +16,22 @@ const RinkSources=(()=>{
  const norm=s=>String(s||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'')
    .toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
  const group=p=>p?.pos==='D'?'D':['C','L','R','LW','RW'].includes(p?.pos)?'F':null;
+ // The raw NST export uses e.g. N.J, T.B, S.J, L.A; MoneyPuck uses NHL short codes.
+ const codeTeam=t=>({'N.J':'NJD','T.B':'TBL','S.J':'SJS','L.A':'LAK'}[t]||t);
  const team=p=>String(p?.team||'').trim().toUpperCase();
- const isWholeSeason=p=>['TOT','TOTAL','ALL','2TM','3TM','4TM'].includes(team(p));
+ const teams=p=>team(p).split(',').map(t=>codeTeam(t.trim())).filter(Boolean);
+ const wholeSeason=p=>['TOT','TOTAL','ALL','2TM','3TM','4TM'].includes(team(p));
  const samePlayer=(mp,ns)=>{
    if(!group(mp)||group(mp)!==group(ns))return false;
-   // Only a stable verified NHL player ID, or a unique exact name, is acceptable.
-   if(ns.id&&/^\d{6,10}$/.test(String(ns.id))&&String(ns.id)!==String(mp.id))return false;
+   // An ID must match if present. Without one, the unique exact name is required.
+   if(ns.id&&(!/^\d{6,10}$/.test(String(ns.id))||String(ns.id)!==String(mp.id)))return false;
    if(!ns.id&&norm(mp.name)!==norm(ns.name))return false;
-   if(ns.id&&norm(ns.name)&&norm(mp.name)!==norm(ns.name))return false;
-   if(!isWholeSeason(ns)&&team(ns)&&team(mp)&&team(ns)!==team(mp))return false;
+   if(!wholeSeason(ns)&&teams(ns).length&&!teams(ns).includes(codeTeam(team(mp))))return false;
    return true;
  };
- function blend(players,snapshot,season){
+ // Don't average season-to-date figures from different reporting dates.
+ // NST is a manual snapshot; MoneyPuck refreshes automatically each day.
+ function blend(players,snapshot,season,moneyPuckUpdatedAt){
    const original=Array.isArray(players)?players:[];
    const result={players:original,matched:0,averaged:0,imported:false,reason:'No verified Natural Stat Trick export for the selected season.'};
    if(!snapshot)return result;
@@ -36,6 +40,17 @@ const RinkSources=(()=>{
       snapshot.adjustment!=='raw'||!Array.isArray(snapshot.players)){
      result.reason='Natural Stat Trick import metadata did not match the selected regular season and 5-on-5 context.';
      return result;
+   }
+   if(moneyPuckUpdatedAt){
+     const nst=Date.parse(snapshot.updatedAt),mp=Date.parse(moneyPuckUpdatedAt);
+     if(!Number.isFinite(nst)||!Number.isFinite(mp)){
+       result.reason='Missing source timestamps; cannot safely combine season-to-date numbers.';
+       return result;
+     }
+     if(Math.abs(nst-mp)>48*60*60*1000){
+       result.reason='Natural Stat Trick snapshot is older than the MoneyPuck season data by more than 48 hours; using MoneyPuck-only metrics until a fresh NST CSV is supplied.';
+       return result;
+     }
    }
    const rows=snapshot.players.filter(p=>p&&group(p)&&norm(p.name)&&COMPARABLE.some(m=>valid(p[m.key])));
    const byId=new Map(),byName=new Map();

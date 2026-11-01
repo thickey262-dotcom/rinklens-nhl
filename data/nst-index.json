@@ -1,5 +1,7 @@
 {
   "source": "naturalstattrick",
-  "seasons": [],
-  "note": "No approved operator-provided Natural Stat Trick CSV imports have been published yet. MoneyPuck values stay unchanged."
+  "seasons": [
+    "20262027"
+  ],
+  "note": "2026–27 user-provided Natural Stat Trick 5-on-5 skater season export, imported 2026-11-01. Static snapshot: not an automatic live NST feed. Comparable 5v5 rates blend only for uniquely matching player IDs."
 }
