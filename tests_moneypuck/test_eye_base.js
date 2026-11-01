@@ -129,7 +129,7 @@ const instance=vm.runInNewContext(baseCode+'\nRinkBase.calculate(state.players);
    assert.equal(d.reviewers,reviewers);
    assert.equal(d.humanWeight,weight);
    assert.equal(d.value,Math.round(baseline*(1-weight)+80*weight));
-   assert.match(instance.panel(player),/public fan review/);
+   assert.match(instance.panel(player),/published fan reviews/);
  }
  cloud.user=null;
  await instance.reload(state.season);
