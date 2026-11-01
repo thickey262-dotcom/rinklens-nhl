@@ -96,3 +96,10 @@
 .eye-entry-private{border-left:3px solid #80adba;padding-left:12px}
 .eye-rating-entries .eye-pending{line-height:1.5;margin:12px 0}
 .eye-rating-entries .source-note{font-size:.85rem;line-height:1.5;margin:12px 0 0}
+
+/* One unified Eye Test score; data provenance is explanatory, not a second rating card. */
+.eye-unified-score{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:12px 0 8px}
+.eye-source-summary,.eye-private-note{line-height:1.55;margin:9px 0;color:#d1e6ed}
+.eye-merge-details{margin:14px 0;border-top:1px solid #416679;padding-top:11px}
+.eye-merge-details summary{font-weight:700;min-height:36px;cursor:pointer}
+.eye-merge-details p{line-height:1.55}

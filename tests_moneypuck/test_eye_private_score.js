@@ -63,14 +63,14 @@ const eye=vm.runInNewContext(eyeSource+'\nRinkEye;',context);
   assert.equal(eye.display(player.id).label,'Your Combined Preview (Private)');
   assert.match(eye.panel(player),/70\/100/);
   assert.match(eye.panel(player),/Your Combined Preview \(Private\)/);
-  assert.match(eye.panel(player),/Community average pending/);
+  assert.match(eye.panel(player),/Fan average pending/);
 
   // Exercise the table's private/public labeling helper using the same module.
   const moneyView=new Function('window','safe',moneySource.slice(
     moneySource.indexOf('function eyeDisplay('),moneySource.indexOf('function status('))+
     '\nreturn {eyeCell,eyeDisplay};')(context.window,String);
   assert.match(moneyView.eyeCell(player.id),/70\/100/);
-  assert.match(moneyView.eyeCell(player.id),/Your Combined Preview \(Private\)/);
+  assert.match(moneyView.eyeCell(player.id),/Private preview includes your saved fan grade/);
 
   // Browser refresh / repeated fetch restores viewer's ballot (no published tally).
   await eye.reload(state.season);
@@ -101,6 +101,7 @@ const eye=vm.runInNewContext(eyeSource+'\nRinkEye;',context);
   assert.equal(eye.score(player.id),80);
   assert.equal(eye.personalScore(player.id),70);
   assert.equal(eye.display(player.id).label,'Combined Eye Test (3 reviewers)');
-  assert.match(moneyView.eyeCell(player.id),/Your Rating \(Private\): 70\/100/);
+  assert.match(moneyView.eyeCell(player.id),/Eye Test ranking/);
+  assert.equal((moneyView.eyeCell(player.id).match(/\/100/g)||[]).length,1,'only one ranking is shown');
   console.log('PASS: saved Eye Test visible to owner, public threshold remains three, safe account switching and distinct community/personal scores.');
 })().catch(err=>{console.error(err);process.exitCode=1});

@@ -70,7 +70,7 @@ const RinkEye = (() => {
       ?cap(unboundedValue,reference.score):unboundedValue;
     const label=isPublic?'Combined Eye Test ('+voters+' reviewers)'
       : personal!==null?'Your Combined Preview (Private)'
-      : reference?(reference.provisional?'Provisional Auto Eye Test':'Auto Eye Test · Stats-based')
+      : reference?(reference.provisional?'Eye Test · Provisional starting estimate':'Eye Test · RinkLens starting estimate')
       : base!==null?'Formula Baseline · No public reviews':'';
     // RinkLens supplies one clearly marked MODEL contribution for any player
     // with a statistical estimate. It is never an authenticated human ballot,
@@ -96,13 +96,13 @@ const RinkEye = (() => {
     const countEl = document.getElementById('eyeCoverage');
     if (countEl){
       const modelCount=(state.players||[]).filter(p=>display(p.id).modelEntries===1).length;
-      countEl.textContent=modelCount+' skaters rated by RinkLens (automated) · '+published.size
-        +' players with public fan averages this season. Model ratings are not human votes.';
+      countEl.textContent=modelCount+' skaters with one Eye Test ranking · '+published.size
+        +' with eligible public fan feedback. RinkLens starts the ranking but does not count as a human voter.';
     }
     const note = document.getElementById('eyeAvailability');
     if (note) note.textContent = loadError || (published.size
-      ? 'Every rated player starts with one RinkLens automated entry. Real fan grades are added separately; public consensus still requires three people.'
-      : 'RinkLens supplies an automated starting rating, not a fan vote. Add your own real Eye Test grade; public fan averages require three different people.');
+      ? 'One Eye Test ranking per player: a RinkLens statistical starting point, updated with eligible fan grades. Public fan feedback requires three people.'
+      : 'One Eye Test ranking per player starts with the RinkLens statistical model. Your fan grade can update your private preview; three human votes are needed for the public blend.');
   }
   async function reload(season = state.season) {
     const req = ++requestId;

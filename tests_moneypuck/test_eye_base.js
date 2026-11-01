@@ -103,7 +103,7 @@ const instance=vm.runInNewContext(baseCode+'\nRinkBase.calculate(state.players);
  assert.equal(d.value,baseline,'an unreviewed skater starts at the statistical baseline');
  assert.match(d.label,/Formula Baseline/);
  assert.equal(d.humanWeight,0);
- assert.match(instance.panel(player),/Formula Baseline:/);
+ assert.match(instance.panel(player),/ONE EYE TEST RANKING/);
  const form={id:'eyeVoteForm',dataset:{eyePlayer:player.id},
   querySelector(){return {disabled:false};},
   elements:{namedItem(k){return k==='watched'?{checked:true}:{value:'9'};}}
@@ -129,7 +129,7 @@ const instance=vm.runInNewContext(baseCode+'\nRinkBase.calculate(state.players);
    assert.equal(d.reviewers,reviewers);
    assert.equal(d.humanWeight,weight);
    assert.equal(d.value,Math.round(baseline*(1-weight)+80*weight));
-   assert.match(instance.panel(player),/Community human-rating average/);
+   assert.match(instance.panel(player),/public fan review/);
  }
  cloud.user=null;
  await instance.reload(state.season);

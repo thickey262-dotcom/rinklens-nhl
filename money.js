@@ -13,13 +13,12 @@ function eyeDisplay(id) { return window.RinkEye?.display(id) ?? null; }
 function eyeCell(id) {
  const entry = eyeDisplay(id);
  if (!entry || entry.value === null) return '—';
- const main='<strong>'+entry.value+'/100</strong><small>'+safe(entry.label)+'</small>'
-   +(entry.modelEntries?'<small class="eye-model-source">1 RinkLens automated rating'
-     +(entry.publicFanEntries?' + '+entry.publicFanEntries+' fan review'+(entry.publicFanEntries===1?'':'s'):' · fan average pending')+'</small>':'')
-   +(entry.anchored?'<small>Within ±5 of '+(entry.provisional?'provisional':'qualified')+' advanced reference</small>':'');
- const extra=entry.community !== null && entry.personal !== null
-   ? '<small class="eye-personal-note">Your Rating (Private): '+entry.personal+'/100</small>' : '';
- return main+extra;
+ const main='<strong>'+entry.value+'/100</strong><small>Eye Test ranking</small>'
+   +(entry.modelEntries?'<small class="eye-model-source">RinkLens model'
+     +(entry.publicFanEntries?' + '+entry.publicFanEntries+' fans':' · awaiting public fan reviews')+'</small>':'')
+   +(entry.provisional?'<small>Provisional · small sample</small>':'')
+   +(entry.isPrivate?'<small class="eye-personal-note">Private preview includes your saved fan grade</small>':'');
+ return main;
 }
 function advancedCell(p){
  const qualified=RinkStats.score(p);
@@ -136,9 +135,7 @@ function render(){
 function renderCompare(){
  if(!state.selected.length){$('comparison').textContent='Select up to two players from the table above.';return}
  const p=state.selected.map(get).filter(Boolean);
- $('comparison').innerHTML='<p class="season-detail-notice"><strong>'+seasonLabel()+' season only.</strong> These are not career numbers.</p><div class="comparison-head">'+p.map(x=>'<div><strong>'+safe(x.name)+'</strong><small>'+safe(x.team)+' · '+safe(x.pos)+'</small><button type="button" class="mini" data-remove="'+safe(x.id)+'">Remove</button></div>').join('')+'</div><div class="table-wrap"><table><thead><tr><th>Statistic</th>'+p.map(x=>'<th>'+safe(x.name)+'</th>').join('')+'</tr></thead><tbody>'+fields.map(([k,name,d])=>'<tr><th>'+name+'</th>'+p.map(x=>'<td>'+show(x[k],d)+'</td>').join('')+'</tr>').join('')+'<tr><th>Advanced Stats Score (or provisional small-sample reference) /100</th>'+p.map(x=>'<td>'+advancedCell(x)+'</td>').join('')+'</tr>'+'<tr><th>Auto Eye Test ranking (within 5 points of reference)</th>'+p.map(x=>'<td>'+eyeCell(x.id)+'</td>').join('')+'</tr>'
-  +'<tr><th>Original unrestricted formula · MoneyPuck-derived /100</th>'+p.map(x=>'<td>'+String((typeof RinkBase!=='undefined'?RinkBase.score(x):null)??'—')+'</td>').join('')+'</tr>'
-  +'<tr><th>Human viewer average /100</th>'+p.map(x=>'<td>'+String(eyeDisplay(x.id)?.community??eyeDisplay(x.id)?.personal??'—')+'</td>').join('')+'</tr>'+'</tbody></table></div>';
+ $('comparison').innerHTML='<p class="season-detail-notice"><strong>'+seasonLabel()+' season only.</strong> These are not career numbers.</p><div class="comparison-head">'+p.map(x=>'<div><strong>'+safe(x.name)+'</strong><small>'+safe(x.team)+' · '+safe(x.pos)+'</small><button type="button" class="mini" data-remove="'+safe(x.id)+'">Remove</button></div>').join('')+'</div><div class="table-wrap"><table><thead><tr><th>Statistic</th>'+p.map(x=>'<th>'+safe(x.name)+'</th>').join('')+'</tr></thead><tbody>'+fields.map(([k,name,d])=>'<tr><th>'+name+'</th>'+p.map(x=>'<td>'+show(x[k],d)+'</td>').join('')+'</tr>').join('')+'<tr><th>Advanced Stats Score (or provisional small-sample reference) /100</th>'+p.map(x=>'<td>'+advancedCell(x)+'</td>').join('')+'</tr>'+'<tr><th>Eye Test ranking · RinkLens model + eligible fan grades</th>'+p.map(x=>'<td>'+eyeCell(x.id)+'</td>').join('')+'</tr>'+'</tbody></table></div>';
 }
 function detail(id){
  const p=get(id);if(!p)return;

@@ -84,8 +84,9 @@ const {stats,base,eye}=build(state,id=>state.players.find(p=>p.id===id),cloud,St
   assert.equal(e.humanWeight,.7,'5+ reviewer weighting preserved');
   assert.ok(Math.abs(e.value-anchor.score)<=5,'public blended auto ranking remains bounded');
   const panel=eye.panel(good);
-  assert.match(panel,/statistical reference/);
-  assert.match(panel,/Real fan grades are never modified/);
-  assert.match(panel,/Community human-rating average/);
+  assert.match(panel,/qualified Advanced Stats Score/);
+  assert.match(panel,/original fan ballots remain unmodified/);
+  assert.match(panel,/5 points/);
+  assert.equal((panel.match(/\/100/g)||[]).length,1,'one Eye Test ranking in player profile');
   console.log('PASS: '+total+' real skaters across 3 seasons, '+official+' qualified / '+provisional+' provisional, '+clamped+' bounded ranks; private/public human scores stay genuine.');
 })().catch(e=>{console.error(e);process.exitCode=1;});
