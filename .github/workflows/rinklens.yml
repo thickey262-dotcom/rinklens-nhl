@@ -38,6 +38,7 @@ jobs:
           node --check cloud.js
           node tests_moneypuck/test_stats_score.js
           node tests_moneypuck/test_pagination.js
+          node tests_moneypuck/test_score_difference.js
           node tests_moneypuck/test_eye_quick_rate.js
           node tests_moneypuck/test_eye_private_score.js
           node tests_moneypuck/test_eye_base.js

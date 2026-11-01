@@ -2,6 +2,12 @@
 
 The homepage begins with a **What is RinkLens for?** introduction explaining the site's purpose to everyday hockey fans: plain-English explanations, season-only comparisons, transparent statistical ratings, and optional real fan Eye Test grades.
 
+## Score Difference column and sorting
+
+The Players table and head-to-head comparison show **Score Difference = Eye Test score − Advanced Stats Score**, in **points on the 0–100 scale**. **+5** means the Eye Test score is five higher than the advanced reference, **−5** means advanced is five higher, and **0** means they match. The displayed difference is recalculated from the latest combined Eye Test value, including any eligible public fan grades or the current user's private preview. It is not a separate scouting score, vote count, or percentage change.
+
+The Sort menu offers **Largest positive difference** (signed descending), **Largest negative difference** (signed ascending) and **Smallest difference / closest scores** (absolute difference ascending, with signed and alphabetical tie-breaks). Any player without both scores shows **—** and sorts last in all three modes. For skaters below the minimum sample threshold, the difference uses the same **clearly labeled provisional advanced reference** that appears in the Advanced column; it never substitutes a missing official score or treats missing data as zero. Positive/negative colors are supplementary to explicit +/− symbols. The selection works with team/position filters, paging, season changes, and changing fan scores. Tested by `tests_moneypuck/test_score_difference.js`.
+
 ## Optional Natural Stat Trick analytics — real, export-based data only
 
 Natural Stat Trick (https://www.naturalstattrick.com/) can be incorporated as a **second statistical source**, but it is **not connected to a live feed**. The site currently publishes only MoneyPuck analytics until an authorized, valid NST export is supplied. Do not describe a MoneyPuck-only number as a two-source average.

@@ -26,6 +26,23 @@ function advancedCell(p){
  const provisional=typeof RinkStats.anchor==='function'?RinkStats.anchor(p):null;
  return provisional?String(provisional.score)+'<small>Provisional · small sample</small>':'—';
 }
+// Signed score gap: positive means the Eye Test ranks the player higher.
+ // Compare against the same advanced/provisional reference shown in the table.
+function scoreDifference(p){
+ const reference=typeof RinkStats.anchor==='function'?RinkStats.anchor(p):null;
+ const eye=eyeDisplay(p.id);
+ if(!reference||!Number.isFinite(reference.score)||!eye||!Number.isFinite(eye.value))return null;
+ return eye.value-reference.score;
+}
+function differenceCell(p){
+ const difference=scoreDifference(p);
+ if(difference===null)return '<span class="score-diff is-unavailable" title="Both scores are required">—</span>';
+ const direction=difference>0?'higher':difference<0?'lower':'equal';
+ const signed=difference>0?'+'+difference:String(difference);
+ const hint=difference===0?'The scores are equal':Math.abs(difference)+' points '+direction+' on Eye Test';
+ return '<span class="score-diff is-'+direction+'" title="'+safe(hint)+'">'+signed+'</span>'
+   +(RinkStats.anchor(p)?.provisional?'<small>Provisional reference</small>':'');
+}
 function status(message,isError=false){$('status').textContent=message;$('status').classList.toggle('error',isError)}
 function position(p){return p.pos==='D'?'D':'F'}
 function seasonLabel(){return state.season.slice(0,4)+'–'+state.season.slice(6);}
@@ -100,12 +117,24 @@ async function load(){
   status(seasonLabel()+' season only. '+ranked+' of '+state.players.length+' skaters have an Eye Test score based on statistics (within ±5 of the advanced reference). '+top100+' top players use extra statistical calculations; '+temporary+' have provisional small-sample estimates. Published fan feedback requires three real reviewers.');
   render();
   if(window.RinkEye) void RinkEye.reload(season);
- }catch(err){if(token!==state.token)return;status('MoneyPuck statistics are currently unavailable for this season. No substitute or estimated data is shown. '+err.message,true);$('rows').innerHTML='<tr><td colspan="12">No verified MoneyPuck data available.</td></tr>';$('results').textContent='0 players';updatePagination(0);}
+ }catch(err){if(token!==state.token)return;status('MoneyPuck statistics are currently unavailable for this season. No substitute or estimated data is shown. '+err.message,true);$('rows').innerHTML='<tr><td colspan="13">No verified MoneyPuck data available.</td></tr>';$('results').textContent='0 players';updatePagination(0);}
 }
 function filtered(){
  const q=$('search').value.trim().toLowerCase(),t=$('team').value,pos=$('position').value,sort=$('sort').value;
- const sortValue = p => sort==='eye'?(eyeDisplay(p.id)?.value??null):sort==='advanced'?(RinkStats.anchor?.(p)?.score??null):p[sort];
- return state.players.filter(p=>(!q||p.name.toLowerCase().includes(q)||p.team.toLowerCase().includes(q))&&(!t||p.team===t)&&(!pos||position(p)===pos)).sort((a,b)=>sort==='name'?a.name.localeCompare(b.name):(missing(sortValue(a))?(missing(sortValue(b))?0:1):missing(sortValue(b))?-1:sortValue(b)-sortValue(a))||a.name.localeCompare(b.name));
+ const sortValue=p=>sort==='eye'?(eyeDisplay(p.id)?.value??null)
+   :sort==='advanced'?(RinkStats.anchor?.(p)?.score??null)
+   :sort==='diffPositive'||sort==='diffNegative'||sort==='diffClosest'?scoreDifference(p):p[sort];
+ const compare=(a,b)=>{
+   if(sort==='name')return a.name.localeCompare(b.name);
+   const x=sortValue(a),y=sortValue(b);
+   // Unavailable scores always go last, regardless of requested direction.
+   if(missing(x))return missing(y)?a.name.localeCompare(b.name):1;
+   if(missing(y))return -1;
+   if(sort==='diffNegative')return x-y||a.name.localeCompare(b.name);
+   if(sort==='diffClosest')return Math.abs(x)-Math.abs(y)||x-y||a.name.localeCompare(b.name);
+   return y-x||a.name.localeCompare(b.name);
+ };
+ return state.players.filter(p=>(!q||p.name.toLowerCase().includes(q)||p.team.toLowerCase().includes(q))&&(!t||p.team===t)&&(!pos||position(p)===pos)).sort(compare);
 }
 function updatePagination(total){
  const maxPages=Math.max(1,Math.ceil(total/PAGE_SIZE));
@@ -133,12 +162,13 @@ function render(){
  $('results').textContent=allRows.length+' matching players · '+PAGE_SIZE+' per page';
  const rows=allRows.slice((state.page-1)*PAGE_SIZE,state.page*PAGE_SIZE);
  $('rows').innerHTML=rows.length?rows.map(p=>'<tr><td><button type="button" class="player-name" data-open="'+safe(p.id)+'">'+safe(p.name)+'</button><small>'+safe(p.team)+' · '+safe(p.pos)+'</small></td>'+[['gp',0],['g',0],['a',0],['p',0],['p60',2],['xgfPct',1],['cfPct',1],['ixG60',2]].map(([k,d])=>'<td>'+show(p[k],d)+'</td>').join('')+'<td class="advanced-score-cell" title="'+safe(RinkStats.label(p)??RinkStats.reason(p)??'Score unavailable')+'">'+advancedCell(p)+'</td><td class="eye-table">'+eyeCell(p.id)
-  +'<button type="button" class="mini eye-rate-link" data-eye-rate="'+safe(p.id)+'" aria-label="'+(window.RinkEye?.hasOwn(p.id)?'Update':'Rate')+' Eye Test for '+safe(p.name)+'">'+(window.RinkEye?.hasOwn(p.id)?'Edit rating':'Rate')+'</button></td><td><button type="button" class="mini" data-compare="'+safe(p.id)+'" aria-label="Compare '+safe(p.name)+'">'+(state.selected.includes(p.id)?'✓ Added':'+ Add')+'</button></td></tr>').join(''):'<tr><td colspan="12">No matching players found.</td></tr>';
+  +'<button type="button" class="mini eye-rate-link" data-eye-rate="'+safe(p.id)+'" aria-label="'+(window.RinkEye?.hasOwn(p.id)?'Update':'Rate')+' Eye Test for '+safe(p.name)+'">'+(window.RinkEye?.hasOwn(p.id)?'Edit rating':'Rate')+'</button></td><td class="score-difference-cell">'+differenceCell(p)+'</td><td><button type="button" class="mini" data-compare="'+safe(p.id)+'" aria-label="Compare '+safe(p.name)+'">'+(state.selected.includes(p.id)?'✓ Added':'+ Add')+'</button></td></tr>').join(''):'<tr><td colspan="13">No matching players found.</td></tr>';
 }
 function renderCompare(){
  if(!state.selected.length){$('comparison').textContent='Select up to two players from the table above.';return}
  const p=state.selected.map(get).filter(Boolean);
- $('comparison').innerHTML='<p class="season-detail-notice"><strong>'+seasonLabel()+' season only.</strong> These are not career numbers.</p><div class="comparison-head">'+p.map(x=>'<div><strong>'+safe(x.name)+'</strong><small>'+safe(x.team)+' · '+safe(x.pos)+'</small><button type="button" class="mini" data-remove="'+safe(x.id)+'">Remove</button></div>').join('')+'</div><div class="table-wrap"><table><thead><tr><th>Statistic</th>'+p.map(x=>'<th>'+safe(x.name)+'</th>').join('')+'</tr></thead><tbody>'+fields.map(([k,name,d])=>'<tr><th>'+name+'</th>'+p.map(x=>'<td>'+show(x[k],d)+'</td>').join('')+'</tr>').join('')+'<tr><th>Advanced Stats Score (or provisional small-sample reference) /100</th>'+p.map(x=>'<td>'+advancedCell(x)+'</td>').join('')+'</tr>'+'<tr><th>Eye Test score · estimate plus eligible fan feedback</th>'+p.map(x=>'<td>'+eyeCell(x.id)+'</td>').join('')+'</tr>'+'</tbody></table></div>';
+ $('comparison').innerHTML='<p class="season-detail-notice"><strong>'+seasonLabel()+' season only.</strong> These are not career numbers.</p><div class="comparison-head">'+p.map(x=>'<div><strong>'+safe(x.name)+'</strong><small>'+safe(x.team)+' · '+safe(x.pos)+'</small><button type="button" class="mini" data-remove="'+safe(x.id)+'">Remove</button></div>').join('')+'</div><div class="table-wrap"><table><thead><tr><th>Statistic</th>'+p.map(x=>'<th>'+safe(x.name)+'</th>').join('')+'</tr></thead><tbody>'+fields.map(([k,name,d])=>'<tr><th>'+name+'</th>'+p.map(x=>'<td>'+show(x[k],d)+'</td>').join('')+'</tr>').join('')+'<tr><th>Advanced Stats Score (or provisional small-sample reference) /100</th>'+p.map(x=>'<td>'+advancedCell(x)+'</td>').join('')+'</tr>'+'<tr><th>Eye Test score · estimate plus eligible fan feedback</th>'+p.map(x=>'<td>'+eyeCell(x.id)+'</td>').join('')+'</tr>'
+  +'<tr><th>Score difference (Eye Test − Advanced)</th>'+p.map(x=>'<td class="score-difference-cell">'+differenceCell(x)+'</td>').join('')+'</tr>'+'</tbody></table></div>';
 }
 function detail(id){
  const p=get(id);if(!p)return;
