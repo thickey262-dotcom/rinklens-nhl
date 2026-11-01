@@ -72,10 +72,17 @@ const RinkEye = (() => {
       : personal!==null?'Your Combined Preview (Private)'
       : reference?(reference.provisional?'Provisional Auto Eye Test':'Auto Eye Test · Stats-based')
       : base!==null?'Formula Baseline · No public reviews':'';
+    // RinkLens supplies one clearly marked MODEL contribution for any player
+    // with a statistical estimate. It is never an authenticated human ballot,
+    // never inserted in Supabase, and NEVER satisfies the 3-human-vote gate.
+    const modelEntries=base!==null?1:0;
+    const publicFanEntries=isPublic?voters:0;
     return {value,base,rawBase,community,personal,reviewers:voters,
       humanWeight,label,isPrivate:!isPublic&&personal!==null,
       advancedAnchor:reference?.score??null,provisional:reference?.provisional??false,
-      anchored:reference!==null,unboundedValue};
+      anchored:reference!==null,unboundedValue,
+      modelEntries,publicFanEntries,visibleEntries:modelEntries+publicFanEntries,
+      ownPrivateEntry:!isPublic&&personal!==null?1:0};
   }
   function hasOwn(id) { return !!RinkCloud.user && activeSeason===state.season && own.has(String(id)); }
   function publishUpdates() {
@@ -87,11 +94,15 @@ const RinkEye = (() => {
       if (player) slot.outerHTML = panel(player);
     }
     const countEl = document.getElementById('eyeCoverage');
-    if (countEl) countEl.textContent = published.size + ' players with community Eye Test scores this season';
+    if (countEl){
+      const modelCount=(state.players||[]).filter(p=>display(p.id).modelEntries===1).length;
+      countEl.textContent=modelCount+' skaters rated by RinkLens (automated) · '+published.size
+        +' players with public fan averages this season. Model ratings are not human votes.';
+    }
     const note = document.getElementById('eyeAvailability');
     if (note) note.textContent = loadError || (published.size
-      ? 'Formula-based starting scores are available for eligible skaters. Human grades update the blended Eye Test; public consensus requires three reviewers.'
-      : 'Formula baselines are available for eligible skaters. Rate a player to adjust your private preview; public human consensus requires three different reviewers.');
+      ? 'Every rated player starts with one RinkLens automated entry. Real fan grades are added separately; public consensus still requires three people.'
+      : 'RinkLens supplies an automated starting rating, not a fan vote. Add your own real Eye Test grade; public fan averages require three different people.');
   }
   async function reload(season = state.season) {
     const req = ++requestId;
@@ -155,6 +166,14 @@ const RinkEye = (() => {
     const group = ratingGroup(player), traits = ratingTraits(player);
     const s=score(id),personal=personalScore(id),merged=display(id);
     const heading = '<div class="eyebrow">STAT-ANCHORED AUTO RANKING · REAL FAN GRADES KEPT SEPARATE</div><h3>Eye Test: '+(group==='D'?'Defenseman':'Forward')+'</h3>';
+    const contributorRows='<section class="eye-rating-entries" aria-label="Rating contributors">'
+      +'<h4>Who has rated this player?</h4>'
+      +(merged.modelEntries?'<div class="eye-entry"><span><b>RinkLens</b><small>1 automated model rating · not a human review</small></span><strong>'+merged.base+'/100</strong></div>':'<p>No automated rating is available for this player.</p>')
+      +(s!==null?'<div class="eye-entry"><span><b>Fan community</b><small>'+r.reviewer_count+' real, authenticated fan reviews · community average</small></span><strong>'+s+'/100</strong></div>'
+        :'<p class="eye-pending"><b>Fan community:</b> No public average yet. Individual fan votes stay private until at least three people review this player; the RinkLens entry does not count toward that minimum.</p>')
+      +(personal!==null?'<div class="eye-entry eye-entry-private"><span><b>Your fan rating</b><small>Real vote · only visible to you'+(s!==null?' · already part of the public count if qualified':'')+'</small></span><strong>'+personal+'/100</strong></div>':'')
+      +'<p class="source-note">'+merged.visibleEntries+' public rating contribution'+(merged.visibleEntries===1?'':'s')+' displayed: '+merged.modelEntries+' RinkLens automated + '+merged.publicFanEntries+' published fan'+(merged.publicFanEntries===1?'':'s')+'. '+(merged.ownPrivateEntry?'Your private fan contribution is also shown to you.':'')+' Neither model scores nor fan votes are represented as professional scouting reports.</p>'
+      +'</section>';
     const result = '<div class="eye-result">'
       +(merged.value !== null
         ? '<p><strong class="eye-score">'+merged.value+'/100</strong> <span class="'+(merged.isPrivate?'eye-private-label':'eye-public-label')+'">'+merged.label+'</span><small>'
@@ -172,6 +191,7 @@ const RinkEye = (() => {
       +(s!==null?'<p><b>Community human-rating average:</b> '+s+'/100 ('+r.reviewer_count+' reviewers)</p>'
          : '<p class="eye-pending"><b>Community average pending.</b> A public human average appears after three signed-in reviewers. '+(personal!==null?'Your own grade is included privately.':'You can contribute grades below.')+'</p>')
       +'</div></div>'
+      +contributorRows
       +(typeof RinkBase!=='undefined'?RinkBase.panel(player):'');
     const traitDetails = r
       ? '<details><summary>See eight position-specific viewer averages</summary><div class="eye-traits">'+traits.map(([key,name]) => '<div><span>'+name+'</span><b>'+Number(r[key]).toFixed(1)+'/10</b></div>').join('')+'</div></details>'

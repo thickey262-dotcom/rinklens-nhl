@@ -1,4 +1,4 @@
-/* The single Eye Test score is a viewer opinion, never a MoneyPuck statistic. */
+/* Automated RinkLens starting rating and authentic fan feedback are labeled separately. */
 .eye-table{font-weight:800;color:#9ee4d9}
 .eye-score{display:inline-block;color:#abefdc;font-size:1.8rem;letter-spacing:-.03em}
 .eye-panel{margin-top:28px;padding:22px;border:1px solid #457481;background:#142e3a;border-radius:13px}
@@ -84,3 +84,15 @@
 .eye-components{border-top:1px solid #527181;margin-top:10px;padding-top:12px}
 .eye-components p{margin:6px 0}
 .eye-result .eye-public-label{max-width:100%;white-space:normal}
+
+/* Show the system-generated baseline as a clearly separate ratings contribution. */
+.eye-model-source{display:block;margin-top:5px;color:#d0e6ed;font-size:.8rem;line-height:1.4}
+.eye-rating-entries{margin:18px 0 22px;padding:15px;border:1px solid #456c7a;border-radius:12px;background:#142d3e}
+.eye-rating-entries h4{margin:0 0 12px}
+.eye-entry{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 0;border-top:1px solid #3b5868}
+.eye-entry span{min-width:0}
+.eye-entry small{display:block;margin-top:3px;font-size:.85rem;color:#c3d8e1;font-weight:400}
+.eye-entry>strong{white-space:nowrap;font-variant-numeric:tabular-nums;color:#aee7de;font-size:1.08rem}
+.eye-entry-private{border-left:3px solid #80adba;padding-left:12px}
+.eye-rating-entries .eye-pending{line-height:1.5;margin:12px 0}
+.eye-rating-entries .source-note{font-size:.85rem;line-height:1.5;margin:12px 0 0}

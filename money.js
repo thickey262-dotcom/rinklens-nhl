@@ -14,6 +14,8 @@ function eyeCell(id) {
  const entry = eyeDisplay(id);
  if (!entry || entry.value === null) return '—';
  const main='<strong>'+entry.value+'/100</strong><small>'+safe(entry.label)+'</small>'
+   +(entry.modelEntries?'<small class="eye-model-source">1 RinkLens automated rating'
+     +(entry.publicFanEntries?' + '+entry.publicFanEntries+' fan review'+(entry.publicFanEntries===1?'':'s'):' · fan average pending')+'</small>':'')
    +(entry.anchored?'<small>Within ±5 of '+(entry.provisional?'provisional':'qualified')+' advanced reference</small>':'');
  const extra=entry.community !== null && entry.personal !== null
    ? '<small class="eye-personal-note">Your Rating (Private): '+entry.personal+'/100</small>' : '';
