@@ -165,38 +165,35 @@ const RinkEye = (() => {
     const id = String(player.id), r = published.get(id), mine = own.get(id);
     const group = ratingGroup(player), traits = ratingTraits(player);
     const s=score(id),personal=personalScore(id),merged=display(id);
-    const heading = '<div class="eyebrow">STAT-ANCHORED AUTO RANKING · REAL FAN GRADES KEPT SEPARATE</div><h3>Eye Test: '+(group==='D'?'Defenseman':'Forward')+'</h3>';
-    const contributorRows='<section class="eye-rating-entries" aria-label="Rating contributors">'
-      +'<h4>Who has rated this player?</h4>'
-      +(merged.modelEntries?'<div class="eye-entry"><span><b>RinkLens</b><small>1 automated model rating · not a human review</small></span><strong>'+merged.base+'/100</strong></div>':'<p>No automated rating is available for this player.</p>')
-      +(s!==null?'<div class="eye-entry"><span><b>Fan community</b><small>'+r.reviewer_count+' real, authenticated fan reviews · community average</small></span><strong>'+s+'/100</strong></div>'
-        :'<p class="eye-pending"><b>Fan community:</b> No public average yet. Individual fan votes stay private until at least three people review this player; the RinkLens entry does not count toward that minimum.</p>')
-      +(personal!==null?'<div class="eye-entry eye-entry-private"><span><b>Your fan rating</b><small>Real vote · only visible to you'+(s!==null?' · already part of the public count if qualified':'')+'</small></span><strong>'+personal+'/100</strong></div>':'')
-      +'<p class="source-note">'+merged.visibleEntries+' public rating contribution'+(merged.visibleEntries===1?'':'s')+' displayed: '+merged.modelEntries+' RinkLens automated + '+merged.publicFanEntries+' published fan'+(merged.publicFanEntries===1?'':'s')+'. '+(merged.ownPrivateEntry?'Your private fan contribution is also shown to you.':'')+' Neither model scores nor fan votes are represented as professional scouting reports.</p>'
-      +'</section>';
-    const result = '<div class="eye-result">'
-      +(merged.value !== null
-        ? '<p><strong class="eye-score">'+merged.value+'/100</strong> <span class="'+(merged.isPrivate?'eye-private-label':'eye-public-label')+'">'+merged.label+'</span><small>'
-          +(merged.base!==null&&merged.humanWeight>0
-            ? 'Formula baseline '+merged.base+'/100 · Human rating '+(merged.isPrivate?personal:s)+'/100 · Viewer weight '+Math.round(merged.humanWeight*100)+'%.'
-            : 'Seasonal statistical estimate only; no qualifying public viewer average yet.')
-          +'</small></p>'
-        : '<p><strong>Not enough MoneyPuck data for a starting estimate.</strong></p>')
-      +'<div class="eye-components">'
-      +(merged.anchored?'<p><b>'+(merged.provisional?'Provisional advanced reference':'Advanced Stats Score')+':</b> '+merged.advancedAnchor+'/100</p>'
-        +'<p class="source-note"><b>Automated ranking rule:</b> the displayed Eye Test score is restricted to within 5 points of this '+(merged.provisional?'provisional':'qualified')+' statistical reference, including after fan grades. This is a model-based estimate, <strong>not an independent eye-test observation</strong>. Real fan grades are never modified.</p>':'')
-      +(merged.base!==null?'<p><b>Auto Eye Test starting estimate:</b> '+merged.base+'/100</p>':'')
-      +(merged.anchored&&merged.rawBase!==null?'<p><b>Original formula before the 5-point limit:</b> '+merged.rawBase+'/100</p>':'')
-      +(personal!==null?'<p><b>Your actual Eye Test:</b> '+personal+'/100 <span class="eye-private-label">Private</span></p>':'')
-      +(s!==null?'<p><b>Community human-rating average:</b> '+s+'/100 ('+r.reviewer_count+' reviewers)</p>'
-         : '<p class="eye-pending"><b>Community average pending.</b> A public human average appears after three signed-in reviewers. '+(personal!==null?'Your own grade is included privately.':'You can contribute grades below.')+'</p>')
-      +'</div></div>'
-      +contributorRows
-      +(typeof RinkBase!=='undefined'?RinkBase.panel(player):'');
+    const heading='<div class="eyebrow">ONE EYE TEST RANKING · RINKLENS + REAL FANS</div>'
+      +'<h3>Eye Test: '+(group==='D'?'Defenseman':'Forward')+'</h3>';
+    const sources=merged.modelEntries
+      ? '1 RinkLens model starting contribution (not a human vote)'
+        +(merged.publicFanEntries?' + '+merged.publicFanEntries+' published fan review'+(merged.publicFanEntries===1?'':'s'):' · public fan average pending')
+      : (merged.publicFanEntries?merged.publicFanEntries+' published fan reviews':'No reliable model estimate available');
+    const result='<div class="eye-result">'
+      +(merged.value!==null
+        ? '<p class="eye-unified-score"><strong class="eye-score">'+merged.value+'/100</strong> '
+          +'<span class="'+(merged.isPrivate?'eye-private-label':'eye-public-label')+'">'
+          +merged.label+'</span></p>'
+        : '<p><strong>Eye Test ranking unavailable:</strong> insufficient statistics and no qualifying fan feedback.</p>')
+      +'<p class="eye-source-summary"><strong>Contributions:</strong> '+sources+'.</p>'
+      +(personal!==null?'<p class="eye-private-note">Your fan grade is saved and visible only to you; '
+          +(s!==null?'it is included in the qualified fan average.':'your private Eye Test preview includes it.')+'</p>':'')
+      +(s===null?'<p class="eye-pending">Fan average pending: at least three distinct real reviewers are required before fan feedback affects the public ranking.</p>':'')
+      +'<details class="eye-merge-details"><summary>How the one Eye Test ranking is calculated</summary>'
+      +'<p>RinkLens starts with a position-based statistical estimate, then combines it with actual fan grades when eligible. With no fan ratings, it is a <strong>model-generated estimate, not a scouting observation</strong>. '
+      +'One signed-in fan can see a private preview (70% model / 30% personal grade); '
+      +'with three qualifying reviewers the public score uses 50% model / 50% fan average; '
+      +'four use 40% model / 60% fans, and five or more use 30% model / 70% fans.</p>'
+      +'<p>The displayed Eye Test ranking stays within 5 points of the qualified Advanced Stats Score (or clearly labeled provisional small-sample reference). '
+      +'The original fan ballots remain unmodified, are not counted as model votes and never become public until three real reviewers qualify. '
+      +'This is one combined ranking, not two competing Eye Test scores.</p></details>'
+      +'</div>';
     const traitDetails = r
       ? '<details><summary>See eight position-specific viewer averages</summary><div class="eye-traits">'+traits.map(([key,name]) => '<div><span>'+name+'</span><b>'+Number(r[key]).toFixed(1)+'/10</b></div>').join('')+'</div></details>'
       : '';
-    let participation = '<p class="source-note">The automated Eye Test ranking is a statistical estimate linked to the Advanced Stats Score, not a scouting observation. Separate human grades are opinions from viewers who say they watched this player, and contributors are not verified professional scouts. Individual human scores are never restricted to the 5-point range.</p>';
+    let participation = '<p class="source-note">Your authentic fan grade contributes to the same Eye Test ranking once eligible. The RinkLens model is not a human voter, and no model grade is stored as a fan submission. Fan ballots are private and unmodified; contributors are not verified professional scouts.</p>';
     if (!RinkCloud.client || !RinkCloud.user) {
       participation += '<p>Rating takes about a minute after signing in.</p><button type="button" class="button primary eye-signin-action" data-eye-signin>Sign in to rate this player</button>';
     } else {
