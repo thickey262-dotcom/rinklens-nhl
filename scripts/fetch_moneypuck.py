@@ -51,6 +51,21 @@ def high_danger_share(row):
     return round(100 * for_count / (for_count + against), 2)
 
 
+def five_on_five_goal_differential(row):
+    """Actual 5-on-5 goals for minus against while on ice.
+
+    This is NOT official NHL +/- (which also includes some non-5v5 situations).
+    Never infer zero for a missing MoneyPuck goals column.
+    """
+    for_goals = nonnegative(row, "OnIce_F_goals")
+    against_goals = nonnegative(row, "OnIce_A_goals")
+    if for_goals is None or against_goals is None:
+        return None
+    if not for_goals.is_integer() or not against_goals.is_integer():
+        return None
+    return round(for_goals - against_goals)
+
+
 def _best_by_player(rows, situation):
     selected = {}
     for row in rows:
@@ -105,6 +120,8 @@ def normalize(rows):
             "ffPct": percent(five, "onIce_fenwickPercentage"),
             "ixG60": round(ixg * 3600 / five_seconds, 3) if ixg is not None and five_seconds else None,
             "hdCfPct": high_danger_share(five),
+            # Only 5-on-5 goal differential. NOT the NHL's official +/- figure.
+            "fivePlusMinus": five_on_five_goal_differential(five),
             "fiveGp": round(nonnegative(five, "games_played")) if nonnegative(five, "games_played") is not None else None,
             # MoneyPuck reports "icetime" in seconds. Never substitute all-situations TOI.
             "fiveToiMinutes": round(five_seconds / 60, 3) if five_seconds is not None and five_seconds > 0 else None,

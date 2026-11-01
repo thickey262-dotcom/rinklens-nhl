@@ -15,11 +15,12 @@ assert.ok(!baseCode.includes('RinkStats'),'baseline must not reuse Advanced Stat
 const base=vm.runInNewContext(baseCode+'\nRinkBase;');
 assert.equal(Object.values(base.WEIGHTS.F).reduce((a,b)=>a+b,0),100);
 assert.equal(Object.values(base.WEIGHTS.D).reduce((a,b)=>a+b,0),100);
-assert.deepEqual(JSON.stringify(base.WEIGHTS.F),JSON.stringify({gp:35,toi:20,ppg:45}));
-assert.deepEqual(JSON.stringify(base.WEIGHTS.D),JSON.stringify({gp:35,toi:25,ppg:40}));
+assert.deepEqual(JSON.stringify(base.WEIGHTS.F),JSON.stringify({gp:35,toi:20,ppg:35,fivePlusMinus:10}));
+assert.deepEqual(JSON.stringify(base.WEIGHTS.D),JSON.stringify({gp:35,toi:25,ppg:30,fivePlusMinus:10}));
 const make=(count,pos)=>Array.from({length:count},(_,i)=>({
   id:String(8000000+(pos==='D'?2000:1000)+i),name:'Skater '+i,
-  pos,team:'BUF',gp:12+(i%35),toi:12+i*.26,p:2+i
+  pos,team:'BUF',gp:12+(i%35),toi:12+i*.26,p:2+i,
+  fivePlusMinus:Math.floor(i/6)-5
 }));
 const forwards=make(50,'C'),defense=make(40,'D');
 const skaters=[...forwards,...defense];
@@ -27,11 +28,33 @@ base.calculate(skaters);
 assert.equal(typeof base.score(forwards[0]),'number');
 assert.ok(base.score(forwards[49])>base.score(forwards[0]));
 assert.ok(base.score(defense[39])>base.score(defense[0]));
-assert.equal(base.forPlayer(forwards[2]).breakdown.find(x=>x.key==='ppg').weight,45);
-assert.equal(base.forPlayer(defense[2]).breakdown.find(x=>x.key==='ppg').weight,40);
+assert.equal(base.forPlayer(forwards[2]).breakdown.find(x=>x.key==='ppg').weight,35);
+assert.equal(base.forPlayer(defense[2]).breakdown.find(x=>x.key==='ppg').weight,30);
+assert.equal(base.forPlayer(forwards[2]).breakdown.find(x=>x.key==='fivePlusMinus').weight,10);
+assert.equal(base.forPlayer(defense[2]).breakdown.find(x=>x.key==='fivePlusMinus').weight,10);
+assert.match(base.panel(forwards[2]),/5-on-5 \+\/-/);
+assert.match(base.panel(forwards[2]),/not official NHL/);
 const dScore=base.score(defense[8]);
 base.calculate([...forwards.map(p=>({...p,gp:90,toi:35,p:170})),...defense]);
 assert.equal(base.score(defense[8]),dScore,'forward-only changes must not affect D scores');
+base.calculate(skaters);
+// 5v5 goal differential is position-scoped, can be negative, and affects only the baseline.
+const samePlayer=forwards[20];
+const original=base.forPlayer(samePlayer);
+const plusModified=skaters.map(p=>p.id===samePlayer.id?{...p,fivePlusMinus:30}:p);
+base.calculate(plusModified);
+const positive=base.forPlayer(samePlayer);
+assert.ok(positive.raw>original.raw,'higher 5v5 +/- should improve formula percentile');
+assert.equal(positive.breakdown.find(x=>x.key==='fivePlusMinus').value,30);
+base.calculate(skaters);
+const missingPlus=skaters.map(p=>p.id===samePlayer.id?{...p,fivePlusMinus:null}:p);
+base.calculate(missingPlus);
+const fallback=base.forPlayer(samePlayer);
+assert.ok(fallback&&fallback.score>=0&&fallback.score<=100);
+assert.equal(fallback.plusMinusIncluded,false);
+assert.equal(fallback.usedWeight,90,'missing +/- is omitted and weights renormalized, not zero');
+assert.doesNotMatch(JSON.stringify(fallback.breakdown),/fivePlusMinus/);
+assert.match(base.panel(samePlayer),/5-on-5 \+\/- unavailable/);
 base.calculate(skaters);
 const player=forwards[20];
 const baseline=base.score(player);
@@ -121,5 +144,5 @@ const instance=vm.runInNewContext(baseCode+'\nRinkBase.calculate(state.players);
    assert.ok(scored.some(p=>p.pos==='D')&&scored.some(p=>p.pos!=='D'));
    assert.ok(scored.every(p=>p.p!==null&&p.toi!==null&&p.gp>=1));
  }
- console.log('PASS: career formula weights adapted to seasons, baseline coverage, position peers, private preview, 3/4/5+ community blends, and voter separation.');
+ console.log('PASS: season Eye Test baseline 10% real 5v5 goal differential, missing-data fallback, positions, private reviews, and 3/4/5+ community blends.');
 })().catch(e=>{console.error(e);process.exitCode=1;});
