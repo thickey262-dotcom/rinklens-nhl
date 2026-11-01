@@ -15,7 +15,7 @@ assert.ok(!baseCode.includes('RinkStats'),'baseline must not reuse Advanced Stat
 const base=vm.runInNewContext(baseCode+'\nRinkBase;');
 assert.equal(Object.values(base.WEIGHTS.F).reduce((a,b)=>a+b,0),100);
 assert.equal(Object.values(base.WEIGHTS.D).reduce((a,b)=>a+b,0),100);
-assert.deepEqual(JSON.stringify(base.WEIGHTS.F),JSON.stringify({gp:35,toi:20,ppg:35,fivePlusMinus:10}));
+assert.deepEqual(JSON.stringify(base.WEIGHTS.F),JSON.stringify({gp:30,toi:20,ppg:40,fivePlusMinus:10}));
 assert.deepEqual(JSON.stringify(base.WEIGHTS.D),JSON.stringify({gp:35,toi:25,ppg:30,fivePlusMinus:10}));
 const make=(count,pos)=>Array.from({length:count},(_,i)=>({
   id:String(8000000+(pos==='D'?2000:1000)+i),name:'Skater '+i,
@@ -28,7 +28,7 @@ base.calculate(skaters);
 assert.equal(typeof base.score(forwards[0]),'number');
 assert.ok(base.score(forwards[49])>base.score(forwards[0]));
 assert.ok(base.score(defense[39])>base.score(defense[0]));
-assert.equal(base.forPlayer(forwards[2]).breakdown.find(x=>x.key==='ppg').weight,35);
+assert.equal(base.forPlayer(forwards[2]).breakdown.find(x=>x.key==='ppg').weight,40);
 assert.equal(base.forPlayer(defense[2]).breakdown.find(x=>x.key==='ppg').weight,30);
 assert.equal(base.forPlayer(forwards[2]).breakdown.find(x=>x.key==='fivePlusMinus').weight,10);
 assert.equal(base.forPlayer(defense[2]).breakdown.find(x=>x.key==='fivePlusMinus').weight,10);

@@ -73,9 +73,9 @@ RinkLens calculates a 0–100 **Formula Baseline**, adapted from the user's sepa
 
 | Formula Baseline input (selected regular season) | Forwards | Defensemen |
 | --- | ---: | ---: |
-| Games played (all situations) | 35% | 35% |
+| Games played (all situations) | 30% | 35% |
 | Average time on ice per game (all situations) | 20% | 25% |
-| Points per game (all situations) | 35% | 30% |
+| Points per game (all situations) | 40% | 30% |
 | **5-on-5 +/-: on-ice goals for minus against** | **10%** | **10%** |
 | **Total** | **100%** | **100%** |
 
