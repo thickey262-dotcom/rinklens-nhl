@@ -2,6 +2,26 @@
 
 The homepage has a short **What is RinkLens for?** introduction explaining that this is an approachable guide to advanced stats for everyday hockey fans: plain-English explanations, season-only comparisons, clear statistical ratings, and optional real fan Eye Test grades. It appears directly below the home hero so new visitors understand the site's purpose before reaching the data.
 
+## Optional Natural Stat Trick analytics — real, export-based data only
+
+Natural Stat Trick (https://www.naturalstattrick.com/) can be incorporated as a **second statistical source**, but it is **not connected to a live feed**. The site currently publishes only MoneyPuck analytics until an authorized, valid NST export is supplied. Do not describe a MoneyPuck-only number as a two-source average.
+
+**How to add a season:**
+
+1. Obtain a Natural Stat Trick skater CSV export with permission to reuse and publish it, selecting **one regular season**, **5-on-5**, **unadjusted (raw)** stats and **all teams**. Don't use playoff, all-situations, score-adjusted or multi-season totals. Automated scraping of the main website is not part of this pipeline.
+2. Verify it has **Player, Team, Position** and at least two of **xGF%, CF%, FF%, HDCF%** (preferably all four). Missing/ambiguous source labels are rejected. Name+position+team is used for exact single-row matching when an NHL player ID is absent; ambiguous duplicates and different teams are skipped rather than guessed.
+3. Run this command from the repository, confirming both the export context and permission to republish:
+
+```bash
+python scripts/import_nst_csv.py --season 20262027 --csv /path/to/approved-export.csv --confirm-5v5-regular-unadjusted --confirm-usage-permitted
+```
+
+4. Inspect generated `data/nst-20262027.json` and `data/nst-index.json`, then commit those two files. The existing GitHub Pages workflow deploys them on push. Reimport a newer export to refresh NST—MoneyPuck's daily feed alone does not update it.
+
+**Calculation:** the four comparable 5v5 percentage metrics (`xgfPct`, `cfPct`, `ffPct`, `hdCfPct`) use an equally weighted arithmetic mean of the two providers when **both** supply a valid value for a uniquely matched skater/season. This is not a pooled game/event-weighted measure, and expected-goals model definitions differ. The raw MoneyPuck value is retained whenever no comparable NST value is available. Other measurements—individual expected goals per 60, goals, assists, points, games played, and five-on-five ice time—remain MoneyPuck-only, as do the statistical Eye Test baseline inputs. Recalculate the Advanced Stats Score using the source-aware metric values; the existing position weights and sample minimums stay unchanged. The player detail lets readers compare provider values for any blended metric, and the Players page displays source coverage. No private Eye Test ballot or fan grade is altered.
+
+**Status:** NST CSVs have not been supplied or imported in this commit, so the manifest intentionally has an empty `seasons` list. The site will clearly say it's showing MoneyPuck only. Manual import avoids claiming access to NST's restricted website or silently inventing data. Scripts: `scripts/import_nst_csv.py`, `source-average.js`. Tests: `test_nst_import.py`, `test_source_average.js`.
+
 The site displays MoneyPuck player statistics alongside an Advanced Stats Score and a separate Eye Test system with a labeled statistical starting baseline:
 
 1. **MoneyPuck statistics**: regular-season all-situations counting totals and 5-on-5 chance/shot metrics. `scripts/fetch_moneypuck.py` refreshes the public dataset daily using MoneyPuck's published season-summary CSV.

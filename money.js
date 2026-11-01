@@ -21,6 +21,31 @@ function eyeCell(id) {
 function status(message,isError=false){$('status').textContent=message;$('status').classList.toggle('error',isError)}
 function position(p){return p.pos==='D'?'D':'F'}
 function seasonLabel(){return state.season.slice(0,4)+'–'+state.season.slice(6);}
+async function loadNST(season){
+ // A manifest prevents unnecessary requests and ensures no implied 2-source results.
+ try{
+   const listing=await fetch('data/nst-index.json',{cache:'no-store'});
+   if(!listing.ok)return null;
+   const index=await listing.json();
+   if(index.source!=='naturalstattrick'||!Array.isArray(index.seasons)||!index.seasons.includes(season))return null;
+   const response=await fetch('data/nst-'+season+'.json',{cache:'no-store'});
+   if(!response.ok)return null;
+   const snapshot=await response.json();
+   if(snapshot.source!=='naturalstattrick'||snapshot.season!==season||
+     snapshot.situation!=='5v5'||snapshot.seasonType!=='regular'||snapshot.adjustment!=='raw')return null;
+   return snapshot;
+ }catch{return null;}
+}
+function showMetricSources(p){
+ const rows=p.nstComparison||{};
+ const entries=RinkSources.COMPARABLE.filter(m=>rows[m.key]);
+ if(!entries.length)return '<p class="source-note">Advanced-stat percentages currently use MoneyPuck only. No matched NST export has been imported for this player and season.</p>';
+ return '<details class="source-comparison"><summary>See MoneyPuck vs. Natural Stat Trick numbers</summary>'
+   +'<p>Each percentage averages the two sources equally when both provide a matching 5-on-5 value. Expected-goals models may differ. This is not a pooled event-based statistic.</p>'
+   +'<div class="table-wrap"><table><thead><tr><th>Metric</th><th>MoneyPuck</th><th>Natural Stat Trick</th><th>Used by RinkLens</th></tr></thead><tbody>'
+   +entries.map(m=>{const x=rows[m.key];return '<tr><th>'+safe(m.label)+'</th><td>'+show(x.moneypuck,2)+'</td><td>'+show(x.nst,2)+'</td><td>'+show(x.result,2)+' <small>'+safe(x.method)+'</small></td></tr>';}).join('')
+   +'</tbody></table></div></details>';
+}
 function updateSeasonNotices(){
  const name=seasonLabel();
  $('seasonNotice').textContent=name+' regular season only. All player numbers and rankings reflect the selected season, not career totals. Choose another season above to view that season.';
@@ -44,7 +69,14 @@ async function load(){
   const data=await response.json();
   if(token!==state.token)return;
   if(data.source!=='moneypuck'||data.season!==season||!Array.isArray(data.players)||!data.players.length)throw Error('Invalid MoneyPuck snapshot');
-  state.players=data.players.filter(p=>typeof p.name==='string'&&typeof p.id==='string'&&p.gp>0);
+  const moneypuckPlayers=data.players.filter(p=>typeof p.name==='string'&&typeof p.id==='string'&&p.gp>0);
+  const nst=await loadNST(season);
+  if(token!==state.token)return;
+  const sources=RinkSources.blend(moneypuckPlayers,nst,season);
+  state.players=sources.players;
+  $('nstCoverage').textContent=sources.imported
+    ? 'Natural Stat Trick export: '+sources.reason+' Other values remain from MoneyPuck. Imported exports are not refreshed automatically.'
+    : 'Natural Stat Trick: no approved, matching 5-on-5 export imported for '+seasonLabel()+'. Currently showing MoneyPuck-only statistics.';
   RinkStats.calculate(state.players);
   if(typeof RinkBase!=='undefined')RinkBase.calculate(state.players);
   state.ready=true;
@@ -52,7 +84,7 @@ async function load(){
   $('updated').textContent=data.updatedAt?new Date(data.updatedAt).toLocaleDateString():'Not recorded';
   const teams=[...new Set(state.players.map(p=>p.team))].sort();
   $('team').innerHTML='<option value="">All teams</option>'+teams.map(t=>'<option value="'+safe(t)+'">'+safe(t)+'</option>').join('');
-  status(seasonLabel()+' regular season data loaded (not career totals). Advanced Stats Score uses 5-on-5 metrics. Formula Baseline uses season games played, average ice time and points/game. Eye Test grades are separately submitted by viewers.');
+  status(seasonLabel()+' regular season loaded (not career totals). Advanced Stats Score uses 5-on-5 MoneyPuck metrics, averaged with comparable Natural Stat Trick values only where verified imports match. Formula Baseline uses MoneyPuck season totals. Viewer Eye Test grades remain separate.');
   render();
   if(window.RinkEye) void RinkEye.reload(season);
  }catch(err){if(token!==state.token)return;status('MoneyPuck statistics are currently unavailable for this season. No substitute or estimated data is shown. '+err.message,true);$('rows').innerHTML='<tr><td colspan="12">No verified MoneyPuck data available.</td></tr>';$('results').textContent='0 players';updatePagination(0);}
@@ -93,7 +125,7 @@ function render(){
 function renderCompare(){
  if(!state.selected.length){$('comparison').textContent='Select up to two players from the table above.';return}
  const p=state.selected.map(get).filter(Boolean);
- $('comparison').innerHTML='<p class="season-detail-notice"><strong>'+seasonLabel()+' season only.</strong> These are not career numbers.</p><div class="comparison-head">'+p.map(x=>'<div><strong>'+safe(x.name)+'</strong><small>'+safe(x.team)+' · '+safe(x.pos)+'</small><button type="button" class="mini" data-remove="'+safe(x.id)+'">Remove</button></div>').join('')+'</div><div class="table-wrap"><table><thead><tr><th>Statistic</th>'+p.map(x=>'<th>'+safe(x.name)+'</th>').join('')+'</tr></thead><tbody>'+fields.map(([k,name,d])=>'<tr><th>'+name+'</th>'+p.map(x=>'<td>'+show(x[k],d)+'</td>').join('')+'</tr>').join('')+'<tr><th>Advanced Stats Score · MoneyPuck-based /100</th>'+p.map(x=>'<td>'+String(RinkStats.score(x)??'—')+(RinkStats.label(x)?'<small>'+safe(RinkStats.label(x))+'</small>':'')+'</td>').join('')+'</tr>'+'<tr><th>Combined Eye Test (baseline + available viewer grades)</th>'+p.map(x=>'<td>'+eyeCell(x.id)+'</td>').join('')+'</tr>'
+ $('comparison').innerHTML='<p class="season-detail-notice"><strong>'+seasonLabel()+' season only.</strong> These are not career numbers.</p><div class="comparison-head">'+p.map(x=>'<div><strong>'+safe(x.name)+'</strong><small>'+safe(x.team)+' · '+safe(x.pos)+'</small><button type="button" class="mini" data-remove="'+safe(x.id)+'">Remove</button></div>').join('')+'</div><div class="table-wrap"><table><thead><tr><th>Statistic</th>'+p.map(x=>'<th>'+safe(x.name)+'</th>').join('')+'</tr></thead><tbody>'+fields.map(([k,name,d])=>'<tr><th>'+name+'</th>'+p.map(x=>'<td>'+show(x[k],d)+'</td>').join('')+'</tr>').join('')+'<tr><th>Advanced Stats Score · verified 5-on-5 sources /100</th>'+p.map(x=>'<td>'+String(RinkStats.score(x)??'—')+(RinkStats.label(x)?'<small>'+safe(RinkStats.label(x))+'</small>':'')+'</td>').join('')+'</tr>'+'<tr><th>Combined Eye Test (baseline + available viewer grades)</th>'+p.map(x=>'<td>'+eyeCell(x.id)+'</td>').join('')+'</tr>'
   +'<tr><th>Formula baseline · MoneyPuck-derived /100</th>'+p.map(x=>'<td>'+String((typeof RinkBase!=='undefined'?RinkBase.score(x):null)??'—')+'</td>').join('')+'</tr>'
   +'<tr><th>Human viewer average /100</th>'+p.map(x=>'<td>'+String(eyeDisplay(x.id)?.community??eyeDisplay(x.id)?.personal??'—')+'</td>').join('')+'</tr>'+'</tbody></table></div>';
 }
@@ -108,7 +140,8 @@ function detail(id){
   +'<details class="player-stat-details"><summary>See MoneyPuck statistics and Advanced Stats Score</summary>'
   +'<div class="detail-grid">'+fields.map(([k,name,d])=>'<div><span>'+name+'</span><strong>'+show(p[k],d)+'</strong></div>').join('')+'</div>'
   +RinkStats.panel(p)
-  +'<p class="source-note">MoneyPuck regular-season skater data. Counting totals are all situations; xGF%, CF%, FF%, ixG/60 and HDCF% are 5-on-5. Statistics are not scouting opinions.</p>'
+  +showMetricSources(p)
+  +'<p class="source-note">All-situations counting totals and 5-on-5 ice time come from MoneyPuck. Matching NST percentages, when supplied, are averaged equally with MoneyPuck. Individual xG/60 still comes only from MoneyPuck. Statistics are not scouting opinions.</p>'
   +'<a href="https://moneypuck.com/data.htm" target="_blank" rel="noopener noreferrer">View MoneyPuck source ↗</a></details>';
  $('modal').hidden=false;
  $('close').focus();

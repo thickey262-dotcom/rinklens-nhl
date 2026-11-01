@@ -42,3 +42,10 @@
 .purpose-intro h2{font-size:clamp(1.4rem,2.4vw,1.8rem);margin:0 0 10px;color:#f0f7fb}
 .purpose-intro p{font-size:1.05rem;line-height:1.7;color:#d0e0e8;margin:0}
 @media(max-width:520px){.purpose-intro{padding-left:15px}.purpose-intro p{font-size:1rem}}
+
+/* Make provenance legible when Natural Stat Trick data is imported. */
+.source-coverage{border:1px solid #506e81;background:#172f40;border-radius:9px;padding:12px 14px;color:#dcebf3;font-size:.91rem;line-height:1.55}
+.source-comparison{border:1px solid #385c70;border-radius:10px;margin:12px 0;padding:12px 14px;background:#193144}
+.source-comparison summary{min-height:35px;font-weight:750;cursor:pointer}
+.source-comparison p{font-size:.9rem;line-height:1.5;margin:12px 0}
+.source-comparison th,.source-comparison td{font-size:.86rem}

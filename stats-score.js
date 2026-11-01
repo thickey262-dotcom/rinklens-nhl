@@ -1,6 +1,6 @@
 'use strict';
 /* RinkLens Advanced Stats Score:
- * MoneyPuck-only 5-on-5 percentiles, separate F/D weights and 10% total 5v5 minutes.
+ * Five-on-five percentiles from MoneyPuck with optional matched Natural Stat Trick percentage averages; separate F/D weights and 10% total 5v5 minutes.
  * Eligible players need documented 5v5 games and ice time, never proxy minutes.
  * Scores are descriptive—not player-value forecasts, MoneyPuck ratings or Eye Tests.
  */
@@ -110,10 +110,10 @@ const RinkStats = (() => {
   const reason=p=>p?missingReasons.get(String(p.id))??null:null;
   function panel(p){
     const data=forPlayer(p);
-    const caveat='<p class="source-note">This is a RinkLens statistical calculation from MoneyPuck 5-on-5 data, <strong>not</strong> an official MoneyPuck rating, an Eye Test or an all-around talent projection. Shot-attempt metrics overlap, and on-ice results depend on teammates, opponents and usage.</p>';
+    const caveat='<p class="source-note">This is a RinkLens statistical calculation from MoneyPuck 5-on-5 data, with optional 50/50 averages from a verified Natural Stat Trick import for matching percentage metrics. It is <strong>not</strong> an official source rating, an Eye Test or an all-around talent projection. Shot-attempt metrics overlap, and on-ice results depend on teammates, opponents and usage.</p>';
     if(!data)return '<section class="stat-score-panel"><div class="eyebrow">FIVE-ON-FIVE · MONEYPUCK</div><h3>Advanced Stats Score: —</h3><p>'+String(reason(p)||'Not enough data for a reliable score')+'. A dash is not a zero.</p>'+caveat+'</section>';
     const rows=data.breakdown.map(m=>'<tr><th>'+m.label+'</th><td>'+m.value.toFixed(m.digits)+'</td><td>'+Math.round(m.percentile)+'th</td><td>'+m.weight+'%</td></tr>').join('');
-    return '<section class="stat-score-panel"><div class="eyebrow">RINKLENS SCORE · MONEYPUCK DATA</div>'
+    return '<section class="stat-score-panel"><div class="eyebrow">RINKLENS SCORE · SOURCE-AWARE 5-ON-5 DATA</div>'
       +'<h3>Advanced Stats Score <strong class="composite-score">'+data.score+'/100</strong></h3>'
       +'<p><span class="sample-label">'+data.reliabilityLabel+'</span> · '+data.fiveGp+' games, '+data.fiveToiMinutes.toFixed(1)+' minutes at five-on-five.</p>'
       +'<p>Compared with qualified '+(data.group==='D'?'defensemen':'forwards')+' from this season only. Total five-on-five ice time makes up <strong>10%</strong> of this score, rewarding minutes played alongside five advanced metrics. Games played still contributes to the separate eligibility and sample-reliability checks, but is no longer a weighted scoring component.</p>'
