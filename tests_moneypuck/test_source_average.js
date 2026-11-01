@@ -65,5 +65,5 @@ assert.match(fs.readFileSync(path.join(base,'index.html'),'utf8'),/src="source-a
 assert.match(fs.readFileSync(path.join(base,'money.js'),'utf8'),/RinkSources\.blend\(moneypuckPlayers,nst,season,data\.updatedAt\)/);
 const manifest=JSON.parse(fs.readFileSync(path.join(base,'data','nst-index.json'),'utf8'));
 assert.equal(manifest.source,'naturalstattrick');
-assert.deepEqual(manifest.seasons,[]);
+assert.deepEqual(manifest.seasons,['20262027']);
 console.log('PASS: exact 5v5 matching, percent averaging, unmatched fallback, ambiguity, source provenance and no invented NST data.');
