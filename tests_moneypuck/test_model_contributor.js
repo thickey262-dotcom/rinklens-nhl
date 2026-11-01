@@ -87,7 +87,7 @@ const eye=vm.runInNewContext(source+'\nRinkEye;',ctx);
    assert.ok(Math.abs(d.value-65)<=5,'combined score remains within +/-5 of reference');
    assert.match(eye.panel(player),new RegExp(n+' published fan reviews'));
    assert.equal((eye.panel(player).match(/\/100/g)||[]).length,1,'public profile must have only one numeric Eye Test ranking');
-   assert.match(view.eyeCell(player.id),new RegExp('RinkLens model \\+ '+n+' fans'));
+   assert.match(view.eyeCell(player.id),new RegExp('RinkLens model evaluation \\+ '+n+' fans'));
  }
  communityRows=[];
  reference={score:48,provisional:true};
