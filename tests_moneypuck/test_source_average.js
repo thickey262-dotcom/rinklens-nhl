@@ -62,7 +62,7 @@ const wrongPos={...matching,players:[{...matching.players[0],pos:'C'}]};
 assert.equal(RinkSources.blend(mp,wrongPos,'20262027').matched,0);
 // Mixed source values are only used after validated import and preserve 5v5 source context.
 assert.match(fs.readFileSync(path.join(base,'index.html'),'utf8'),/src="source-average\.js"/);
-assert.match(fs.readFileSync(path.join(base,'money.js'),'utf8'),/RinkSources\.blend\(moneypuckPlayers,nst,season\)/);
+assert.match(fs.readFileSync(path.join(base,'money.js'),'utf8'),/RinkSources\.blend\(moneypuckPlayers,nst,season,data\.updatedAt\)/);
 const manifest=JSON.parse(fs.readFileSync(path.join(base,'data','nst-index.json'),'utf8'));
 assert.equal(manifest.source,'naturalstattrick');
 assert.deepEqual(manifest.seasons,[]);
