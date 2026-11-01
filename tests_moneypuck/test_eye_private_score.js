@@ -101,7 +101,7 @@ const eye=vm.runInNewContext(eyeSource+'\nRinkEye;',context);
   assert.equal(eye.score(player.id),80);
   assert.equal(eye.personalScore(player.id),70);
   assert.equal(eye.display(player.id).label,'Eye Test · Fan-informed (3 reviewers)');
-  assert.match(moneyView.eyeCell(player.id),/Private preview · includes your saved fan grade/);
+  assert.match(moneyView.eyeCell(player.id),/Fan-informed · 3 actual reviews/);
   assert.equal((moneyView.eyeCell(player.id).match(/\/100/g)||[]).length,1,'only one ranking is shown');
   console.log('PASS: saved Eye Test visible to owner, public threshold remains three, safe account switching and distinct community/personal scores.');
 })().catch(err=>{console.error(err);process.exitCode=1});
