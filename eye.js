@@ -1,5 +1,5 @@
 'use strict';
-/* One Eye Test rating only: verified-format community votes, never a stats-derived proxy. */
+/* Separate real human Eye Test ballots from a clearly labeled stat-anchored automated ranking. */
 const RinkEye = (() => {
   // Shared storage fields, with position-specific scouting meanings.
   // Each submitted ballot rates all eight fields from 1 to 10.
@@ -46,25 +46,36 @@ const RinkEye = (() => {
       && Number(ballot[key]) >= 1 && Number(ballot[key]) <= 10)) return null;
     return Math.round(KEYS.reduce((sum,key)=>sum+Number(ballot[key]),0) / KEYS.length * 10);
   }
+  const cap=(value,stat)=>Math.max(0,Math.min(100,
+    Math.max(stat-5,Math.min(stat+5,value))));
   function display(id) {
     const community=score(id),personal=personalScore(id);
     const player=get(id);
-    const base=(typeof RinkBase!=='undefined' ? RinkBase.score(player) : null);
+    const rawBase=(typeof RinkBase!=='undefined' ? RinkBase.score(player) : null);
+    const reference=(typeof RinkStats!=='undefined'&&typeof RinkStats.anchor==='function')
+      ? RinkStats.anchor(player) : null;
+    // The automated ranking is *intentionally* derived from, and restricted
+    // to +/-5 of, the Advanced Stats Score (or labeled provisional reference).
+    // Never pretend this is independent film/scout observation.
+    const base=reference?cap(rawBase??reference.score,reference.score):rawBase;
     const voters=count(id);
-    // Publicly blend only authorized community consensus (currently >= 3 accounts).
-    // For an owner with fewer reviewers, calculate a local private preview.
     const isPublic=community!==null;
     const human=isPublic?community:personal;
     const humanWeight=human===null?0:isPublic
       ? (voters>=5?0.70:voters===4?0.60:0.50)
       : 0.30;
-    const value=human===null?base:base===null?human:
+    const unboundedValue=human===null?base:base===null?human:
       Math.round(base*(1-humanWeight)+human*humanWeight);
+    const value=reference&&unboundedValue!==null
+      ?cap(unboundedValue,reference.score):unboundedValue;
     const label=isPublic?'Combined Eye Test ('+voters+' reviewers)'
       : personal!==null?'Your Combined Preview (Private)'
+      : reference?(reference.provisional?'Provisional Auto Eye Test':'Auto Eye Test · Stats-based')
       : base!==null?'Formula Baseline · No public reviews':'';
-    return {value,base,community,personal,reviewers:voters,
-      humanWeight,label,isPrivate:!isPublic&&personal!==null};
+    return {value,base,rawBase,community,personal,reviewers:voters,
+      humanWeight,label,isPrivate:!isPublic&&personal!==null,
+      advancedAnchor:reference?.score??null,provisional:reference?.provisional??false,
+      anchored:reference!==null,unboundedValue};
   }
   function hasOwn(id) { return !!RinkCloud.user && activeSeason===state.season && own.has(String(id)); }
   function publishUpdates() {
@@ -143,7 +154,7 @@ const RinkEye = (() => {
     const id = String(player.id), r = published.get(id), mine = own.get(id);
     const group = ratingGroup(player), traits = ratingTraits(player);
     const s=score(id),personal=personalScore(id),merged=display(id);
-    const heading = '<div class="eyebrow">VIEWER OPINION · SEPARATE FROM MONEYPUCK</div><h3>Eye Test: '+(group==='D'?'Defenseman':'Forward')+'</h3>';
+    const heading = '<div class="eyebrow">STAT-ANCHORED AUTO RANKING · REAL FAN GRADES KEPT SEPARATE</div><h3>Eye Test: '+(group==='D'?'Defenseman':'Forward')+'</h3>';
     const result = '<div class="eye-result">'
       +(merged.value !== null
         ? '<p><strong class="eye-score">'+merged.value+'/100</strong> <span class="'+(merged.isPrivate?'eye-private-label':'eye-public-label')+'">'+merged.label+'</span><small>'
@@ -153,7 +164,10 @@ const RinkEye = (() => {
           +'</small></p>'
         : '<p><strong>Not enough MoneyPuck data for a starting estimate.</strong></p>')
       +'<div class="eye-components">'
-      +(merged.base!==null?'<p><b>Starting formula estimate:</b> '+merged.base+'/100</p>':'')
+      +(merged.anchored?'<p><b>'+(merged.provisional?'Provisional advanced reference':'Advanced Stats Score')+':</b> '+merged.advancedAnchor+'/100</p>'
+        +'<p class="source-note"><b>Automated ranking rule:</b> the displayed Eye Test score is restricted to within 5 points of this '+(merged.provisional?'provisional':'qualified')+' statistical reference, including after fan grades. This is a model-based estimate, <strong>not an independent eye-test observation</strong>. Real fan grades are never modified.</p>':'')
+      +(merged.base!==null?'<p><b>Auto Eye Test starting estimate:</b> '+merged.base+'/100</p>':'')
+      +(merged.anchored&&merged.rawBase!==null?'<p><b>Original formula before the 5-point limit:</b> '+merged.rawBase+'/100</p>':'')
       +(personal!==null?'<p><b>Your actual Eye Test:</b> '+personal+'/100 <span class="eye-private-label">Private</span></p>':'')
       +(s!==null?'<p><b>Community human-rating average:</b> '+s+'/100 ('+r.reviewer_count+' reviewers)</p>'
          : '<p class="eye-pending"><b>Community average pending.</b> A public human average appears after three signed-in reviewers. '+(personal!==null?'Your own grade is included privately.':'You can contribute grades below.')+'</p>')
@@ -162,7 +176,7 @@ const RinkEye = (() => {
     const traitDetails = r
       ? '<details><summary>See eight position-specific viewer averages</summary><div class="eye-traits">'+traits.map(([key,name]) => '<div><span>'+name+'</span><b>'+Number(r[key]).toFixed(1)+'/10</b></div>').join('')+'</div></details>'
       : '';
-    let participation = '<p class="source-note">Eye Test is an opinion from viewers who say they watched this player. It is separate from MoneyPuck data, and contributors are not verified professional scouts.</p>';
+    let participation = '<p class="source-note">The automated Eye Test ranking is a statistical estimate linked to the Advanced Stats Score, not a scouting observation. Separate human grades are opinions from viewers who say they watched this player, and contributors are not verified professional scouts. Individual human scores are never restricted to the 5-point range.</p>';
     if (!RinkCloud.client || !RinkCloud.user) {
       participation += '<p>Rating takes about a minute after signing in.</p><button type="button" class="button primary eye-signin-action" data-eye-signin>Sign in to rate this player</button>';
     } else {

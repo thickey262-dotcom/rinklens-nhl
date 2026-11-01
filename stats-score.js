@@ -20,7 +20,7 @@ const RinkStats = (() => {
     D: Object.freeze({xgfPct:40,ixG60:10,cfPct:15,ffPct:10,hdCfPct:15,fiveToiMinutes:10})
   });
   const MIN_PEERS=30;
-  let byId=new Map(),missingReasons=new Map(),minimumGames=10,minimumMinutes=100;
+  let byId=new Map(),provisionalById=new Map(),missingReasons=new Map(),minimumGames=10,minimumMinutes=100;
   const isNumber=v=>typeof v==='number'&&Number.isFinite(v);
   const group=p=>p?.pos==='D'?'D':['C','L','R','LW','RW'].includes(p?.pos)?'F':null;
   const valid=(p,key)=>key==='fiveToiMinutes'
@@ -56,7 +56,7 @@ const RinkStats = (() => {
     return 'Not enough valid MoneyPuck metrics or qualified position peers';
   }
   function calculate(players){
-    byId=new Map();missingReasons=new Map();
+    byId=new Map();provisionalById=new Map();missingReasons=new Map();
     const source=Array.isArray(players)?players:[];
     const maxGP=Math.max(0,...source.map(p=>isNumber(p?.gp)?p.gp:0));
     const early=maxGP<15;
@@ -102,8 +102,32 @@ const RinkStats = (() => {
         reliabilityLabel:reliabilityLabel(fiveGames(p),fiveMinutes(p))
       });
     }
+    // A provisional reference uses the SAME position peers and metric weights as
+    // the official index, but allows players with fewer than 10 GP / 100 minutes.
+    // Their stronger reliability shrinkage must remain visible in the UI.
+    for(const p of source){
+      const id=String(p.id);
+      if(byId.has(id)||!group(p)||fiveGames(p)===null||fiveMinutes(p)===null)continue;
+      const kind=group(p),weights=WEIGHTS[kind];
+      const available=METRICS.filter(m=>valid(p,m.key)&&pools[kind][m.key].length>=MIN_PEERS);
+      const advanced=available.filter(m=>m.key!=='fiveToiMinutes');
+      if(!available.some(m=>m.key==='fiveToiMinutes')||advanced.length<4||
+        !advanced.some(m=>m.key==='xgfPct')||!advanced.some(m=>m.key==='ixG60'))continue;
+      const total=available.reduce((sum,m)=>sum+weights[m.key],0);
+      const raw=available.reduce((sum,m)=>sum+weights[m.key]*percentile(pools[kind][m.key],p[m.key]),0)/total;
+      const effectiveGames=Math.min(fiveGames(p),fiveMinutes(p)/12);
+      const reliability=effectiveGames/(effectiveGames+10);
+      const score=Math.max(0,Math.min(100,Math.round(50+(raw-50)*reliability)));
+      provisionalById.set(id,{score,effectiveGames,fiveGp:fiveGames(p),fiveToiMinutes:fiveMinutes(p)});
+    }
     return byId;
   }
+  const provisional=p=>p?provisionalById.get(String(p.id))??null:null;
+  const anchor=p=>{
+    const regular=forPlayer(p);
+    return regular?{score:regular.score,provisional:false}
+      : provisional(p)?{score:provisional(p).score,provisional:true}:null;
+  };
   const forPlayer=p=>p?byId.get(String(p.id))??null:null;
   const score=p=>forPlayer(p)?.score??null;
   const label=p=>forPlayer(p)?.reliabilityLabel??null;
@@ -111,7 +135,12 @@ const RinkStats = (() => {
   function panel(p){
     const data=forPlayer(p);
     const caveat='<p class="source-note">This is a RinkLens statistical calculation from MoneyPuck 5-on-5 data, with optional 50/50 averages from a verified Natural Stat Trick import for matching percentage metrics. It is <strong>not</strong> an official source rating, an Eye Test or an all-around talent projection. Shot-attempt metrics overlap, and on-ice results depend on teammates, opponents and usage.</p>';
-    if(!data)return '<section class="stat-score-panel"><div class="eyebrow">FIVE-ON-FIVE · MONEYPUCK</div><h3>Advanced Stats Score: —</h3><p>'+String(reason(p)||'Not enough data for a reliable score')+'. A dash is not a zero.</p>'+caveat+'</section>';
+    if(!data){
+      const low=provisional(p);
+      return '<section class="stat-score-panel"><div class="eyebrow">FIVE-ON-FIVE · MONEYPUCK</div><h3>Qualified Advanced Stats Score: —</h3>'
+        +(low?'<p><strong>Provisional 5-on-5 reference: '+low.score+'/100</strong> · '+low.fiveGp+' five-on-five games, '+low.fiveToiMinutes.toFixed(1)+' minutes. Does not meet the normal '+minimumGames+'-game, '+minimumMinutes+'-minute requirement. Used only as a clearly labeled reference for the automated Eye Test ranking.</p>':'')
+        +'<p>'+String(reason(p)||'Not enough data for a reliable score')+'. A provisional rating is less reliable than a qualified score.</p>'+caveat+'</section>';
+    }
     const rows=data.breakdown.map(m=>'<tr><th>'+m.label+'</th><td>'+m.value.toFixed(m.digits)+'</td><td>'+Math.round(m.percentile)+'th</td><td>'+m.weight+'%</td></tr>').join('');
     return '<section class="stat-score-panel"><div class="eyebrow">RINKLENS SCORE · SOURCE-AWARE 5-ON-5 DATA</div>'
       +'<h3>Advanced Stats Score <strong class="composite-score">'+data.score+'/100</strong></h3>'
@@ -123,7 +152,7 @@ const RinkStats = (() => {
       +'</details>'+caveat+'</section>';
   }
   return {
-    METRICS,WEIGHTS,MIN_PEERS,calculate,forPlayer,score,label,reason,panel,group,
+    METRICS,WEIGHTS,MIN_PEERS,calculate,forPlayer,provisional,anchor,score,label,reason,panel,group,
     get minimumGames(){return minimumGames},
     get minimumMinutes(){return minimumMinutes}
   };
