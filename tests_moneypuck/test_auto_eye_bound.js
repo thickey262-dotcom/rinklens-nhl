@@ -8,7 +8,8 @@ const beforeInit=eyeSource.slice(0,eyeSource.indexOf('// The player table uses w
 assert.ok(beforeInit.includes('function display(id)'),'eye source must have auto ranking display');
 const state={season:'20262027',players:[],page:1,ready:true};
 const cloud={user:null,client:null,initialize:async()=>true};
-const document={getElementById(){return null},addEventListener(){}};
+const nodes=new Map();
+const document={getElementById(id){if(!nodes.has(id))nodes.set(id,{addEventListener(){},dataset:{},textContent:'',hidden:false});return nodes.get(id);},addEventListener(){}};
 const build=new Function('state','get','RinkCloud','safe','render','renderCompare','document','window','console',
   statsSource+'\n'+baseSource+'\n'+beforeInit+'\nreturn {stats:RinkStats,base:RinkBase,eye:RinkEye};');
 const {stats,base,eye}=build(state,id=>state.players.find(p=>p.id===id),cloud,String,()=>{},()=>{},document,{},console);
