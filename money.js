@@ -14,7 +14,7 @@ function eyeCell(id) {
  const entry = eyeDisplay(id);
  if (!entry || entry.value === null) return '—';
  const main='<strong>'+entry.value+'/100</strong><small>Eye Test ranking</small>'
-   +(entry.modelEntries?'<small class="eye-model-source">RinkLens model'
+   +(entry.modelEntries?'<small class="eye-model-source">'+entry.modelEntries+' RinkLens model evaluation'+(entry.modelEntries===1?'':'s')
      +(entry.publicFanEntries?' + '+entry.publicFanEntries+' fans':' · awaiting public fan reviews')+'</small>':'')
    +(entry.provisional?'<small>Provisional · small sample</small>':'')
    +(entry.isPrivate?'<small class="eye-personal-note">Private preview includes your saved fan grade</small>':'');
@@ -68,6 +68,7 @@ async function load(){
  updatePagination(0);
  RinkStats.calculate([]);
  if(typeof RinkBase!=='undefined')RinkBase.calculate([]);
+ if(typeof RinkLenses!=='undefined')RinkLenses.calculate([]);
  $('rows').innerHTML='';$('playerCount').textContent='—';$('updated').textContent='—';$('seasonSummary').textContent=season.slice(0,4)+'–'+season.slice(6);
  status('Loading MoneyPuck data for '+$('season').selectedOptions[0].text+'…');renderCompare();
  if(window.RinkEye) void RinkEye.reload(season);
@@ -87,6 +88,7 @@ async function load(){
     : 'Natural Stat Trick: '+sources.reason+' Currently showing MoneyPuck-only statistics for '+seasonLabel()+'.';
   RinkStats.calculate(state.players);
   if(typeof RinkBase!=='undefined')RinkBase.calculate(state.players);
+  if(typeof RinkLenses!=='undefined')RinkLenses.calculate(state.players);
   state.ready=true;
   $('playerCount').textContent=state.players.length.toLocaleString();
   $('updated').textContent=data.updatedAt?new Date(data.updatedAt).toLocaleDateString():'Not recorded';
@@ -94,7 +96,8 @@ async function load(){
   $('team').innerHTML='<option value="">All teams</option>'+teams.map(t=>'<option value="'+safe(t)+'">'+safe(t)+'</option>').join('');
   const ranked=state.players.filter(p=>eyeDisplay(p.id)?.anchored).length;
   const temporary=state.players.filter(p=>RinkStats.anchor?.(p)?.provisional).length;
-  status(seasonLabel()+' regular season only. '+ranked+' of '+state.players.length+' skaters have a stats-anchored Auto Eye Test ranking (within ±5 of the advanced reference); '+temporary+' are clearly marked provisional because of small samples. Actual fan Eye Test grades are separate.');
+  const top100=typeof RinkLenses!=='undefined'?RinkLenses.total():0;
+  status(seasonLabel()+' regular season only. '+ranked+' of '+state.players.length+' skaters have a single Eye Test ranking (within ±5 of the advanced reference). The top '+top100+' qualified skaters receive five additional automated statistical evaluations. '+temporary+' skaters use provisional references. Fan votes remain authentic and separate.');
   render();
   if(window.RinkEye) void RinkEye.reload(season);
  }catch(err){if(token!==state.token)return;status('MoneyPuck statistics are currently unavailable for this season. No substitute or estimated data is shown. '+err.message,true);$('rows').innerHTML='<tr><td colspan="12">No verified MoneyPuck data available.</td></tr>';$('results').textContent='0 players';updatePagination(0);}

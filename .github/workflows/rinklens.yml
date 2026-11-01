@@ -30,6 +30,7 @@ jobs:
       - name: Validate public website JavaScript
         run: |
           node --check eye-base.js
+          node --check eye-models.js
           node --check stats-score.js
           node --check source-average.js
           node --check money.js
@@ -41,6 +42,7 @@ jobs:
           node tests_moneypuck/test_eye_private_score.js
           node tests_moneypuck/test_eye_base.js
           node tests_moneypuck/test_model_contributor.js
+          node tests_moneypuck/test_five_extra_models.js
           node tests_moneypuck/test_auto_eye_bound.js
           node tests_moneypuck/test_source_average.js
           node tests_moneypuck/test_nst_published.js
@@ -60,7 +62,7 @@ jobs:
       - name: Assemble MoneyPuck stats, composite, and Eye Test website
         run: |
           mkdir -p _site/data
-          cp index.html money.css money.js stats-score.js source-average.js eye-base.js eye.css eye.js cloud.js config.js _site/
+          cp index.html money.css money.js stats-score.js source-average.js eye-base.js eye-models.js eye.css eye.js cloud.js config.js _site/
           cp data/nst-index.json _site/data/
           if ls data/nst-*.json >/dev/null 2>&1; then cp data/nst-*.json _site/data/; fi
           cp data/moneypuck-*.json _site/data/

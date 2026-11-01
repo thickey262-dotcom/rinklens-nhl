@@ -87,6 +87,22 @@ When the 5-on-5 goal counts are absent, the 10% component is **omitted** and oth
 
 The source label states whether the ranking is model-only, has eligible public fan input, or is a sign-in-only private preview. RinkLens is never a human voter and **does not satisfy the three-person publication requirement**. Individual fan ballots remain stored in Supabase without alteration; the actual fan review count is reported when the public aggregate qualifies. The single combined score is constrained to ±5 of its Advanced Stats Score (or clearly provisional reference). The separate Advanced Stats Score is still a statistics index, not another Eye Test ranking.
 
+## Five additional model evaluations for each season's top 100 skaters
+
+On each season load, `eye-models.js` selects the **top 100 players with qualified Advanced Stats Scores**, sorted by score descending, then stable player ID ascending to break ties. It calculates five **additional deterministic statistical perspectives** from each player's existing position-relative 5v5 metric percentiles:
+
+| Model perspective | Emphasis |
+| --- | --- |
+| Expected goals | xGF% |
+| Chance creation | Individual xG/60 and high-danger share |
+| Puck possession | Corsi and Fenwick |
+| High-danger play | High-danger chance share |
+| Ice time and impact | Total five-on-five minutes, with xG and chance-share context |
+
+Every model uses its stated alternate percentage weighting of the *same* six verified advanced-stat inputs, including data provenance and eligibility checks already in RinkLens. Each applies the existing Advanced Stats Score reliability shrink toward 50, then is limited to within ±5 of that player's qualified Advanced Stats Score. The existing GP/TOI/PPG/5v5 +/- baseline also remains bounded. **For top-100 skaters, the model starting value is the rounded arithmetic mean of six bounded statistical estimates** (original + five extra); it, and the final Eye Test after eligible fan feedback, remain bounded to ±5 of the advanced reference. For players outside the top 100, the existing single estimate is unchanged. Small-sample provisional references are never eligible to enter the top 100.
+
+These are **six correlated calculations of the same source statistics**, not six independent sets of scouting observations, not LLM video review, and **not fan ballots**. They are never inserted into Supabase's human vote tables, do not count toward the three-human-reviewer publication threshold, and never display as six competing Eye Test rankings. The player row says "6 RinkLens model evaluations" (or "1" outside the top 100), while the single Eye Test score remains the only prominently displayed ranking. Top-100 membership automatically changes when the selected season or upstream MoneyPuck/NST data changes; no extra paid API or billing is used. Check: `tests_moneypuck/test_five_extra_models.js`.
+
 **Every-player automatic Eye Test ranking (stat-linked, not scouted):** RinkLens retains the original 0–100 Formula Baseline above as an **unrestricted raw input**, but anchors the displayed automatic Eye Test ranking to the **Advanced Stats Score, within ±5 points**. Specifically, `auto = clamp(raw formula baseline, advanced score - 5, advanced score + 5)`. This deliberate statistical relationship is **not** independent eye-test evidence and should never be presented as an observed scouting grade.
 
 The qualified Advanced Stats Score retains the existing 10-game/100-minute (or early-season 3-game/30-minute) threshold and five-on-five data requirements. For players below those sample thresholds but with usable five-on-five statistics, `RinkStats.anchor` supplies an explicitly **provisional 5-on-5 reference** from the same metrics and position-based qualified peers, applying the same conservative effective-games reliability shrink toward 50. Provisional values never become qualified Advanced Stats Scores; they are clearly labeled in the player list and profile. If even a provisional score lacks underlying evidence, no number is invented. In the latest published snapshots, 740/740 current-season skaters, 920/920 in 2024–25 and 940/940 in 2025–26 have an official or provisional reference.
