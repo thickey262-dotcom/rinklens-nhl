@@ -48,7 +48,7 @@ const eye=vm.runInNewContext(source+'\nRinkEye;',ctx);
  assert.equal(eye.score(player.id),null,'model must not create a community score');
  assert.match(eye.panel(player),/ONE EYE TEST RANKING/);
  assert.equal((eye.panel(player).match(/\/100/g)||[]).length,1,'exactly one displayed Eye Test ranking in profile');
- assert.match(eye.panel(player),/1 RinkLens model starting contribution \(not a human vote\)/);
+ assert.match(eye.panel(player),/1 RinkLens statistical evaluation/);
  assert.match(eye.panel(player),/public fan average pending/);
  assert.match(getEl('eyeCoverage').textContent,/1 skaters with one Eye Test ranking/);
  const view=new Function('window','safe',money.slice(
