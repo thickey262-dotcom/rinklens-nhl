@@ -158,6 +158,9 @@ const countRows=()=> (element('rows').innerHTML.match(/<tr>/g)||[]).length;
  api.detail(players[0].id);
  assert.match(element('detail').innerHTML,/2025–26 regular season only/);
  assert.equal(countRows(),25);
+ // Clear the earlier BUF filter before checking the full 50-row option.
+ element('team').value='';
+ handlers['team:change']();
  element('pageSize').value='50';
  handlers['pageSize:change']();
  assert.equal(api.state.page,1);
