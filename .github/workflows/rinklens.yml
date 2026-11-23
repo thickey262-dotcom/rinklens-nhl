@@ -59,6 +59,11 @@ jobs:
           git add data/moneypuck-*.json
           if ! git diff --cached --quiet; then
             git commit -m 'chore(data): refresh MoneyPuck-only snapshots'
+            # Scheduled/retried jobs may run from an older checkout after another
+            # successful refresh pushed newer data. Replay this run's verified
+            # snapshots onto the latest branch instead of rejecting the push.
+            git fetch origin main
+            git rebase -X theirs origin/main
             git push origin HEAD:main
           fi
       - name: Assemble MoneyPuck stats, composite, and Eye Test website
