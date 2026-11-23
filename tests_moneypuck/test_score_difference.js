@@ -76,7 +76,7 @@ const ids=()=>Array.from(ui.filtered(),p=>p.id).join(',');
  assert.match(html,/value="diffPositive"/);
  assert.match(html,/value="diffNegative"/);
  assert.match(html,/value="diffClosest"/);
- assert.match(html,/Difference \(\+\/−\)/);
+ assert.match(html,/<span class="rank-wide">Difference<\/span><span class="rank-short">\+\/−<\/span>/);
  assert.match(html,/Eye Test − Advanced Stats/);
  assert.match(el('rows').innerHTML,/score-difference-cell/);
  assert.match(el('rows').innerHTML,/\+5/);
