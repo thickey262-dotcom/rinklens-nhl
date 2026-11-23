@@ -50,9 +50,14 @@ const {stats,base,eye}=build(state,id=>state.players.find(p=>p.id===id),cloud,St
     }
     assert.equal(seasonOfficial+seasonProvisional,state.players.length);
     if(season==='20262027'){
-      assert.equal(seasonOfficial,505,'current qualified Advanced Stats Score count');
-      assert.equal(seasonProvisional,235,'current small-sample skaters use explicitly provisional reference');
-      assert.equal(state.players.length,740);
+      // The current season updates daily: game/time thresholds are crossed,
+      // and roster additions change the counts. Do not lock CI to yesterday's
+      // exact qualifying/provisional split or player count.
+      assert.ok(state.players.length>=500,'current-season roster must have meaningful coverage');
+      assert.ok(seasonOfficial>=100,'current season must have enough qualified advanced-stat peers');
+      assert.ok(seasonProvisional>=0,'provisional count is always nonnegative');
+      assert.equal(seasonOfficial+seasonProvisional,state.players.length,
+        'all published skaters must still be classified by real 5v5 evidence');
     }
   }
   assert.ok(clamped>100,'five-point bound must materially affect the automatic ranking');
