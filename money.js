@@ -1,6 +1,7 @@
 'use strict';
 const $ = id => document.getElementById(id);
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 10; // Compact view: 10 rows per page by default, with optional larger pages.
+const pageSize = () => { const n=Number($('pageSize')?.value);return [10,25,50].includes(n)?n:PAGE_SIZE; };
 const state = {players:[],season:'20262027',selected:[],token:0,ready:false,page:1};
 const safe = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const missing = value => typeof value !== 'number' || !Number.isFinite(value);
@@ -10,14 +11,16 @@ const label = p => p.name + ' (' + p.team + ', ' + p.pos + ')';
 const get = id => state.players.find(p=>p.id===id);
 // Public community averages and the current viewer's private Eye Test are distinct.
 function eyeDisplay(id) { return window.RinkEye?.display(id) ?? null; }
-function eyeCell(id) {
+function eyeCell(id,compact=false) {
  const entry = eyeDisplay(id);
  if (!entry || entry.value === null) return '—';
  const status=entry.isPrivate?'Private preview · includes your saved fan grade'
    :entry.community!==null?'Fan-informed · '+entry.reviewers+' actual reviews'
    :'Statistical estimate · no published fan reviews';
- const main='<strong>'+entry.value+'/100</strong><small>'+safe(status)+'</small>'
-   +(entry.provisional?'<small>Provisional · small sample</small>':'');
+ const short=entry.isPrivate?'Your preview':entry.community!==null?'Fans ('+entry.reviewers+')':'Stat estimate';
+ const small=compact?short:status;
+ const main='<strong>'+entry.value+'/100</strong><small title="'+safe(status)+'" aria-label="'+safe(status)+'">'+safe(small)+'</small>'
+   +(entry.provisional?'<small title="Provisional: limited five-on-five games and minutes">Provisional</small>':'');
  return main;
 }
 function advancedCell(p){
@@ -137,11 +140,11 @@ function filtered(){
  return state.players.filter(p=>(!q||p.name.toLowerCase().includes(q)||p.team.toLowerCase().includes(q))&&(!t||p.team===t)&&(!pos||position(p)===pos)).sort(compare);
 }
 function updatePagination(total){
- const maxPages=Math.max(1,Math.ceil(total/PAGE_SIZE));
+ const maxPages=Math.max(1,Math.ceil(total/pageSize()));
  state.page=Math.max(1,Math.min(state.page,maxPages));
- const start=(state.page-1)*PAGE_SIZE;
+ const start=(state.page-1)*pageSize();
  $('pagination').hidden=total===0;
- $('pageSummary').textContent=total ? 'Showing '+(start+1)+'–'+Math.min(start+PAGE_SIZE,total)+' of '+total+' players' : 'No matching players';
+ $('pageSummary').textContent=total ? 'Showing '+(start+1)+'–'+Math.min(start+pageSize(),total)+' of '+total+' players' : 'No matching players';
  $('pageNumber').textContent='Page '+state.page+' of '+maxPages;
  $('pagePrev').disabled=state.page===1;
  $('pageNext').disabled=state.page===maxPages;
@@ -149,7 +152,7 @@ function updatePagination(total){
 function changePage(direction){
  if(!state.ready)return;
  const total=filtered().length;
- const last=Math.max(1,Math.ceil(total/PAGE_SIZE));
+ const last=Math.max(1,Math.ceil(total/pageSize()));
  const next=Math.max(1,Math.min(last,state.page+direction));
  if(next===state.page)return;
  state.page=next;
@@ -159,9 +162,9 @@ function changePage(direction){
 function render(){
  const allRows=filtered();
  updatePagination(allRows.length);
- $('results').textContent=allRows.length+' matching players · '+PAGE_SIZE+' per page';
- const rows=allRows.slice((state.page-1)*PAGE_SIZE,state.page*PAGE_SIZE);
- $('rows').innerHTML=rows.length?rows.map(p=>'<tr><td><button type="button" class="player-name" data-open="'+safe(p.id)+'">'+safe(p.name)+'</button><small>'+safe(p.team)+' · '+safe(p.pos)+'</small></td>'+[['gp',0],['g',0],['a',0],['p',0],['p60',2],['xgfPct',1],['cfPct',1],['ixG60',2]].map(([k,d])=>'<td>'+show(p[k],d)+'</td>').join('')+'<td class="advanced-score-cell" title="'+safe(RinkStats.label(p)??RinkStats.reason(p)??'Score unavailable')+'">'+advancedCell(p)+'</td><td class="eye-table">'+eyeCell(p.id)
+ $('results').textContent=allRows.length+' matching players · '+pageSize()+' per page';
+ const rows=allRows.slice((state.page-1)*pageSize(),state.page*pageSize());
+ $('rows').innerHTML=rows.length?rows.map(p=>'<tr><td><button type="button" class="player-name" data-open="'+safe(p.id)+'">'+safe(p.name)+'</button><small>'+safe(p.team)+' · '+safe(p.pos)+'</small></td>'+[['gp',0],['g',0],['a',0],['p',0],['p60',2],['xgfPct',1],['cfPct',1],['ixG60',2]].map(([k,d])=>'<td>'+show(p[k],d)+'</td>').join('')+'<td class="advanced-score-cell" title="'+safe(RinkStats.label(p)??RinkStats.reason(p)??'Score unavailable')+'">'+advancedCell(p)+'</td><td class="eye-table">'+eyeCell(p.id,true)
   +'<button type="button" class="mini eye-rate-link" data-eye-rate="'+safe(p.id)+'" aria-label="'+(window.RinkEye?.hasOwn(p.id)?'Update':'Rate')+' Eye Test for '+safe(p.name)+'">'+(window.RinkEye?.hasOwn(p.id)?'Edit rating':'Rate')+'</button></td><td class="score-difference-cell">'+differenceCell(p)+'</td><td><button type="button" class="mini" data-compare="'+safe(p.id)+'" aria-label="Compare '+safe(p.name)+'">'+(state.selected.includes(p.id)?'✓ Added':'+ Add')+'</button></td></tr>').join(''):'<tr><td colspan="13">No matching players found.</td></tr>';
 }
 function renderCompare(){
@@ -199,7 +202,7 @@ document.addEventListener('click',event=>{
 $('close').addEventListener('click',close);
 document.addEventListener('keydown',event=>{if(event.key==='Escape')close()});
 $('season').addEventListener('change',load);
-['search','team','position','sort'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',()=>{state.page=1;render();}));
+['search','team','position','sort','pageSize'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',()=>{state.page=1;render();}));
 $('pagePrev').addEventListener('click',()=>changePage(-1));
 $('pageNext').addEventListener('click',()=>changePage(1));
 load();

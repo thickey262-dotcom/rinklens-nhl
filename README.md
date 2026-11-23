@@ -2,6 +2,12 @@
 
 The homepage begins with a **What is RinkLens for?** introduction explaining the site's purpose to everyday hockey fans: plain-English explanations, season-only comparisons, transparent statistical ratings, and optional real fan Eye Test grades.
 
+## Compact full-width player rankings
+
+The Players tab now defaults to **10 rows per page** for a shorter, easier-to-scan viewport, with optional **25** or **50** rows from the Rows per page selector. The main table has a fixed, proportional layout; desktop widths keep all 13 columns visible without side-to-side scrolling. At narrower viewport widths (1040px, 600px, and 420px), lower-priority counting/possession columns are suppressed **in the table only** to preserve the key Player, Advanced Score, Eye Test Score, signed Difference, and Compare actions. Clicking any player name still opens the **full original statistics and scoring breakdown**, so no data is deleted. Compact cells shorten source labels, with the original explanatory label available as a tooltip/accessibility text. The '+/-' difference signs and provisional-data flags remain visible.
+
+The filter/search, sorting, compare, season switch, and pagination operate on the same underlying full player dataset. Changing rows per page resets to page one. Automated checks are in `tests_moneypuck/test_compact_rankings.js` and the updated `tests_moneypuck/test_pagination.js`.
+
 ## Score Difference column and sorting
 
 The Players table and head-to-head comparison show **Score Difference = Eye Test score − Advanced Stats Score**, in **points on the 0–100 scale**. **+5** means the Eye Test score is five higher than the advanced reference, **−5** means advanced is five higher, and **0** means they match. The displayed difference is recalculated from the latest combined Eye Test value, including any eligible public fan grades or the current user's private preview. It is not a separate scouting score, vote count, or percentage change.

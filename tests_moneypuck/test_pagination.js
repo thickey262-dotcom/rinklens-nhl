@@ -17,7 +17,7 @@ const elements=new Map();
 function element(id){
  if(!elements.has(id)){
   elements.set(id,{
-   id,value:id==='season'?'20262027':id==='sort'?'advanced':'',
+   id,value:id==='season'?'20262027':id==='sort'?'advanced':id==='pageSize'?'10':'',
    textContent:'',innerHTML:'',disabled:false,hidden:false,
    selectedOptions:[{text:'2026–27'}],
    classList:{toggle(){}},
@@ -65,14 +65,24 @@ const countRows=()=> (element('rows').innerHTML.match(/<tr>/g)||[]).length;
  api.renderCompare();
  assert.match(element('comparison').innerHTML,/2026–27 season only/);
  api.state.selected=[];
- assert.equal(countRows(),25);
- assert.equal(element('pageSummary').textContent,'Showing 1–25 of 53 players');
- assert.equal(element('pageNumber').textContent,'Page 1 of 3');
+ assert.equal(countRows(),10,'compact view defaults to ten visible rows');
+ assert.equal(element('pageSummary').textContent,'Showing 1–10 of 53 players');
+ assert.equal(element('pageNumber').textContent,'Page 1 of 6');
  assert.equal(element('pagePrev').disabled,true);
  assert.equal(element('pageNext').disabled,false);
  assert.equal(element('pagination').hidden,false);
+ assert.equal(element('results').textContent,'53 matching players · 10 per page');
+ handlers['pageNext:click']();
+ assert.equal(api.state.page,2);
+ assert.equal(countRows(),10,'compact view stays at ten rows on the second page');
+ assert.equal(element('pageSummary').textContent,'Showing 11–20 of 53 players');
+ // Users can switch to 25 or 50 rows when they want more records.
+ element('pageSize').value='25';
+ handlers['pageSize:change']();
+ assert.equal(api.state.page,1,'changing page size resets pagination');
+ assert.equal(countRows(),25);
+ assert.equal(element('pageNumber').textContent,'Page 1 of 3');
  assert.equal(element('results').textContent,'53 matching players · 25 per page');
-
  handlers['pageNext:click']();
  assert.equal(api.state.page,2);
  assert.equal(countRows(),25);
@@ -85,7 +95,7 @@ const countRows=()=> (element('rows').innerHTML.match(/<tr>/g)||[]).length;
  assert.equal(element('pageNext').disabled,true);
  handlers['pageNext:click']();
  assert.equal(api.state.page,3,'cannot move beyond final page');
- assert.equal(scrollCount,2,'only real page changes scroll to the table');
+ assert.equal(scrollCount,3,'only real page changes scroll to the table');
  handlers['pagePrev:click']();
  assert.equal(api.state.page,2);
  assert.equal(countRows(),25);
@@ -148,8 +158,16 @@ const countRows=()=> (element('rows').innerHTML.match(/<tr>/g)||[]).length;
  api.detail(players[0].id);
  assert.match(element('detail').innerHTML,/2025–26 regular season only/);
  assert.equal(countRows(),25);
- assert.ok(code.includes('PAGE_SIZE = 25'));
+ element('pageSize').value='50';
+ handlers['pageSize:change']();
+ assert.equal(api.state.page,1);
+ assert.equal(countRows(),50,'larger page-size option should work');
+ assert.equal(element('pageNumber').textContent,'Page 1 of 2');
+ element('pageSize').value='10';
+ handlers['pageSize:change']();
+ assert.equal(countRows(),10);
+ assert.ok(code.includes('PAGE_SIZE = 10'));
  assert.ok(code.includes('allRows.slice('));
  assert.ok(!code.includes('PAGE_SIZE = 50'));
- console.log('PASS: pagination, filtering, selected-season-only reminders in page/table/profile/compare, season changes, and Eye Test render.');
+ console.log('PASS: compact 10-row default, optional 25/50 rows, pagination, filters, season changes and Eye Test render.');
 })().catch(err=>{console.error(err);process.exitCode=1});

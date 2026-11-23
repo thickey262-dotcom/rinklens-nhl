@@ -59,3 +59,100 @@
 .score-diff.is-lower{color:#f4b27e}
 .score-diff.is-equal{color:#e0eaf1}
 .score-diff.is-unavailable{color:#b7c8d2}
+
+/* Compact, screen-width player rankings. The unabridged metrics remain in profiles. */
+#players.section{padding-top:28px}
+#players .rankings-heading{margin-bottom:12px}
+#players .rankings-heading .eyebrow{margin-bottom:5px}
+#players .rankings-heading h2{margin-bottom:5px}
+#players .rankings-heading p{margin:0;font-size:.92rem;line-height:1.4}
+#players>.panel{padding:clamp(9px,1.2vw,17px)}
+#players .season-inline-notice{font-size:.82rem;padding:8px 10px;margin-bottom:7px}
+#players .source-coverage{font-size:.75rem;line-height:1.35;padding:7px 10px;margin:7px 0 10px}
+#players .filters{grid-template-columns:minmax(130px,1.6fr) repeat(3,minmax(100px,1fr));gap:8px;margin-bottom:10px}
+#players .filters label{gap:3px;font-size:.81rem}
+#players .filters select,#players .filters input{width:100%;padding:7px 9px;font-size:.84rem}
+#players .rankings-help{border-bottom:1px solid #34556a;margin:0 0 9px;padding:0 0 7px}
+#players .rankings-help summary{cursor:pointer;font-weight:700;font-size:.81rem;color:#9cddd9}
+#players .rankings-help .score-diff-explainer{margin:7px 0 2px;font-size:.82rem}
+#players .rankings-toolbar{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;margin:6px 0 9px}
+#players .rankings-toolbar #results{margin:0;font-size:.83rem}
+#players .rankings-toolbar label{display:flex;align-items:center;gap:6px;font-size:.8rem;font-weight:650;color:#c3d9e2}
+#players .rankings-toolbar select{font-size:.79rem;padding:5px 7px;min-height:32px}
+#players .rankings-wrap{width:100%;overflow-x:visible}
+#players .rankings-table{table-layout:fixed;width:100%;min-width:0;font-size:clamp(.68rem,.82vw,.8rem)}
+#players .rankings-table th,#players .rankings-table td{padding:6px 4px;line-height:1.2;vertical-align:middle;white-space:normal;overflow-wrap:anywhere}
+#players .rankings-table th{font-size:.75rem;font-weight:750;vertical-align:bottom}
+#players .rankings-table th:nth-child(1){width:18%;text-align:left}
+#players .rankings-table th:nth-child(2){width:5%}
+#players .rankings-table th:nth-child(3),#players .rankings-table th:nth-child(4){width:4%}
+#players .rankings-table th:nth-child(5){width:5%}
+#players .rankings-table th:nth-child(6),#players .rankings-table th:nth-child(7),#players .rankings-table th:nth-child(8),#players .rankings-table th:nth-child(9){width:6%}
+#players .rankings-table th:nth-child(10){width:10%}
+#players .rankings-table th:nth-child(11){width:13%}
+#players .rankings-table th:nth-child(12){width:8%}
+#players .rankings-table th:nth-child(13){width:9%}
+#players .rankings-table th:not(:first-child),#players .rankings-table td:not(:first-child){text-align:center}
+#players .rankings-table .player-name{display:block;max-width:100%;font-size:.82rem;line-height:1.16;text-wrap:pretty}
+#players .rankings-table td:first-child small{font-size:.67rem;line-height:1.25;margin-top:2px}
+#players .rankings-table .eye-table{font-size:.79rem}
+#players .rankings-table .eye-table strong{display:block;line-height:1.15}
+#players .rankings-table .eye-table small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;font-size:.66rem;line-height:1.3}
+#players .rankings-table .advanced-score-cell small{font-size:.63rem;line-height:1.25}
+#players .rankings-table .score-diff{font-size:.92rem}
+#players .rankings-table .score-difference-cell{min-width:0}
+#players .rankings-table .score-difference-cell small{font-size:.62rem}
+#players .rankings-table .mini{display:inline-flex;align-items:center;justify-content:center;max-width:100%;min-width:0;padding:5px 6px;font-size:.73rem;line-height:1.15;white-space:nowrap}
+#players .rankings-table .eye-rate-link{display:inline-flex;margin:4px 0 0;min-height:28px;min-width:0}
+#players .pagination{margin-top:9px;padding-top:9px;font-size:.83rem}
+#players .pagination-controls .mini{min-height:34px;padding:6px 10px;font-size:.8rem}
+#players .pagination-controls{gap:7px}
+#players .rank-short{display:none}
+
+/* Tablets retain the core rankings and actions; detailed stats are in each profile. */
+@media(max-width:1040px){
+ #players .rankings-table th:nth-child(3),#players .rankings-table td:nth-child(3),
+ #players .rankings-table th:nth-child(4),#players .rankings-table td:nth-child(4),
+ #players .rankings-table th:nth-child(6),#players .rankings-table td:nth-child(6),
+ #players .rankings-table th:nth-child(7),#players .rankings-table td:nth-child(7),
+ #players .rankings-table th:nth-child(8),#players .rankings-table td:nth-child(8),
+ #players .rankings-table th:nth-child(9),#players .rankings-table td:nth-child(9){display:none}
+ #players .rankings-table th:nth-child(1){width:27%}
+ #players .rankings-table th:nth-child(2),#players .rankings-table th:nth-child(5){width:8%}
+ #players .rankings-table th:nth-child(10){width:13%}
+ #players .rankings-table th:nth-child(11){width:19%}
+ #players .rankings-table th:nth-child(12){width:11%}
+ #players .rankings-table th:nth-child(13){width:14%}
+ #players .rankings-table .rank-wide{display:none}
+ #players .rankings-table .rank-short{display:inline}
+}
+@media(max-width:700px){
+ #players .filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #players .filters label:first-child{grid-column:1/-1}
+ #players .rankings-wrap{overflow-x:visible}
+}
+@media(max-width:600px){
+ #players .rankings-table th:nth-child(2),#players .rankings-table td:nth-child(2){display:none}
+ #players .rankings-table th:nth-child(1){width:31%}
+ #players .rankings-table th:nth-child(5){width:10%}
+ #players .rankings-table th:nth-child(10){width:16%}
+ #players .rankings-table th:nth-child(11){width:18%}
+ #players .rankings-table th:nth-child(12){width:11%}
+ #players .rankings-table th:nth-child(13){width:14%}
+ #players .rankings-table th,#players .rankings-table td{padding:6px 2px;font-size:.72rem}
+ #players .rankings-table .player-name{font-size:.76rem}
+ #players .rankings-table .eye-table small{font-size:.61rem}
+ #players .rankings-table .mini{font-size:.69rem;padding:6px 3px}
+ #players .rankings-toolbar label{font-size:.73rem}
+}
+@media(max-width:420px){
+ #players .rankings-table th:nth-child(5),#players .rankings-table td:nth-child(5){display:none}
+ #players .rankings-table th:nth-child(1){width:35%}
+ #players .rankings-table th:nth-child(10){width:18%}
+ #players .rankings-table th:nth-child(11){width:21%}
+ #players .rankings-table th:nth-child(12){width:12%}
+ #players .rankings-table th:nth-child(13){width:14%}
+ #players .rankings-table th,#players .rankings-table td{padding:5px 2px}
+ #players .rankings-table .eye-rate-link{min-height:29px}
+ #players .pagination{gap:5px}
+}
