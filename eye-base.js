@@ -1,15 +1,15 @@
 'use strict';
 /* RinkLens: a statistical starting estimate adapted from the user's NHL Career Ranking weights.
  * This is season-level MoneyPuck skater data, not a subjective or career scout grade.
- * Forwards: GP 25%, average all-situations TOI 20%, points/game 45%, 5v5 +/- 10%.
- * Defensemen: GP 30%, average all-situations TOI 30%, points/game 30%, 5v5 +/- 10%.
+ * Forwards: GP 20%, average all-situations TOI 20%, points/game 50%, 5v5 +/- 10%.
+ * Defensemen: GP 20%, average all-situations TOI 30%, points/game 40%, 5v5 +/- 10%.
  * Five-on-five +/- is on-ice GOALS FOR minus AGAINST (not official NHL +/-).
  * Fan-submitted scouting grades and the Advanced Stats Score are unaffected.
  */
 const RinkBase = (() => {
   const WEIGHTS=Object.freeze({
-    F:Object.freeze({gp:25,toi:20,ppg:45,fivePlusMinus:10}),
-    D:Object.freeze({gp:30,toi:30,ppg:30,fivePlusMinus:10})
+    F:Object.freeze({gp:20,toi:20,ppg:50,fivePlusMinus:10}),
+    D:Object.freeze({gp:20,toi:30,ppg:40,fivePlusMinus:10})
   });
   const COMPONENTS=Object.freeze([
     ['gp','Games played',0],['toi','Average ice time / game (minutes)',2],['ppg','Points per game',3],
